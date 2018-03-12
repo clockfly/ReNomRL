@@ -21,11 +21,12 @@ class DQN(object):
         buffer_size (float, int): The size of replay buffer.
     """
 
-    def __init__(self, q_network, target_q, state_size, action_pattern, gamma=0.99, buffer_size=1e5):
+    def __init__(self, q_network, state_size, action_pattern, gamma=0.99, buffer_size=1e5):
+        assert isinstance(action_pattern, int)
         self._network = q_network
-        self._target_network = target_q
+        self._target_network = copy.deepcopy(q_network)
         self._action_size = action_pattern
-        self._state_size = state_size if hasattr(state_size, "__getitem__") else [state_size, ]
+        self._state_size = state_size if hasattr(state_size, "__getitem__") else (state_size, )
         self._buffer_size = buffer_size
         self._gamma = gamma
         self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
