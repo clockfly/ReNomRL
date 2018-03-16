@@ -5,6 +5,7 @@ import numpy as np
 import renom as rm
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 from renom.utility.initializer import GlorotNormal, GlorotUniform
+import time
 
 class OU_noise(object):
     """ 
