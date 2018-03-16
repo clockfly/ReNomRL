@@ -150,10 +150,13 @@ class DDPG(object):
         
         reward_list = []
         critic_loss_list = []
+        
         for i in range(num_episodes):
             s = self.env.reset()
             ep_reward = 0.0
             cumulative_critic_loss = 0.0
+            loss = 0.0
+            tq = tqdm(range(num_steps))
             for j in range(num_steps):
                 if render:
                     self.env.render()
@@ -186,7 +189,7 @@ class DDPG(object):
                     with self._critic.train():
                         value = self._critic.forward(train_prestate, train_action)
                         critic_loss = rm.mse(value, target_q) + self.l2_decay*self._critic.weigiht_decay()
-                    
+                    loss += critic_loss.as_ndarray()
                     critic_loss.grad().update(self._critic_optimizer)
                     cumulative_critic_loss += critic_loss.as_ndarray()
                     
@@ -200,13 +203,17 @@ class DDPG(object):
 
                 s = state
                 ep_reward += reward
-
-
+                tq.set_description("episode: {:03d} Each step reward:{:0.2f}".format(i, ep_reward))
+                tq.update(1)
                 if terminal:
-                    if i%self.every == 0.0:
-                        print('episode',i, 'episode total reward ', ep_reward)
+                    #if i%self.every == 0.0:
+                    #    print('episode',i, 'episode total reward ', ep_reward)
                     reward_list.append(ep_reward)
                     critic_loss_list.append(cumulative_critic_loss)
+                    tq.set_description("episode: {:03d} Total reward:{:0.2f} avg loss:{:6.4f}".format(i, ep_reward, float(loss) / (j + 1)))
+                    tq.update(0)
+                    tq.refresh()
+                    tq.close()
                     break
         
         return (reward_list, critic_loss)
@@ -258,7 +265,7 @@ class DDPG(object):
                 tcl.params[k] = cl.params[k]*self.tau + tcl.params[k]*(1 - self.tau)
     
     
-    def test(self, episodes=5, render=True):
+    def test(self, episodes=5, num_steps=200 ,render=True):
         '''test the trained network
         Args:
             epsiodes: number of trail episodes to run
@@ -266,7 +273,8 @@ class DDPG(object):
         Return:
             (list): A list of cumulative test rewards
         '''
-        ep_test_reward_list = [] 
+        ep_test_reward_list = []
+        
         for i in range(episodes):
             ep_reward = 0
             prestate = self.env.reset() 
@@ -274,16 +282,22 @@ class DDPG(object):
             if render:
                 self.env.render()
                 #time.sleep(5) # to observe the initial state
-            for _ in range(200):
+            tq = tqdm(range(num_steps))
+            for _ in range(num_steps):
                 if render:
                     self.env.render()
                 a = self._actor.forward(np.reshape(prestate, (1, self.env.observation_space.shape[0])))
                 state, reward, terminal, _ = self.env.step(a[0])
                 ep_reward += reward
                 prestate = state
+                tq.set_description("episode: {:03d} Each step reward:{:0.2f}".format(i, ep_reward))
+                tq.update(1)
                 if terminal:
                     ep_test_reward_list.append(ep_reward)
-                    #print('episode :', i+1, ' -->total reward', ep_reward)
+                    tq.set_description("episode: {:03d} Total reward:{:0.2f}".format(i, ep_reward))
+                    tq.update(0)
+                    tq.refresh()
+                    tq.close()
                     break
                 
         return ep_test_reward_list
