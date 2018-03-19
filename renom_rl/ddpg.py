@@ -4,7 +4,7 @@ from tqdm import tqdm
 import numpy as np
 import renom as rm
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom.utility.initializer import GlorotNormal, GlorotUniform
+from renom.utility.initializer import Uniform, GlorotUniform
 import time
 
 class OU_noise(object):
@@ -32,7 +32,7 @@ class Actor(rm.Model):
         self.env = env
         self._l1 = rm.Dense(layer_size[0], initializer=GlorotUniform())
         self._l2 = rm.Dense(layer_size[1], initializer=GlorotUniform())
-        self._l3 = rm.Dense(self.env.action_space.shape[0], initializer=GlorotUniform())
+        self._l3 = rm.Dense(self.env.action_space.shape[0], initializer=Uniform(min=-0.003, max=0.003))
         self._layers = [self._l1, self._l2, self._l3]
     
     # forward propagation to get action    
@@ -60,7 +60,7 @@ class Critic(rm.Model):
         self.env = env
         self._l1 = rm.Dense(layer_size[0], initializer=GlorotUniform())
         self._l2 = rm.Dense(layer_size[1], initializer=GlorotUniform())
-        self._l3 = rm.Dense(1, initializer=GlorotUniform())
+        self._l3 = rm.Dense(1, initializer=Uniform(min=-0.003, max=0.003))
         self._layers = [self._l1, self._l2, self._l3]
     
     # Forward propagation    
@@ -99,7 +99,7 @@ class DDPG(object):
     """
 
     def __init__(self, env, actor_network = None, critic_network = None, target_actor_network = None, \
-                 target_critic_network = None, sgd=rm.Sgd, actor_lr=0.0001, critic_lr=0.001, \
+                 target_critic_network = None, sgd=rm.Adam, actor_lr=0.0001, critic_lr=0.001, \
                  gamma=0.99, tau=0.001, batch_size= 64, buffer_size=100000, l2_decay = 0.0):
         
         layer_size=[400,300] # default network hidden layer neurons same as DDPG Research Paper
@@ -203,7 +203,7 @@ class DDPG(object):
 
                 s = state
                 ep_reward += reward
-                tq.set_description("episode: {:03d} Each step reward:{:0.2f}".format(i, ep_reward))
+                tq.set_description("episode: {:03d} Each step reward:{:0.2f}".format(i, reward))
                 tq.update(1)
                 if terminal:
                     #if i%self.every == 0.0:
