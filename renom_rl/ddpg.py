@@ -14,7 +14,9 @@ class OU_noise(object):
     
     def __init__(self, env, theta = 0.15, sigma = 0.2, x0 = None):
         # x0 is action_space size
-        self.mu = np.zeros(shape=(1,env.action_space.shape[0]))
+        self.env = env
+        self.action_size = self.env.action_space.shape[0] if hasattr(self.env, "action_space") else env.action_size
+        self.mu = np.zeros(shape=(1,self.action_size))
         self.theta = theta
         self.sigma = sigma
         self.dt = 1e-2
@@ -30,9 +32,11 @@ class Actor(rm.Model):
     def __init__(self, env):
         self._layers = []
         self.env = env
+        self.action_size = self.env.action_space.shape[0] if hasattr(self.env, "action_space") else env.action_size
+        self.high = self.env.action_space.high[0] if hasattr(self.env, "action_space") else env.high
         self._l1 = rm.Dense(400, initializer=GlorotUniform())
         self._l2 = rm.Dense(300, initializer=GlorotUniform())
-        self._l3 = rm.Dense(self.env.action_space.shape[0], initializer=Uniform(min=-0.003, max=0.003))
+        self._l3 = rm.Dense(self.action_size, initializer=Uniform(min=-0.003, max=0.003))
         self._layers = [self._l1, self._l2, self._l3]
     
       
@@ -42,7 +46,7 @@ class Actor(rm.Model):
         h2 = rm.relu(self._l2(h1))
         h3 = rm.tanh(self._l3(h2))
         #h3 = self._l3(h2)
-        h = h3*self.env.action_space.high[0]
+        h = h3*self.high
         
         return h
     
@@ -112,25 +116,25 @@ class DDPG(object):
             self._target_actor = copy.deepcopy(self._actor)
         else:
             self._actor = actor_network
-            self._target_actor = copy.deepcopy(self._critic)
+            self._target_actor = copy.deepcopy(self._actor)
         
         if critic_network == None:
             self._critic = Critic(env=env)
-            self._target_critic = Critic(env=env)
+            self._target_critic = copy.deepcopy(self._critic)
         else:
             self._critic = critic_network
-            self._target_critic = target_critic_network
-        
+            self._target_critic = copy.deepcopy(self._critic)
+
+        self.env = env 
+        self.action_size = self.env.action_space.shape[0] if hasattr(self.env, "action_space") else env.action_size
+        self.state_size = self.env.observation_space.shape[0] if hasattr(self.env, "observation_space") else env.state_size
         self.loss_func = loss_func
-        self._actor_optimizer = sgd(lr = actor_lr )
-        self._critic_optimizer = sgd(lr = critic_lr)
-        self.actor_lr = actor_lr
-        self.critic_lr = critic_lr
+        self._actor_optimizer = actor_optimizer
+        self._critic_optimizer = critic_optimizer
         self.buffer_size = buffer_size
         self.batch_size = batch_size
-        self._state_size = env.observation_space.shape
-        self._buffer = ReplayBuffer([1,], self._state_size, buffer_size)
-        
+        #self._state_size = env.observation_space.shape
+        self._buffer = ReplayBuffer([1,], (self.state_size,), buffer_size)
         self.gamma = gamma
         self.env = env
         self.tau = tau
@@ -146,7 +150,7 @@ class DDPG(object):
             (int, ndarray): Action.
         """
         self._actor.set_models(inference=True)
-        shape = [-1, ] + list(self._state_size)
+        shape = [-1, ] + list(self.state_size) #here self._state_size
         s = state.reshape(shape)
         return self._actor(s).as_ndarray()
         
@@ -162,7 +166,7 @@ class DDPG(object):
         Returns:
             (dict): A dictionary which includes reward list of training and loss list.
         """
-        x0 = np.zeros(shape=(1,self.env.action_space.shape[0]))
+        x0 = np.zeros(shape=(1,self.action_size))
         noise = OU_noise(env=self.env, x0=x0) # DDPG specific noise
         
         reward_list = []
@@ -177,7 +181,7 @@ class DDPG(object):
             for j in range(num_steps):
                 if render:
                     self.env.render()
-                prestate = np.reshape(s,(1, self.env.observation_space.shape[0]))
+                prestate = np.reshape(s,(1, self.state_size))
                 
                 action = self._actor.forward(prestate) + noise.sample()
                 
@@ -297,7 +301,7 @@ class DDPG(object):
             for _ in range(num_steps):
                 if render:
                     self.env.render()
-                a = self._actor.forward(np.reshape(prestate, (1, self.env.observation_space.shape[0])))
+                a = self._actor.forward(np.reshape(prestate, (1, self.state_size)))
                 state, reward, terminal, _ = self.env.step(a[0])
                 ep_reward += reward
                 prestate = state
