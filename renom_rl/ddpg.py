@@ -27,16 +27,17 @@ class OU_noise(object):
 class Actor(rm.Model):
     '''Actor network Default
     '''
-    def __init__(self, env, layer_size):
+    def __init__(self, env):
         self._layers = []
         self.env = env
-        self._l1 = rm.Dense(layer_size[0], initializer=GlorotUniform())
-        self._l2 = rm.Dense(layer_size[1], initializer=GlorotUniform())
+        self._l1 = rm.Dense(400, initializer=GlorotUniform())
+        self._l2 = rm.Dense(300, initializer=GlorotUniform())
         self._l3 = rm.Dense(self.env.action_space.shape[0], initializer=Uniform(min=-0.003, max=0.003))
         self._layers = [self._l1, self._l2, self._l3]
     
-    # forward propagation to get action    
+      
     def forward(self, x):
+        ''' forward propagation to get action '''
         h1 = rm.relu(self._l1(x))
         h2 = rm.relu(self._l2(h1))
         h3 = rm.tanh(self._l3(h2))
@@ -45,8 +46,9 @@ class Actor(rm.Model):
         
         return h
     
-    # For L2-norm to minimize the overfitting (it is an optional)
+    
     def weigiht_decay(self):
+        '''For L2-norm to minimize the overfitting (it is an optional)'''
         weight_decay = 0
         for i in range(len(self._layers)):
             weight_decay += rm.sum(self._layers[i].params.w**2)
@@ -55,23 +57,25 @@ class Actor(rm.Model):
 
 class Critic(rm.Model):
     '''Critic network Default'''
-    def __init__(self, env, layer_size):        
+    def __init__(self, env):        
         self._layers = []
         self.env = env
-        self._l1 = rm.Dense(layer_size[0], initializer=GlorotUniform())
-        self._l2 = rm.Dense(layer_size[1], initializer=GlorotUniform())
+        self._l1 = rm.Dense(400, initializer=GlorotUniform())
+        self._l2 = rm.Dense(300, initializer=GlorotUniform())
         self._l3 = rm.Dense(1, initializer=Uniform(min=-0.003, max=0.003))
         self._layers = [self._l1, self._l2, self._l3]
     
-    # Forward propagation    
+        
     def forward(self, x, action):
+        '''Forward propagation'''
         h1 = rm.relu(self._l1(x))
         h2 = rm.relu(self._l2(rm.concat(h1,action))) # actions are applied at 2nd hidden layer
         h = self._l3(h2)        
         return h
     
-    # To minimize over fitting L2-norm (it is an optional)
+    
     def weigiht_decay(self):
+        '''To minimize over fitting L2-norm (it is an optional)'''
         weight_decay = 0
         for i in range(len(self._layers)):
             weight_decay += rm.sum(self._layers[i].params.w**2)
@@ -89,35 +93,34 @@ class DDPG(object):
         actor_network (Model): Actor-Network. If it is None, default ANN is created 
                                 with [400, 300] hidden layer sizes
         critic_network (Model): basically a Q(s,a) function Network.
-        sgd : optimizer such as vaninall stochostic gradient
-        actor_lr (float): actor_network learning rate
-        critic_lr (float): critic_network learning rate
+        actor_optimizer : Adam
+        critic_optimizer : Adam
         gamma (float): Discount rate.
         tau (float): target_networks update parameter
         batch_size (int): mini batch size
         buffer_size (float, int): The size of replay buffer.
+        initliaze(): To make the tareget network's actor & critic weights same as actor & critic network weights
     """
 
-    def __init__(self, env, actor_network = None, critic_network = None, target_actor_network = None, \
-                 target_critic_network = None, sgd=rm.Adam, actor_lr=0.0001, critic_lr=0.001, \
-                 gamma=0.99, tau=0.001, batch_size= 64, buffer_size=100000, l2_decay = 0.0):
-        
-        layer_size=[400,300] # default network hidden layer neurons same as DDPG Research Paper
+    def __init__(self, env, actor_network = None, critic_network = None, loss_func=rm.mse, \
+                 actor_optimizer=rm.Adam(0.0001),critic_optimizer=rm.Adam(0.001), gamma=0.99, \
+                 tau=0.001, batch_size= 64, buffer_size=100000, l2_decay = 0.0):
         
         if actor_network == None:
-            self._actor = Actor(env=env, layer_size=layer_size)
-            self._target_actor = Actor(env=env, layer_size=layer_size)
+            self._actor = Actor(env=env)
+            self._target_actor = copy.deepcopy(self._actor)
         else:
             self._actor = actor_network
-            self._target_actor = target_actor_network
+            self._target_actor = copy.deepcopy(self._critic)
         
         if critic_network == None:
-            self._critic = Critic(env=env, layer_size=layer_size)
-            self._target_critic = Critic(env=env, layer_size=layer_size)
+            self._critic = Critic(env=env)
+            self._target_critic = Critic(env=env)
         else:
             self._critic = critic_network
             self._target_critic = target_critic_network
-            
+        
+        self.loss_func = loss_func
         self._actor_optimizer = sgd(lr = actor_lr )
         self._critic_optimizer = sgd(lr = critic_lr)
         self.actor_lr = actor_lr
@@ -130,12 +133,25 @@ class DDPG(object):
         self.gamma = gamma
         self.env = env
         self.tau = tau
-        self.every = 1
         self.l2_decay = l2_decay
         self.initalize()
         
+    def action(self, state):
+        """This method returns an action according to the given state.
+        Args:
+            state (ndarray): A state of an environment.
+
+        Returns:
+            (int, ndarray): Action.
+        """
+        self._actor.set_models(inference=True)
+        shape = [-1, ] + list(self._state_size)
+        s = state.reshape(shape)
+        return self._actor(s).as_ndarray()
+        
     def train(self, num_episodes=1000, num_steps=200, render=False):
         """ This method executes training of an actor-network.
+        Here, target actor & critic network weights are updated after every actor & critic update using self.tau
         Args:
             num_episodes (int): training number of epsiodes
             num_steps (int): Depends on the type of Environment in-built setting.
@@ -188,7 +204,7 @@ class DDPG(object):
                     
                     with self._critic.train():
                         value = self._critic.forward(train_prestate, train_action)
-                        critic_loss = rm.mse(value, target_q) + self.l2_decay*self._critic.weigiht_decay()
+                        critic_loss = self.loss_func(value, target_q) + self.l2_decay*self._critic.weigiht_decay()
                     loss += critic_loss.as_ndarray()
                     critic_loss.grad().update(self._critic_optimizer)
                     cumulative_critic_loss += critic_loss.as_ndarray()
@@ -244,16 +260,10 @@ class DDPG(object):
     
     
     def initalize(self):
-        '''target networks are initialized with same neural network weights as predict network'''
-        m = 1.0
-        for al, tal in zip(self._actor._layers, self._target_actor._layers):
-            for k in al.params.keys():
-                tal.params[k] = al.params[k]*m + tal.params[k]*(1 - m)
-                
-        for cl, tcl in zip(self._critic._layers, self._target_critic._layers):
-            for k in cl.params.keys():
-                tcl.params[k] = cl.params[k]*m + tcl.params[k]*(1 - m)
-    
+        '''target actor and critic networks are initialized with same neural network weights as actor & critic network'''
+        self._target_actor.copy_params(self._actor)
+        self._target_critic.copy_params(self._critic)
+        
     def update(self):
         '''updare target networks'''
         for al, tal in zip(self._actor._layers, self._target_actor._layers):
@@ -265,7 +275,7 @@ class DDPG(object):
                 tcl.params[k] = cl.params[k]*self.tau + tcl.params[k]*(1 - self.tau)
     
     
-    def test(self, episodes=5, num_steps=200 ,render=True):
+    def test(self, episodes=5, num_steps=200 ,render=False):
         '''test the trained network
         Args:
             epsiodes: number of trail episodes to run
