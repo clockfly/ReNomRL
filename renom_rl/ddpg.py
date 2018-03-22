@@ -95,6 +95,7 @@ class DDPG(object):
         critic_network (Model): basically a Q(s,a) function Network.
         actor_optimizer : Adam
         critic_optimizer : Adam
+	loss_func: It is a loss function for critic network.
         gamma (float): Discount rate.
         tau (float): target_networks update parameter
         batch_size (int): mini batch size
