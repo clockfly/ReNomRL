@@ -14,14 +14,12 @@ def check_step_method(func, action, state):
 
 def check_sample_method(func, action, state):
     ret = func()
-    assert ret and len(ret) == 1, "Please define return value `random_action`."
-    assert hasattr(ret[0], "shape") and ret.shape == action.shape, \
-        "Please set the shape of the return value `random_action` same as `self.action_shape`."
+    assert ret is not None, "Please define return value `random_action`."
 
 
 def check_reset_method(func, action, state):
     ret = func()
-    assert ret and len(ret) == 1, "Please define return value `initial_state`."
+    assert ret is not None, "Please define return value `initial_state`."
     assert hasattr(ret[0], "shape") and ret.shape == state.shape, \
         "Please set the shape of the return value `initial_state` same as `self.state_shape`."
 
@@ -59,17 +57,17 @@ class BaseEnv(object):
         assert self.action_shape, "The field `self.action_shape` must be specified."
         assert self.state_shape, "The field `self.state_shape` must be specified."
 
+        check_reset_method(self.reset,
+                           np.argmax(np.zeros(self.action_shape, dtype=np.float32)),
+                           np.zeros(self.state_shape, dtype=np.float32))
+
         check_step_method(self.step,
-                          np.zeros(self.action_shape, dtype=np.float32),
+                          np.argmax(np.zeros(self.action_shape, dtype=np.float32)),
                           np.zeros(self.state_shape, dtype=np.float32))
 
         check_sample_method(self.sample,
-                            np.zeros(self.action_shape, dtype=np.float32),
+                            np.argmax(np.zeros(self.action_shape, dtype=np.float32)),
                             np.zeros(self.state_shape, dtype=np.float32))
-
-        check_reset_method(self.reset,
-                           np.zeros(self.action_shape, dtype=np.float32),
-                           np.zeros(self.state_shape, dtype=np.float32))
 
     def step(self, action):
         """This method must be overridden.

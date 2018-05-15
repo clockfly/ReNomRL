@@ -10,7 +10,7 @@ from PIL import Image
 import numpy as np
 import pickle
 
-try: 
+try:
     from gym.core import Env as OpenAIEnv
 except:
     OpenAIEnv = None
@@ -50,17 +50,18 @@ class DQN(object):
             action_shape = env.action_shape
             state_shape = env.state_shape
         elif isinstance(env, OpenAIEnv):
-            action_shape = env.action_space
+            action_shape = env.action_space.n
             state_shape = env.observation_space.shape
         else:
             raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
 
-        ##### Check env object
+        # Check env object
         # Check sample method.
         sample = self.env.sample()
         assert isinstance(sample, int), \
-          "Sampled action from env object must be scalar and integer type. Actual is {}".format(type(sample))
-          
+            "Sampled action from env object must be scalar and integer type. Actual is {}".format(
+                type(sample))
+
         # Check state and action shape
         assert state_shape == self.env.reset().shape
         action = self._q_network(np.zeros((1, *state_shape))).as_ndarray()
@@ -70,7 +71,6 @@ class DQN(object):
         self._action_size = action_shape
         self._state_size = state_shape
         self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
-
 
     def initialize(self):
         '''target q-network is initialized with same neural network weights as q-network'''
@@ -85,16 +85,13 @@ class DQN(object):
             (int, ndarray): Action.
         """
         self._q_network.set_models(inference=True)
-        shape = [-1, ] + list(self._state_size)
-        s = state.reshape(shape)
-        return np.argmax(self._q_network(s).as_ndarray(), axis=1)
+        return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
 
     def _walk_model(self, model):
         yield self
         for k, v in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if isinstance(v, rm.Model):
-                for c in v.iter_models():
-                    yield c
+                yield self._walk_model(v)
 
     def update(self):
         """This function updates target network."""
@@ -102,8 +99,9 @@ class DQN(object):
             self._target_q_network.copy_params(self._q_network)
         else:
             for ql, tql in zip(self._walk_model(self._q_network),
-                              self._walk_model(self._target_q_network)):
-                if not hasattr(ql, 'params'): continue
+                               self._walk_model(self._target_q_network)):
+                if not hasattr(ql, 'params'):
+                    continue
                 for k in ql.params.keys():
                     tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
@@ -195,7 +193,7 @@ class DQN(object):
         print("Run random {} step for storing experiences".format(random_step))
 
         state = self.env.reset()
-        for i in range(1, random_step+1):
+        for i in range(1, random_step + 1):
             action = self.env.sample()
             if isinstance(self.env, BaseEnv):
                 next_state, reward, terminal = self.env.step(action)
@@ -205,7 +203,7 @@ class DQN(object):
                 raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
 
             self._buffer.store(state, np.array(action),
-                              np.array(reward), next_state, np.array(terminal))
+                               np.array(reward), next_state, np.array(terminal))
             if terminal:
                 state = self.env.reset()
 
@@ -215,7 +213,7 @@ class DQN(object):
         train_error_list = []
 
         count = 0
-        for e in range(episode):
+        for e in range(1, episode + 1):
             loss = 0
             sum_reward = 0
             state = self.env.reset()
@@ -227,7 +225,8 @@ class DQN(object):
 
             for j in range(episode_step):
                 if greedy > np.random.rand():  # and state is not None:
-                    action = np.argmax(np.atleast_2d(self._q_network(state[None, ...]).as_ndarray()), axis=1)
+                    action = np.argmax(np.atleast_2d(self._q_network(
+                        state[None, ...]).as_ndarray()), axis=1)
                 else:
                     action = self.env.sample()
 
@@ -255,7 +254,7 @@ class DQN(object):
                     target = self._q_network(train_prestate).as_ndarray()
                     target.setflags(write=True)
                     value = self._target_q_network(train_state).as_ndarray(
-                        ) * self._gamma * (~train_terminal[:, None])
+                    ) * self._gamma * (~train_terminal[:, None])
 
                     for i in range(batch_size):
                         a = train_action[i, 0].astype(np.integer)
@@ -278,25 +277,26 @@ class DQN(object):
                 tq.update(1)
 
                 if terminal:
-                    state = self.env.reset()
-                    train_reward_list.append(sum_reward)
-                    train_error_list.append(float(loss) / (j + 1))
-                    msg = ("episode {:03d} avg_loss:{:6.4f} total_reward [train:{:5.3f} test:-] e-greedy:{:5.3f}".format(e, float(loss) / (j + 1), sum_reward, greedy))
-                    if e % test_period == 0 and e:
-                        test_total_reward = self.test(test_step, test_greedy)
-                        msg = ("episode {:03d} avg_loss:{:6.4f} total_reward [train:{:5.3f} test:{:5.3f}] e-greedy:{:5.3f}".format(e, float(loss) / (j + 1), sum_reward, test_total_reward, greedy))
-                    tq.set_description(msg)
-                    tq.update(0)
-                    tq.refresh()
-                    tq.close()
-                    sleep(0.25)
                     break
+            state = self.env.reset()
+            train_reward_list.append(sum_reward)
+            train_error_list.append(float(loss) / (j + 1))
+            msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] e-greedy:{:5.3f}".format(
+                e, float(loss) / (j + 1), sum_reward, greedy))
+            if e % test_period == 0 and e:
+                test_total_reward = self.test(test_step, test_greedy)
+                msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] e-greedy:{:5.3f}".format(
+                    e, float(loss) / (j + 1), sum_reward, test_total_reward, greedy))
+            tq.set_description(msg)
+            tq.update(0)
+            tq.refresh()
+            tq.close()
+            sleep(0.25)
 
-    def test(self, test_step, test_greedy=0.95):
+    def test(self, test_step=2000, test_greedy=0.95):
         # Test
         sum_reward = 0
         state = self.env.reset()
-        self._q_network.set_models(inference=True)
 
         for j in range(test_step):
             if test_greedy > np.random.rand():
@@ -305,9 +305,9 @@ class DQN(object):
                 action = self.env.sample()
 
             if isinstance(self.env, BaseEnv):
-                _, reward, terminal = self.env.step(action)
+                state, reward, terminal = self.env.step(action)
             else:
-                _, reward, terminal, _ = self.env.step(action)
+                state, reward, terminal, _ = self.env.step(action)
             sum_reward += float(reward)
             if terminal:
                 break
