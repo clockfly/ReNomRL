@@ -111,7 +111,7 @@ class DDPG(object):
         self._actor.set_models(inference=True)
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()
 
-    def train(self, episode=1000, episode_step=2000, batch_size=64, random_step=1000,
+    def train(self, episode=1000, episode_step=2000, batch_size=32, random_step=1000,
               test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
               exploration_step=10000, test_period=10, noise=OU()):
         """ This method executes training of an actor-network.
