@@ -112,8 +112,8 @@ class DDPG(object):
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()
 
     def fit(self, episode=1000, episode_step=2000, batch_size=32, random_step=1000,
-              test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
-              exploration_step=10000, test_period=10, noise=OU()):
+            test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
+            exploration_step=10000, test_period=10, noise=OU()):
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
         Args:
@@ -170,7 +170,7 @@ class DDPG(object):
                 e_rate += e_step
                 e_rate = np.clip(e_rate, min_exploration_rate, max_exploration_rate)
 
-                if len(self._buffer) > batch_size and j%train_frequency == 0:
+                if len(self._buffer) > batch_size and j % train_frequency == 0:
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
                         self._buffer.get_minibatch(batch_size)
 
@@ -270,7 +270,7 @@ class DDPG(object):
             for k in ql.params.keys():
                 tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
-    def test(self, test_steps=2000):
+    def test(self, test_steps=2000, render=False):
         '''test the trained network
         Args:
         Return:
@@ -285,6 +285,8 @@ class DDPG(object):
             else:
                 state, reward, terminal, _ = self.env.step(action)
             sum_reward += reward
+            if render:
+                self.env.render()
             if terminal:
                 break
         return sum_reward

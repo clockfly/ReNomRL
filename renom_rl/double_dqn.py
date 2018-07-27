@@ -16,8 +16,8 @@ except:
     OpenAIEnv = None
 
 
-class DQN(object):
-    """DQN class
+class DoubleDQN(object):
+    """Double DQN class
     This class provides a reinforcement learning agent including training method.
 
     Args:
@@ -30,21 +30,6 @@ class DQN(object):
         gamma (float): Discount rate.
         tau (float):
         buffer_size (float, int): The size of replay buffer.
-
-    Example:
-        >>> import renom as rm
-        >>> from renom_rl.dqn import DQN
-        >>> model = rm.Sequential()
-        >>> agent = DQN(
-        ...       env, 
-        ...       model,
-        ...       loss_func=rm.ClippedMeanSquaredError(),
-        ...       buffer_size=1e6
-        ...   )
-        >>> agent.train(episode=10000)
-        episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
-        episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
-        episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
 
     """
 
@@ -152,7 +137,7 @@ class DQN(object):
 
         Example:
             >>> import renom as rm
-            >>> from renom_rl.dqn import DQN
+            >>> from renom_rl.double_dqn import DoubleDQN
             >>>
             >>> q_network = rm.Sequential([
             ...    rm.Conv2d(32, filter=8, stride=4),
@@ -178,7 +163,7 @@ class DQN(object):
             ...     return prestate, state, reward, terminal
             >>>
             >>> # Instantiation of DQN object
-            >>> dqn = DQN(model,
+            >>> dqn = DoubleDQN(model,
             ...           state_size=state_size,
             ...           action_pattern=action_pattern,
             ...           gamma=0.99,
@@ -274,8 +259,9 @@ class DQN(object):
                     target = self._q_network(train_prestate).as_ndarray()
                     target.setflags(write=True)
 
-                    value = np.amax(self._target_q_network(train_state).as_ndarray(),
-                                    axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
+                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
+                    value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
+                        max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
 
                     for i in range(batch_size):
                         a = train_action[i, 0].astype(np.integer)

@@ -35,9 +35,9 @@ class TRPO(object):
         episodes = []
         for e in range(num_episode):
             eps = {
-              "state":[],
-              "reward":[],
-              "action":[]
+                "state": [],
+                "reward": [],
+                "action": []
             }
             state = self._env.reset()
             for step in range(max_step):
@@ -51,7 +51,7 @@ class TRPO(object):
                 if terminal:
                     break
             episodes.append(eps)
-        return episodes 
+        return episodes
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
         pass
