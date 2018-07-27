@@ -34,6 +34,7 @@ class DQN(object):
 
     def __init__(self, env, q_network, loss_func=rm.ClippedMeanSquaredError(),
                  optimizer=rm.Rmsprop(lr=0.00025, g=0.95), gamma=0.99, tau=0.0, buffer_size=1e6):
+
         self._q_network = q_network
         self._target_q_network = copy.deepcopy(self._q_network)
         self._buffer_size = buffer_size
@@ -45,6 +46,10 @@ class DQN(object):
         self.gamma = gamma
         self.tau = tau
         self.initialize()
+
+        # Train histories
+        self.train_reward_list = []
+        self.test_reward_list = []
 
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
@@ -106,7 +111,7 @@ class DQN(object):
                     tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
 
-    def train(self, episode=50000, batch_size=64, episode_step=2000, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, test_period=50, render=False):
+    def fit(self, episode=50000, batch_size=64, episode_step=2000, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, test_period=50, render=False):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -132,7 +137,7 @@ class DQN(object):
 
         Example:
             >>> import renom as rm
-            >>> from renom.algorithm.reinforcement.dqn import DQN
+            >>> from renom_rl.dqn import DQN
             >>>
             >>> q_network = rm.Sequential([
             ...    rm.Conv2d(32, filter=8, stride=4),
@@ -275,16 +280,18 @@ class DQN(object):
                 msg = "episode {:03d} each step reward:{:5.3f}".format(e, sum_reward)
                 tq.set_description(msg)
                 tq.update(1)
-
                 if terminal:
                     break
+
             state = self.env.reset()
             train_reward_list.append(sum_reward)
+            self.train_reward_list.append(sum_reward)
             train_error_list.append(float(loss) / (j + 1))
             msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] e-greedy:{:5.3f}".format(
                 e, float(loss) / (j + 1), sum_reward, greedy))
             if e % test_period == 0 and e:
                 test_total_reward = self.test(test_step, test_greedy, render)
+                self.test_reward_list.append(test_total_reward)
                 msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] e-greedy:{:5.3f}".format(
                     e, float(loss) / (j + 1), sum_reward, test_total_reward, greedy))
             tq.set_description(msg)
@@ -313,3 +320,4 @@ class DQN(object):
             if terminal:
                 break
         return sum_reward
+
