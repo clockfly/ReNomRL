@@ -111,7 +111,7 @@ class DoubleDQN(object):
                 for k in ql.params.keys():
                     tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
-    def fit(self, episode=50000, batch_size=64, episode_step=2000, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, test_period=50, render=False):
+    def fit(self, episode=50000, batch_size=64, episode_step=2000, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, test_period=50, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -300,7 +300,8 @@ class DoubleDQN(object):
             tq.update(0)
             tq.refresh()
             tq.close()
-            sleep(0.05)
+            if callback_end_epoch is not None:
+                callback_end_epoch(e, self._q_network, self.train_reward_list, self.test_reward_list, train_error_list)
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
         # Test
