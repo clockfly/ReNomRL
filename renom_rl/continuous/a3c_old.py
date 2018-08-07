@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import BoundedSemaphore
 
 import renom as rm
-from renom.core import Grads
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 from renom_rl.env import BaseEnv
@@ -58,12 +57,8 @@ class A3C(object):
                  optimizer=rm.Rmsprop(0.001, g=0.99, epsilon=1e-10), gamma=0.99, num_worker=8):
 
         self._network = network
-        for layer in self._network.iter_models():
-            if hasattr(layer, "params"):
-                layer.params = {}
-        self._slave_network = [copy.deepcopy(self._network) for i in range(num_worker)]
-
         self._num_worker = num_worker
+
         self.envs = [copy.deepcopy(env) for i in range(num_worker)]
         self.loss_func = loss_func
         self._actor_optimizer = optimizer
@@ -77,16 +72,6 @@ class A3C(object):
         self.action_size = action_shape
         self.state_size = state_shape
         self.bar = None
-
-        # Dry run.
-        with self._network.train():
-            loss_p, loss_v = self._network(np.random.rand(1, *state_shape))
-            loss_p = rm.sum(loss_p)
-            loss_v = rm.sum(loss_v)
-        self._master_critic_variables = loss_v.grad(detach_graph=False)._auto_updates
-        self._master_actor_variables = loss_p.grad()._auto_updates
-        loss_p = None
-        loss_v = None
 
     def action(self, state):
         """This method returns an action according to the given state.
@@ -119,7 +104,7 @@ class A3C(object):
         g_step = (max_greedy - min_greedy) / greedy_step
 
         def run_agent(args):
-            network, env, learning_rate = args
+            env, learning_rate = args
             avg_reward_list = []
             for e in range(test_frequency//self._num_worker):
                 # Run episode for specified times.
@@ -137,9 +122,7 @@ class A3C(object):
                         # Play until tmax.
                         state = state.reshape(1, *self.state_size)
                         if self.greedy > np.random.rand():
-                            network.set_models(inference=True)
-                            p = network(state.reshape(1, *self.state_size))[0].as_ndarray()
-                            action =  np.random.randn()*safe_softplus(p[:, dim:]) + p[:, :dim]
+                            action = self.action(state)
                         else:
                             action = env.sample()
                         if isinstance(env, BaseEnv):
@@ -153,26 +136,31 @@ class A3C(object):
                         if terminal:
                             break
     
-                    value = 0 if trajectory[-1][TERMINAL] else network(trajectory[-1][STATE])[1].as_ndarray()
+                    self.semaphore.acquire()
+                    value = 0 if trajectory[-1][TERMINAL] else self._network(trajectory[-1][STATE])[1].as_ndarray()
+                    self.semaphore.release()
     
                     actor_grad = None
                     critic_grad = None
                     for t in range(len(trajectory))[::-1]:
                         target = trajectory[t][REWARD] + self.gamma*value
                         target = target.reshape(1, 1)
-                        network.set_models(inference=False)
-                        with network.train():
-                            _, v = network(trajectory[t][PRESTATE])
+                        self.semaphore.acquire()
+                        self._network.set_models(inference=False)
+                        with self._network.train():
+                            _, v = self._network(trajectory[t][PRESTATE])
                             critic_loss = self.loss_func(v, target)
                         grad = critic_loss.grad()
+                        self.semaphore.release()
                         if critic_grad is None:
                             critic_grad = grad
                         else:
                             for k in critic_grad._auto_updates:
                                 critic_grad.variables[id(k)] += grad.variables[id(k)]
-
-                        with network.train():
-                            p, v = network(trajectory[t][PRESTATE])
+        
+                        self.semaphore.acquire()
+                        with self._network.train():
+                            p, v = self._network(trajectory[t][PRESTATE])
                             dim = p.shape[1]//2
                             u = p[:, :dim]
                             s = safe_softplus_ad(p[:, dim:]) ** 2 # This equals to sigm^2.
@@ -180,6 +168,7 @@ class A3C(object):
                             log_pi2 = np.log(np.pi*2)
                             actor_loss = 0.5*rm.sum((-0.5*(log_pi2 + logs) - ((trajectory[t][ACTION]-u)**2)/(2*s + 1e-10))*(target - v.as_ndarray())) - 0.0001*(0.5*rm.sum(log_pi2+logs+1))
                         grad = actor_loss.grad(-1*np.ones_like(actor_loss))
+                        self.semaphore.release()
                         if actor_grad is None:
                             actor_grad = grad
                         else:
@@ -187,23 +176,12 @@ class A3C(object):
                                 actor_grad.variables[id(k)] += grad.variables[id(k)]
 
                         value = target
-
                     self.semaphore.acquire()
                     self._actor_optimizer._lr = learning_rate
                     self._critic_optimizer._lr = learning_rate
-                    a_grad = Grads()
-                    c_grad = Grads()
-                    for m, s in zip(self._master_actor_variables, actor_grad._auto_updates):
-                        a_grad.variables[id(m)] = actor_grad.variables[id(s)]
-                        a_grad._auto_updates.append(m)
-                    for m, s in zip(self._master_critic_variables, critic_grad._auto_updates):
-                        c_grad.variables[id(m)] = critic_grad.variables[id(s)]
-                        c_grad._auto_updates.append(m)
-                    a_grad.update(self._actor_optimizer)
-                    c_grad.update(self._critic_optimizer)
-                    network.copy_params(self._network)
+                    actor_grad.update(self._actor_optimizer)
+                    critic_grad.update(self._critic_optimizer)
                     self.semaphore.release()
-
                     learning_rate = learning_rate - (1e-2 - 1e-7)/(episode_step*episode)
                     learning_rate = float(np.clip(learning_rate, 0, 1e-2))
                     if terminal:
@@ -220,7 +198,7 @@ class A3C(object):
         for i in range(episode//test_frequency):
             self.bar = tqdm()
             with ThreadPoolExecutor(max_workers=self._num_worker) as exc:
-                result = exc.map(run_agent, [(net, env, lr) for net, env, lr in zip(self._slave_network, self.envs, next_learning_rate)])
+                result = exc.map(run_agent, [(e, lr) for e, lr in zip(self.envs, next_learning_rate)])
             ret = []
             next_learning_rate = []
             for r, l in result:
