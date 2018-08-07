@@ -1,4 +1,3 @@
-
 classdef cart_pole < handle 
     %{
 Parameters for simulation
@@ -81,7 +80,7 @@ Tau=0.02;           %Time interval for updating the values;
             self.state=init_state;
         end
         function CartPlot(self,acton,ep)
-            if ep>10000
+            if ep>1000
                 x     = self.state(1);
                 theta = self.state(3);
                 l= 3 -abs(sin(theta));     %pole's Length for ploting it can be different from the actual length
