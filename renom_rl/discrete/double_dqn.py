@@ -16,7 +16,7 @@ except:
     OpenAIEnv = None
 
 
-class DQN(object):
+class DoubleDQN(object):
     """DQN class
     This class provides a reinforcement learning agent including training method.
 
@@ -28,7 +28,6 @@ class DQN(object):
         loss_func (function):
         optimizer: 
         gamma (float): Discount rate.
-        tau (float):
         buffer_size (float, int): The size of replay buffer.
 
     Example:
@@ -49,10 +48,16 @@ class DQN(object):
     """
 
     def __init__(self, env, q_network, loss_func=rm.ClippedMeanSquaredError(),
-                 optimizer=rm.Rmsprop(lr=0.00025, g=0.95), gamma=0.99, tau=0.0, buffer_size=1e6):
+                 optimizer=rm.Rmsprop(lr=0.00025, g=0.95), gamma=0.99, buffer_size=1e6):
 
         self._q_network = q_network
+        for layer in self._q_network.iter_models():
+            if hasattr(layer, "params"):
+                layer.params = {}
         self._target_q_network = copy.deepcopy(self._q_network)
+        self._best_test_q_network = copy.deepcopy(self._q_network)
+        self._best_test_reward = -np.Inf
+
         self._buffer_size = buffer_size
         self._gamma = gamma
         self.env = env
@@ -60,7 +65,6 @@ class DQN(object):
         self._optimizer = optimizer
         self.buffer_size = buffer_size
         self.gamma = gamma
-        self.tau = tau
         self.initialize()
 
         # Train histories
@@ -116,17 +120,9 @@ class DQN(object):
 
     def update(self):
         """This function updates target network."""
-        if self.tau == 0:
-            self._target_q_network.copy_params(self._q_network)
-        else:
-            for ql, tql in zip(self._walk_model(self._q_network),
-                               self._walk_model(self._target_q_network)):
-                if not hasattr(ql, 'params'):
-                    continue
-                for k in ql.params.keys():
-                    tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
+        self._target_q_network.copy_params(self._best_test_q_network)
 
-    def fit(self, episode=50000, batch_size=32, episode_step=2000, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, test_period=50, render=False, callback_end_epoch=None):
+    def fit(self, epoch=50000, epoch_step=2000, batch_size=32, random_step=5000, test_step=1000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -135,10 +131,10 @@ class DQN(object):
                 and returns prestate, state,  reward and terminal.
             loss_func (Model): Loss function for training q-network.
             optimizer (Optimizer): Optimizer object for training q-network.
-            episode (int): Number of episode for training.
+            epoch (int): Number of epoch for training.
             batch_size (int): Batch size.
             random_step (int): Number of random step which will be executed before training.
-            episode_step (int): Number of step of one episode.
+            epoch_step (int): Number of step of one epoch.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
             greedy_step (int): Number of step
@@ -187,18 +183,18 @@ class DQN(object):
             >>> # Training
             >>> train_history = dqn.train(environment,
             ...           loss_func=rm.ClippedMeanSquaredError(clip=(-1, 1)),
-            ...           episode=50,
+            ...           epoch=50,
             ...           random_step=5000,
-            ...           episode_step=25000,
+            ...           epoch_step=25000,
             ...           test_step=2500,
             ...           optimizer=rm.Rmsprop(lr=0.00025, g=0.95))
             >>>
             Executing random action for 5000 step...
-            episode 000 avg loss:0.0060 avg reward:0.023: 100%|██████████| 25000/25000 [19:12<00:00, 21.70it/s]
+            epoch 000 avg loss:0.0060 avg reward:0.023: 100%|██████████| 25000/25000 [19:12<00:00, 21.70it/s]
                 /// Result
                 Average train error: 0.006
-                Avg train reward in one episode: 1.488
-                Avg test reward in one episode: 1.216
+                Avg train reward in one epoch: 1.488
+                Avg test reward in one epoch: 1.216
                 Test reward: 63.000
                 Greedy: 0.0225
                 Buffer: 29537
@@ -233,17 +229,17 @@ class DQN(object):
         train_error_list = []
 
         count = 0
-        for e in range(1, episode + 1):
+        for e in range(1, epoch+1):
             loss = 0
             sum_reward = 0
             state = self.env.reset()
-            train_one_episode_reward = []
-            train_each_episode_reward = []
-            test_one_episode_reward = []
-            test_each_episode_reward = []
-            tq = tqdm()
+            train_one_epoch_reward = []
+            train_each_epoch_reward = []
+            test_one_epoch_reward = []
+            test_each_epoch_reward = []
+            tq = tqdm(range(epoch_step))
 
-            for j in range(episode_step):
+            for j in range(epoch_step):
                 if greedy > np.random.rand():  # and state is not None:
                     action = np.argmax(np.atleast_2d(self._q_network(
                         state[None, ...]).as_ndarray()), axis=1)
@@ -258,10 +254,10 @@ class DQN(object):
                 greedy += g_step
                 greedy = np.clip(greedy, min_greedy, max_greedy)
                 sum_reward += reward
-                train_each_episode_reward.append(reward)
+                train_each_epoch_reward.append(reward)
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
-                train_one_episode_reward.append(reward)
+                train_one_epoch_reward.append(reward)
                 state = next_state
 
                 if len(self._buffer) > batch_size:
@@ -274,8 +270,9 @@ class DQN(object):
                     target = self._q_network(train_prestate).as_ndarray()
                     target.setflags(write=True)
 
-                    value = np.amax(self._target_q_network(train_state).as_ndarray(),
-                                    axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
+                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
+                    value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
+                        max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
 
                     for i in range(batch_size):
                         a = train_action[i, 0].astype(np.integer)
@@ -288,28 +285,36 @@ class DQN(object):
                     ls.grad().update(self._optimizer)
                     loss += ls.as_ndarray()
 
-                    if count % update_period == 0 or self.tau > 0:
+                    if count % update_period == 0 and count:
+                        print("Update", self._best_test_reward)
                         self.update()
+                        self._best_test_reward = -np.Inf
                         count = 0
                     count += 1
 
-                msg = "episode {:03d} each step reward:{:5.3f}".format(e, sum_reward)
+                msg = "epoch {:03d} each step reward:{:5.3f}".format(e, sum_reward)
                 tq.set_description(msg)
                 tq.update(1)
                 if terminal:
-                    break
+                    self.env.reset()
 
             state = self.env.reset()
             train_reward_list.append(sum_reward)
             self.train_reward_list.append(sum_reward)
             train_error_list.append(float(loss) / (j + 1))
-            msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] e-greedy:{:5.3f}".format(
+            msg = ("epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] e-greedy:{:5.3f}".format(
                 e, float(loss) / (j + 1), sum_reward, greedy))
-            if e % test_period == 0 and e:
-                test_total_reward = self.test(test_step, test_greedy, render)
-                self.test_reward_list.append(test_total_reward)
-                msg = ("episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] e-greedy:{:5.3f}".format(
-                    e, float(loss) / (j + 1), sum_reward, test_total_reward, greedy))
+
+            # Test
+            test_total_reward = self.test(test_step, test_greedy, render)
+            self.test_reward_list.append(test_total_reward)
+            msg = ("epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] e-greedy:{:5.3f}".format(
+                e, float(loss) / (j + 1), sum_reward, test_total_reward, greedy))
+
+            if self._best_test_reward < test_total_reward:
+                self._best_test_q_network.copy_params(self._q_network)
+                self._best_test_reward = test_total_reward
+
             tq.set_description(msg)
             tq.update(0)
             tq.refresh()
@@ -336,5 +341,5 @@ class DQN(object):
             if render:
                 self.env.render()
             if terminal:
-                break
+                self.env.reset()
         return sum_reward

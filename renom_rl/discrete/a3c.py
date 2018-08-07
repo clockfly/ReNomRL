@@ -98,12 +98,15 @@ class A3C(object):
 
         train_reward_list = []
 
-        def run_agent(env):
+        def run_agent(args):
+            env, learning_rate = args
             avg_reward_list = []
             for e in range(test_frequency//self._num_worker):
+                # Run episode for specified times.
                 state = env.reset()
                 reward_list = []
                 for _ in range(episode_step//tmax):
+                    # 1 episode.
                     PRESTATE = 0
                     ACTION = 1
                     REWARD = 2
@@ -111,6 +114,7 @@ class A3C(object):
                     TERMINAL = 4
                     trajectory = []
                     for t in range(tmax):
+                        # Play until tmax.
                         state = state.reshape(1, *self.state_size)
                         if self.greedy > np.random.rand():
                             action = self.action(state)
@@ -148,10 +152,6 @@ class A3C(object):
                         if critic_grad is None:
                             critic_grad = grad
                         else:
-                            # for v1, v2 in zip(critic_grad._auto_updates, grad._auto_updates):
-                            #     print("critic " + str(id(v1)) + " " + str(id(v2)) + " " + str(id(v1)==id(v2)) + " " + str(len(critic_grad._auto_updates)) +" " + str(len(grad._auto_updates)))
-                            if len(critic_grad._auto_updates) == 0 or len(grad._auto_updates) == 0:
-                                print(str(len(critic_grad._auto_updates)) +" " + str(len(grad._auto_updates)))
                             for k in critic_grad._auto_updates:
                                 critic_grad.variables[id(k)] += grad.variables[id(k)]
         
@@ -165,29 +165,37 @@ class A3C(object):
                         if actor_grad is None:
                             actor_grad = grad
                         else:
-                            # for v1, v2 in zip(actor_grad._auto_updates, grad._auto_updates):
-                            #     print("actor " + str(id(v1)) + " " + str(id(v2)) + " " + str(id(v1)==id(v2)))
- 
                             for k in actor_grad._auto_updates:
                                 actor_grad.variables[id(k)] += grad.variables[id(k)]
 
                         value = target
                     self.semaphore.acquire()
+                    self._actor_optimizer._lr = learning_rate
+                    self._critic_optimizer._lr = learning_rate
                     actor_grad.update(self._actor_optimizer)
                     critic_grad.update(self._critic_optimizer)
                     self.semaphore.release()
+                    learning_rate = learning_rate - (1e-2 - 1e-7)/(episode_step*episode)
+                    learning_rate = float(np.clip(learning_rate, 0, 1e-2))
                     if terminal:
                         break
 
                 avg_reward_list.append(np.sum(reward_list))
                 self.bar.update(1)
-            return np.mean(avg_reward_list)
-    
+            return np.mean(avg_reward_list), learning_rate
+
+        next_learning_rate = [float(np.exp(np.random.uniform(np.log(1e-7), np.log(1e-2)))) for _ in range(self._num_worker)]
         for i in range(episode//test_frequency):
             self.bar = tqdm()
             with ThreadPoolExecutor(max_workers=self._num_worker) as exc:
-                result = exc.map(run_agent, self.envs)
-            self.bar.set_description("Average Train reward: {:5.3f} Test reward: {:5.3f} Greedy: {:5.4f}".format(np.mean(list(result)), self.test(render=True), self.greedy))
+                result = exc.map(run_agent, [(e, lr) for e, lr in zip(self.envs, next_learning_rate)])
+            ret = []
+            next_learning_rate = []
+            for r, l in result:
+                ret.append(r)
+                next_learning_rate.append(l)
+                
+            self.bar.set_description("Average Train reward: {:5.3f} Test reward: {:5.3f}".format(np.mean(ret), self.test(render=True)))
             self.bar.update(0)
             self.bar.refresh()
             self.bar.close()
