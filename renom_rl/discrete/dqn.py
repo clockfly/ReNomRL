@@ -23,8 +23,6 @@ class DQN(object):
     Args:
         env (Environment):
         q_network (Model): Q-Network.
-        action_pattern (int): The number of action pattern.
-        state_size (tuple, list): The size of state.
         loss_func (function):
         optimizer: 
         gamma (float): Discount rate.
@@ -32,7 +30,7 @@ class DQN(object):
 
     Example:
         >>> import renom as rm
-        >>> from renom_rl.dqn import DQN
+        >>> from renom_rl.discrete.dqn import DQN
         >>> model = rm.Sequential()
         >>> agent = DQN(
         ...       env, 
@@ -40,7 +38,7 @@ class DQN(object):
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
         ...   )
-        >>> agent.train(episode=10000)
+        >>> agent.train(epoch=10000)
         episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
         episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
         episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
@@ -203,6 +201,8 @@ class DQN(object):
             >>> print(train_history["train_reward"])
 
         """
+        assert epoch_step < update_period, "The argument 'epoch_step' must be smaller than 'update_period'."
+
         greedy = min_greedy
         g_step = (max_greedy - min_greedy) / greedy_step
 
@@ -285,7 +285,6 @@ class DQN(object):
                     loss += ls.as_ndarray()
 
                     if count % update_period == 0 and count:
-                        print("Update", self._best_test_reward)
                         self.update()
                         self._best_test_reward = -np.Inf
                         count = 0
