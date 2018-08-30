@@ -5,7 +5,7 @@ from tqdm import tqdm
 import numpy as np
 import renom as rm
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom_rl.env import BaseEnv
+from renom_rl.environ import BaseEnv
 from PIL import Image
 import numpy as np
 import pickle
@@ -220,6 +220,7 @@ class DQN(object):
 
             self._buffer.store(state, np.array(action),
                                np.array(reward), next_state, np.array(terminal))
+            state = next_state
             if terminal:
                 state = self.env.reset()
 
