@@ -101,11 +101,11 @@ class A3C(object):
         def run_agent(args):
             env, learning_rate = args
             avg_reward_list = []
-            for e in range(test_frequency//self._num_worker):
+            for e in range(test_frequency // self._num_worker):
                 # Run episode for specified times.
                 state = env.reset()
                 reward_list = []
-                for _ in range(episode_step//tmax):
+                for _ in range(episode_step // tmax):
                     # 1 episode.
                     PRESTATE = 0
                     ACTION = 1
@@ -132,15 +132,16 @@ class A3C(object):
                         self.greedy = np.clip(self.greedy, min_greedy, max_greedy)
                         if terminal:
                             break
-    
+
                     self.semaphore.acquire()
-                    value = 0 if trajectory[-1][TERMINAL] else self._network(trajectory[-1][STATE])[1].as_ndarray()
+                    value = 0 if trajectory[-1][TERMINAL] else self._network(trajectory[-1][STATE])[
+                        1].as_ndarray()
                     self.semaphore.release()
-    
+
                     actor_grad = None
                     critic_grad = None
                     for t in range(len(trajectory))[::-1]:
-                        target = trajectory[t][REWARD] + self.gamma*value
+                        target = trajectory[t][REWARD] + self.gamma * value
                         target = target.reshape(1, 1)
                         self.semaphore.acquire()
                         self._network.set_models(inference=False)
@@ -154,13 +155,15 @@ class A3C(object):
                         else:
                             for k in critic_grad._auto_updates:
                                 critic_grad.variables[id(k)] += grad.variables[id(k)]
-        
+
                         self.semaphore.acquire()
                         with self._network.train():
                             p, v = self._network(trajectory[t][PRESTATE])
                             p = p[:, int(trajectory[t][ACTION])]
-                            actor_loss = 0.5*rm.sum(rm.log(p+1e-10)*(target - v.as_ndarray())) - 0.01*rm.sum(p*rm.log(p + 1e-10))
-                        grad = actor_loss.grad(-1*np.ones_like(actor_loss))
+                            actor_loss = 0.5 * \
+                                rm.sum(rm.log(p + 1e-10) * (target - v.as_ndarray())) - \
+                                0.01 * rm.sum(p * rm.log(p + 1e-10))
+                        grad = actor_loss.grad(-1 * np.ones_like(actor_loss))
                         self.semaphore.release()
                         if actor_grad is None:
                             actor_grad = grad
@@ -175,7 +178,7 @@ class A3C(object):
                     actor_grad.update(self._actor_optimizer)
                     critic_grad.update(self._critic_optimizer)
                     self.semaphore.release()
-                    learning_rate = learning_rate - (1e-2 - 1e-7)/(episode_step*episode)
+                    learning_rate = learning_rate - (1e-2 - 1e-7) / (episode_step * episode)
                     learning_rate = float(np.clip(learning_rate, 0, 1e-2))
                     if terminal:
                         break
@@ -184,23 +187,25 @@ class A3C(object):
                 self.bar.update(1)
             return np.mean(avg_reward_list), learning_rate
 
-        next_learning_rate = [float(np.exp(np.random.uniform(np.log(1e-7), np.log(1e-2)))) for _ in range(self._num_worker)]
-        for i in range(episode//test_frequency):
+        next_learning_rate = [float(np.exp(np.random.uniform(np.log(1e-7), np.log(1e-2))))
+                              for _ in range(self._num_worker)]
+        for i in range(episode // test_frequency):
             self.bar = tqdm()
             with ThreadPoolExecutor(max_workers=self._num_worker) as exc:
-                result = exc.map(run_agent, [(e, lr) for e, lr in zip(self.envs, next_learning_rate)])
+                result = exc.map(run_agent, [(e, lr)
+                                             for e, lr in zip(self.envs, next_learning_rate)])
             ret = []
             next_learning_rate = []
             for r, l in result:
                 ret.append(r)
                 next_learning_rate.append(l)
-                
-            self.bar.set_description("Average Train reward: {:5.3f} Test reward: {:5.3f}".format(np.mean(ret), self.test(render=True)))
+
+            self.bar.set_description("Average Train reward: {:5.3f} Test reward: {:5.3f}".format(
+                np.mean(ret), self.test(render=True)))
             self.bar.update(0)
             self.bar.refresh()
             self.bar.close()
-                
-            
+
     def test(self, test_steps=2000, render=False):
         '''test the trained network
         Args:
