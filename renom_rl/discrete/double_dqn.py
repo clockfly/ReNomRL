@@ -56,7 +56,6 @@ class DoubleDQN(object):
                 layer.params = {}
         self._target_q_network = copy.deepcopy(self._q_network)
         self._best_test_q_network = copy.deepcopy(self._q_network)
-        self._best_test_reward = -np.Inf
 
         self._buffer_size = buffer_size
         self._gamma = gamma
@@ -259,6 +258,7 @@ class DoubleDQN(object):
             for j in range(epoch_step):
                 loss = 0
                 if greedy > np.random.rand():  # and state is not None:
+                    self._q_network.set_models(inference=True)
                     action = np.argmax(np.atleast_2d(self._q_network(
                         state[None, ...]).as_ndarray()), axis=1)
                 else:
@@ -285,8 +285,8 @@ class DoubleDQN(object):
                     self._target_q_network.set_models(inference=True)
 
                     target = self._q_network(train_prestate).as_ndarray()
-                    target.setflags(write=True)
 
+                    target.setflags(write=True)
                     max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                     value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
                                                                               max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
