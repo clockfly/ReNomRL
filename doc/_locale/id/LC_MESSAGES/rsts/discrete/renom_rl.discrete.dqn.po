@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-09-18 22:56+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../../rsts/discrete/renom_rl.discrete.dqn.rst:2
+msgid "renom_rl.discrete.dqn"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:1
+msgid ""
+"DQN class This class provides a reinforcement learning agent including "
+"training method."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:6
+msgid "Q-Network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:8
+msgid "The number of action pattern."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:10
+msgid "The size of state."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:15
+msgid "Discount rate."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:17
+msgid "The size of replay buffer."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:22 renom_rl.discrete.dqn.DQN.fit:40
+msgid "Example"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.initialize:1
+msgid ""
+"target q-network is initialized with same neural network weights as "
+"q-network"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.action:1
+msgid ""
+"This method returns an action according to the given state. :param state:"
+" A state of an environment."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.action:6
+msgid "Action."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.update:1
+msgid "This function updates target network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:1
+msgid ""
+"This method executes training of a q-network. Training will be done with "
+"epsilon-greedy method."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:4
+msgid ""
+"A function which accepts action as an argument and returns prestate, "
+"state,  reward and terminal."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:7
+msgid "Loss function for training q-network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:9
+msgid "Optimizer object for training q-network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:11
+msgid "Number of epoch for training."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:13
+msgid "Batch size."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:15
+msgid "Number of random step which will be executed before training."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:17
+msgid "Number of step of one epoch."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:19
+msgid "Number of test step."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:21
+msgid "Period of updating target network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:23
+msgid "Number of step"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:25
+msgid "Minimum greedy value"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:27
+msgid "Maximum greedy value"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:29
+msgid "Greedy threshold"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:31
+msgid "For the learning step, training is done at this cycle"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:35
+msgid "A dictionary which includes reward list of training and loss list."
+msgstr ""
+
