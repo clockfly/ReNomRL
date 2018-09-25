@@ -56,7 +56,6 @@ class DoubleDQN(object):
                 layer.params = {}
         self._target_q_network = copy.deepcopy(self._q_network)
         self._best_test_q_network = copy.deepcopy(self._q_network)
-        self._best_test_reward = -np.Inf
 
         self._buffer_size = buffer_size
         self._gamma = gamma
@@ -118,9 +117,26 @@ class DoubleDQN(object):
             if isinstance(v, rm.Model):
                 yield self._walk_model(v)
 
+    def _rec_copy(self, obj1, obj2):
+        for item_keys in obj1.__dict__.keys():
+            if isinstance(obj1.__dict__[item_keys], rm.BatchNormalize):
+                obj1.__dict__[item_keys]._mov_mean = obj2.__dict__[item_keys]._mov_mean
+                obj1.__dict__[item_keys]._mov_std = obj2.__dict__[item_keys]._mov_std
+            elif isinstance(obj1.__dict__[item_keys], rm.Model):
+                self._rec_copy(obj1.__dict__[item_keys], obj2.__dict__[item_keys])
+
+
     def update(self):
         """This function updates target network."""
         self._target_q_network.copy_params(self._best_test_q_network)
+        self._rec_copy(self._target_q_network, self._best_test_q_network)
+
+
+    def update_best_q_network(self):
+        """This function updates target network."""
+        self._best_test_q_network.copy_params(self._q_network)
+        self._rec_copy(self._best_test_q_network, self._q_network)
+
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000, test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
@@ -240,7 +256,9 @@ class DoubleDQN(object):
             tq = tqdm(range(epoch_step))
             sum_reward = 0
             for j in range(epoch_step):
+                loss = 0
                 if greedy > np.random.rand():  # and state is not None:
+                    self._q_network.set_models(inference=True)
                     action = np.argmax(np.atleast_2d(self._q_network(
                         state[None, ...]).as_ndarray()), axis=1)
                 else:
@@ -267,8 +285,8 @@ class DoubleDQN(object):
                     self._target_q_network.set_models(inference=True)
 
                     target = self._q_network(train_prestate).as_ndarray()
-                    target.setflags(write=True)
 
+                    target.setflags(write=True)
                     max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                     value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
                                                                               max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
@@ -282,7 +300,8 @@ class DoubleDQN(object):
                         z = self._q_network(train_prestate)
                         ls = self.loss_func(z, target)
                     ls.grad().update(self._optimizer)
-                    train_error_in_each_epoch.append(ls.as_ndarray())
+                    loss = np.sum(ls.as_ndarray())
+                    train_error_in_each_epoch.append(loss)
 
                     if count % update_period == 0 and count:
                         max_reward_in_each_update_period = -np.Inf
@@ -292,22 +311,21 @@ class DoubleDQN(object):
 
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
-                        self._best_test_q_network.copy_params(self._q_network)
+                        self.update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
                     self.env.reset()
-
-                msg = "epoch {:04d} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e,
+                msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e, loss,
                                                                                                                 np.sum(
                                                                                                                     train_sum_rewards_in_each_episode) + sum_reward,
                                                                                                                 nth_episode,
                                                                                                                 train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
+
                 tq.set_description(msg)
                 tq.update(1)
 
-            state = self.env.reset()
             avg_train_error_list.append(np.mean(train_error_in_each_epoch))
             summed_train_rewards_in_each_epoch.append(
                 np.sum(train_sum_rewards_in_each_episode) + sum_reward)
@@ -327,15 +345,15 @@ class DoubleDQN(object):
             tq.close()
 
             if callback_end_epoch is not None:
-                callback_end_epoch(e, self._q_network, summed_train_rewards_in_each_epoch,
-                                   summed_test_reward_list, train_error_list)
+                callback_end_epoch(e, self, summed_train_rewards_in_each_epoch[-1],
+                                   sum_of_test_reward, avg_train_error_list[-1])
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
         # Test
         sum_reward = 0
         reward_in_episode = 0
         avg_rewards_in_each_episode = []
-        state = self.env.reset()
+        state = self.env.reset(test=True)
 
         for j in range(test_step):
             if test_greedy > np.random.rand():
@@ -353,5 +371,5 @@ class DoubleDQN(object):
             if terminal:
                 avg_rewards_in_each_episode.append(reward_in_episode)
                 reward_in_episode = 0
-                self.env.reset()
+                self.env.reset(test=True)
         return sum_reward, avg_rewards_in_each_episode
