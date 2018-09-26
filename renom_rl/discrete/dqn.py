@@ -1,19 +1,12 @@
 from __future__ import division
-from time import sleep
 import copy
+import numpy as np
 from tqdm import tqdm
-import numpy as np
-import renom as rm
-from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom_rl.environ import BaseEnv
-from PIL import Image
-import numpy as np
-import pickle
 
-try:
-    from gym.core import Env as OpenAIEnv
-except:
-    OpenAIEnv = None
+import renom as rm
+from renom_rl.environ import BaseEnv
+from renom_rl.utility.event_handler import EventHandler
+from renom_rl.utility.replaybuffer import ReplayBuffer
 
 
 class DQN(object):
@@ -56,7 +49,6 @@ class DQN(object):
                 layer.params = {}
         self._target_q_network = copy.deepcopy(self._q_network)
         self._best_test_q_network = copy.deepcopy(self._q_network)
-        self._best_test_reward = -np.Inf
 
         self._buffer_size = buffer_size
         self._gamma = gamma
@@ -74,11 +66,8 @@ class DQN(object):
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
             state_shape = env.state_shape
-        elif isinstance(env, OpenAIEnv):
-            action_shape = env.action_space.n
-            state_shape = env.observation_space.shape
         else:
-            raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+            raise Exception("Argument env must be a object of BaseEnv class.")
 
         # Check env object
         # Check sample method.
@@ -96,6 +85,8 @@ class DQN(object):
         self._action_size = action_shape
         self._state_size = state_shape
         self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
+
+        self.events = EventHandler()
 
     def initialize(self):
         '''target q-network is initialized with same neural network weights as q-network'''
@@ -118,9 +109,23 @@ class DQN(object):
             if isinstance(v, rm.Model):
                 yield self._walk_model(v)
 
+    def _rec_copy(self, obj1, obj2):
+        for item_keys in obj1.__dict__.keys():
+            if isinstance(obj1.__dict__[item_keys], rm.BatchNormalize):
+                obj1.__dict__[item_keys]._mov_mean = obj2.__dict__[item_keys]._mov_mean
+                obj1.__dict__[item_keys]._mov_std = obj2.__dict__[item_keys]._mov_std
+            elif isinstance(obj1.__dict__[item_keys], rm.Model):
+                self._rec_copy(obj1.__dict__[item_keys], obj2.__dict__[item_keys])
+
     def update(self):
         """This function updates target network."""
         self._target_q_network.copy_params(self._best_test_q_network)
+        self._rec_copy(self._target_q_network, self._best_test_q_network)
+
+    def update_best_q_network(self):
+        """This function updates target network."""
+        self._best_test_q_network.copy_params(self._q_network)
+        self._rec_copy(self._best_test_q_network, self._q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000, test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
@@ -213,10 +218,8 @@ class DQN(object):
             action = self.env.sample()
             if isinstance(self.env, BaseEnv):
                 next_state, reward, terminal = self.env.step(action)
-            elif isinstance(self.env, OpenAIEnv):
-                next_state, reward, terminal, _ = self.env.step(action)
             else:
-                raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+                raise Exception("Argument env must be a object of BaseEnv class.")
 
             self._buffer.store(state, np.array(action),
                                np.array(reward), next_state, np.array(terminal))
@@ -227,6 +230,7 @@ class DQN(object):
         # History of Learning
         avg_train_error_list = []
         summed_train_rewards_in_each_epoch = []
+        summed_test_rewards_in_each_epoch = []
         max_reward_in_each_update_period = -np.Inf
 
         count = 0
@@ -239,7 +243,9 @@ class DQN(object):
             tq = tqdm(range(epoch_step))
             sum_reward = 0
             for j in range(epoch_step):
+                loss = 0
                 if greedy > np.random.rand():  # and state is not None:
+                    self._q_network.set_models(inference=True)
                     action = np.argmax(np.atleast_2d(self._q_network(
                         state[None, ...]).as_ndarray()), axis=1)
                 else:
@@ -266,6 +272,7 @@ class DQN(object):
                     self._target_q_network.set_models(inference=True)
 
                     target = self._q_network(train_prestate).as_ndarray()
+
                     target.setflags(write=True)
 
                     value = np.amax(self._target_q_network(train_state).as_ndarray(),
@@ -280,7 +287,8 @@ class DQN(object):
                         z = self._q_network(train_prestate)
                         ls = self.loss_func(z, target)
                     ls.grad().update(self._optimizer)
-                    train_error_in_each_epoch.append(ls.as_ndarray())
+                    loss = np.sum(ls.as_ndarray())
+                    train_error_in_each_epoch.append(loss)
 
                     if count % update_period == 0 and count:
                         max_reward_in_each_update_period = -np.Inf
@@ -290,22 +298,21 @@ class DQN(object):
 
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
-                        self._best_test_q_network.copy_params(self._q_network)
+                        self.update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
                     self.env.reset()
+                msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e, loss,
+                                                                                                                             np.sum(
+                                                                                                                                 train_sum_rewards_in_each_episode) + sum_reward,
+                                                                                                                             nth_episode,
+                                                                                                                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
 
-                msg = "epoch {:04d} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e,
-                                                                                                                np.sum(
-                                                                                                                    train_sum_rewards_in_each_episode) + sum_reward,
-                                                                                                                nth_episode,
-                                                                                                                train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
                 tq.set_description(msg)
                 tq.update(1)
 
-            state = self.env.reset()
             avg_train_error_list.append(np.mean(train_error_in_each_epoch))
             summed_train_rewards_in_each_epoch.append(
                 np.sum(train_sum_rewards_in_each_episode) + sum_reward)
@@ -323,10 +330,8 @@ class DQN(object):
             tq.update(0)
             tq.refresh()
             tq.close()
-
-            if callback_end_epoch is not None:
-                callback_end_epoch(e, self._q_network, summed_test_reward_list,
-                                   summed_test_reward_list, train_error_list)
+            self.events.on(
+                "end_epoch", e, self, summed_train_rewards_in_each_epoch[-1], sum_of_test_reward, avg_train_error_list[-1])
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
         # Test
