@@ -57,7 +57,6 @@ class DoubleDQN(object):
         self._optimizer = optimizer
         self.buffer_size = buffer_size
         self.gamma = gamma
-        self.initialize()
 
         # Train histories
         self.train_reward_list = []
@@ -87,10 +86,15 @@ class DoubleDQN(object):
         self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
 
         self.events = EventHandler()
+        self.initialize()
 
     def initialize(self):
         '''target q-network is initialized with same neural network weights as q-network'''
-        self._target_q_network.copy_params(self._q_network)
+        for layer in list(self._target_q_network.iter_models()):
+            if hasattr(layer, "params") and False:
+                layer.params = {}
+        self._target_q_network(np.random.randn(1, *self._state_size))
+        self._q_network.copy_params(self._target_q_network)
 
     def action(self, state):
         """This method returns an action according to the given state.

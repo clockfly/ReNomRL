@@ -80,7 +80,8 @@ class DDPG(object):
             "Expected state shape is {}. Actual is {}.".format(state_shape, self.env.reset().shape)
         action_sample = self._actor(np.zeros((1, *state_shape))).as_ndarray()
         assert action_sample.shape[1:] == action_shape, \
-            "Expected state shape is {}. Actual is {}.".format(action_shape, action_sample.shape[1:])
+            "Expected state shape is {}. Actual is {}.".format(
+                action_shape, action_sample.shape[1:])
         #####
         self.action_size = action_shape
         self.state_size = state_shape
@@ -98,7 +99,6 @@ class DDPG(object):
         """
         self._actor.set_models(inference=True)
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()
-
 
     def fit(self, episode=1000, episode_step=2000, batch_size=64, random_step=5000,
             test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
@@ -135,7 +135,7 @@ class DDPG(object):
         train_reward_list = []
         train_avg_loss_list = []
         test_reward_list = []
-        
+
         for e in range(1, episode + 1):
             state = self.env.reset()
             sum_reward = 0.0
@@ -180,7 +180,8 @@ class DDPG(object):
                     self._actor.set_models(inference=False)
                     with self._actor.train(), self._critic.train():
                         actor_loss = self.value_function(train_prestate)/len(train_prestate)
-                    target_actor_loss = self.target_value_function(train_prestate)/len(train_prestate)
+                    target_actor_loss = self.target_value_function(
+                        train_prestate)/len(train_prestate)
 
                     critic_loss.grad().update(self._critic_optimizer)
                     with self._critic.prevent_update():
@@ -213,8 +214,8 @@ class DDPG(object):
             tq.refresh()
             tq.close()
 
-            self.events.on("end_epoch", 
-                e, self, train_reward_list, test_reward_list, train_avg_loss_list)
+            self.events.on("end_epoch",
+                           e, self, train_reward_list, test_reward_list, train_avg_loss_list)
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
