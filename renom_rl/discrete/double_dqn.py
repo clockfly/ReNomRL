@@ -5,10 +5,14 @@ from tqdm import tqdm
 import numpy as np
 import renom as rm
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom_rl.environ import BaseEnv
 from PIL import Image
 import numpy as np
 import pickle
+
+
+from renom_rl.environ import BaseEnv
+from renom_rl.utility.event_handler import EventHandler
+
 
 try:
     from gym.core import Env as OpenAIEnv
@@ -96,6 +100,8 @@ class DoubleDQN(object):
         self._state_size = state_shape
         self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
 
+        self.events = EventHandler()
+
     def initialize(self):
         '''target q-network is initialized with same neural network weights as q-network'''
         self._target_q_network.copy_params(self._q_network)
@@ -125,18 +131,15 @@ class DoubleDQN(object):
             elif isinstance(obj1.__dict__[item_keys], rm.Model):
                 self._rec_copy(obj1.__dict__[item_keys], obj2.__dict__[item_keys])
 
-
     def update(self):
         """This function updates target network."""
         self._target_q_network.copy_params(self._best_test_q_network)
         self._rec_copy(self._target_q_network, self._best_test_q_network)
 
-
     def update_best_q_network(self):
         """This function updates target network."""
         self._best_test_q_network.copy_params(self._q_network)
         self._rec_copy(self._best_test_q_network, self._q_network)
-
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000, test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
@@ -318,10 +321,10 @@ class DoubleDQN(object):
                     nth_episode += 1
                     self.env.reset()
                 msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e, loss,
-                                                                                                                np.sum(
-                                                                                                                    train_sum_rewards_in_each_episode) + sum_reward,
-                                                                                                                nth_episode,
-                                                                                                                train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
+                                                                                                                             np.sum(
+                                                                                                                                 train_sum_rewards_in_each_episode) + sum_reward,
+                                                                                                                             nth_episode,
+                                                                                                                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
 
                 tq.set_description(msg)
                 tq.update(1)
@@ -343,10 +346,8 @@ class DoubleDQN(object):
             tq.update(0)
             tq.refresh()
             tq.close()
-
-            if callback_end_epoch is not None:
-                callback_end_epoch(e, self, summed_train_rewards_in_each_epoch[-1],
-                                   sum_of_test_reward, avg_train_error_list[-1])
+            self.events.on(
+                "end_epoch", e, self, summed_train_rewards_in_each_epoch[-1], sum_of_test_reward, avg_train_error_list[-1])
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
         # Test
