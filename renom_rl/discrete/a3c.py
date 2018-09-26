@@ -8,7 +8,7 @@ from threading import BoundedSemaphore
 import renom as rm
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom_rl.env import BaseEnv
+from renom_rl.environ.env import BaseEnv
 from renom_rl.noise import OU
 
 
@@ -34,7 +34,7 @@ class A3C(object):
                         For example, 'Pendulum-v0' environment, has methods reset, step.
                         env.reset() --> resets initial state of environment
                         env.step(action) --> take action value and returns (next_state, reward, terminal, _)
-        actor_network (Model): Actor-Network. If it is None, default ANN is created 
+        actor_network (Model): Actor-Network. If it is None, default ANN is created
                                 with [400, 300] hidden layer sizes
         critic_network (Model): basically a Q(s,a) function Network.
         actor_optimizer : Optimizer object for training actor network.
@@ -87,7 +87,7 @@ class A3C(object):
             episode_step (int): Depends on the type of Environment in-built setting.
                              Environment reaches terminal situation in two cases.
                             (i) In the type of Game, it is game over
-                            (ii) Maximum time steps to play                    
+                            (ii) Maximum time steps to play
         Returns:
             (dict): A dictionary which includes reward list of training and loss list.
         """

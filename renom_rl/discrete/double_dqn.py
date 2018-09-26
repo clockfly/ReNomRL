@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 import renom as rm
-from renom_rl.environ import BaseEnv
+from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
 
@@ -19,7 +19,7 @@ class DoubleDQN(object):
         action_pattern (int): The number of action pattern.
         state_size (tuple, list): The size of state.
         loss_func (function):
-        optimizer: 
+        optimizer:
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
 
@@ -28,7 +28,7 @@ class DoubleDQN(object):
         >>> from renom_rl.dqn import DQN
         >>> model = rm.Sequential()
         >>> agent = DQN(
-        ...       env, 
+        ...       env,
         ...       model,
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
