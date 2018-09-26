@@ -4,8 +4,8 @@ import numpy as np
 
 class EventHandler(object):
 
-    def __init__(self, events):
-        super(EventHandler, self).__setattr__('_events', events)
+    def __init__(self):
+        super(EventHandler, self).__setattr__('_events', {})
 
     def __getattr__(self, name):
         def deco(f):
@@ -16,10 +16,7 @@ class EventHandler(object):
     def __setattr__(self, name, f):
         self._events[name] = f
 
-    def get_handlers(self):
-        return self._evnets
-
     def on(self, name, *args, **kwargs):
-        event = self._evnets.get(name)
+        event = self._events.get(name, None)
         if event:
             event(*args, **kwargs)

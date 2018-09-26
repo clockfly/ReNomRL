@@ -9,7 +9,8 @@ def check_step_method(func, action, state):
     ret = func(action)
     assert ret and len(ret) == 3, "Please define return values `state`, `reward` and `terminal`."
     assert hasattr(ret[0], "shape") and ret[0].shape == state.shape, \
-        "Please set the shape of the return value `state` same as `self.state_shape`."
+        "Please set the shape of the return value `state` same as `self.state_shape`. Expect {}, actual is {}.".format(
+            state.shape, ret[0].shape)
 
 
 def check_sample_method(func, action, state):
@@ -21,7 +22,8 @@ def check_reset_method(func, action, state):
     ret = func()
     assert ret is not None, "Please define return value `initial_state`."
     assert hasattr(ret[0], "shape") and ret.shape == state.shape, \
-        "Please set the shape of the return value `initial_state` same as `self.state_shape`."
+        "Please set the shape of the return value `initial_state` same as `self.state_shape`. Expect {}, actual is {}.".format(
+            state.shape, ret.shape)
 
 
 class BaseEnv(object):

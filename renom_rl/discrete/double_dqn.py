@@ -1,23 +1,12 @@
 from __future__ import division
-from time import sleep
 import copy
+import numpy as np
 from tqdm import tqdm
-import numpy as np
+
 import renom as rm
-from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from PIL import Image
-import numpy as np
-import pickle
-
-
 from renom_rl.environ import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
-
-
-try:
-    from gym.core import Env as OpenAIEnv
-except:
-    OpenAIEnv = None
+from renom_rl.utility.replaybuffer import ReplayBuffer
 
 
 class DoubleDQN(object):
@@ -77,11 +66,8 @@ class DoubleDQN(object):
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
             state_shape = env.state_shape
-        elif isinstance(env, OpenAIEnv):
-            action_shape = env.action_space.n
-            state_shape = env.observation_space.shape
         else:
-            raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+            raise Exception("Argument env must be a object of BaseEnv class.")
 
         # Check env object
         # Check sample method.
@@ -232,10 +218,8 @@ class DoubleDQN(object):
             action = self.env.sample()
             if isinstance(self.env, BaseEnv):
                 next_state, reward, terminal = self.env.step(action)
-            elif isinstance(self.env, OpenAIEnv):
-                next_state, reward, terminal, _ = self.env.step(action)
             else:
-                raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+                raise Exception("Argument env must be a object of BaseEnv class.")
 
             self._buffer.store(state, np.array(action),
                                np.array(reward), next_state, np.array(terminal))
@@ -354,7 +338,7 @@ class DoubleDQN(object):
         sum_reward = 0
         reward_in_episode = 0
         avg_rewards_in_each_episode = []
-        state = self.env.reset(test=True)
+        state = self.env.reset()
 
         for j in range(test_step):
             if test_greedy > np.random.rand():
@@ -372,5 +356,5 @@ class DoubleDQN(object):
             if terminal:
                 avg_rewards_in_each_episode.append(reward_in_episode)
                 reward_in_episode = 0
-                self.env.reset(test=True)
+                self.env.reset()
         return sum_reward, avg_rewards_in_each_episode
