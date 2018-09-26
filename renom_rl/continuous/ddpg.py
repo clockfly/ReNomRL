@@ -1,22 +1,13 @@
-
 import copy
 import numpy as np
 from tqdm import tqdm
-from time import sleep
 
 import renom as rm
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 
-from renom_rl.env import BaseEnv
+from renom_rl.environ import BaseEnv
 from renom_rl.noise import OU
-
-
-import time
-try:
-    from gym.core import Env as OpenAIEnv
-except:
-    OpenAIEnv = None
 
 
 class DDPG(object):
@@ -27,7 +18,7 @@ class DDPG(object):
     https://arxiv.org/abs/1509.02971
 
     This class provides a reinforcement learning agent including training and testing methods.
-    This class only accepts 'Environment' as a object of 'BaseEnv' class or OpenAI-Gym 'Env' class.
+    This class only accepts 'Environment' as a object of 'BaseEnv' class.
 
     Args:
         env (BaseEnv, openAI-Env): An instance of Environment to be learned.
@@ -71,20 +62,15 @@ class DDPG(object):
                 action_shape = tuple(action_shape)
             if isinstance(state_shape, 'int'):
                 state_shape = tuple(state_shape)
-        elif isinstance(env, OpenAIEnv):
-            action_shape = env.action_space.shape
-            state_shape = env.observation_space.shape
         else:
-            raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+            raise Exception("Argument env must be a object of BaseEnv class.")
 
         # Check env object
         # Check sample method.
         if isinstance(env, BaseEnv):
             sample = self.env.sample()
-        elif isinstance(env, OpenAIEnv):
-            sample = self.env.action_space.sample()
         else:
-            raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+            raise Exception("Argument env must be a object of BaseEnv class.")
 
         assert isinstance(sample, np.ndarray), \
             "Sampled action from env object must be numpy ndarray. Actual is {}".format(
@@ -134,11 +120,8 @@ class DDPG(object):
             if isinstance(self.env, BaseEnv):
                 action = self.env.sample()
                 next_state, reward, terminal = self.env.step(action)
-            elif isinstance(self.env, OpenAIEnv):
-                action = self.env.action_space.sample()
-                next_state, reward, terminal, _ = self.env.step(action)
             else:
-                raise Exception("Argument env must be a object of BaseEnv class or OpenAI gym Env.")
+                raise Exception("Argument env must be a object of BaseEnv class.")
             self._buffer.store(state, action,
                                np.array(reward), next_state, np.array(terminal))
             if terminal:
@@ -160,8 +143,6 @@ class DDPG(object):
 
                 if isinstance(self.env, BaseEnv):
                     next_state, reward, terminal = self.env.step(action)
-                elif isinstance(self.env, OpenAIEnv):
-                    next_state, reward, terminal, _ = self.env.step(action)
 
                 self._buffer.store(state, action,
                                    np.array(reward), next_state, np.array(terminal))
