@@ -284,7 +284,7 @@ class DDPG(object):
         sum_reward = 0
         state = self.env.reset()
         for _ in range(test_steps):
-            action = self._actor.forward(state.reshape(1, *self.state_size)).as_ndarray()[0]
+            action = self.action(state)
             if isinstance(self.env, BaseEnv):
                 state, reward, terminal = self.env.step(action)
             else:

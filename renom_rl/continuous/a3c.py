@@ -9,7 +9,7 @@ import renom as rm
 from renom.core import Grads
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
-from renom_rl.env import BaseEnv
+from renom_rl.environ import BaseEnv
 from renom_rl.noise import OU
 
 
@@ -63,7 +63,6 @@ class A3C(object):
         for layer in self._network.iter_models():
             if hasattr(layer, "params"):
                 layer.params = {}
-        self._slave_network = [copy.deepcopy(self._network) for i in range(num_worker)]
 
         self._num_worker = num_worker
         self.envs = [copy.deepcopy(env) for i in range(num_worker)]
@@ -76,19 +75,35 @@ class A3C(object):
         action_shape = env.action_shape
         state_shape = env.state_shape
 
-        self.action_size = action_shape
-        self.state_size = state_shape
+        if hasattr(action_shape, "__getitem__"):
+            self.action_size = action_shape
+        else:
+            self.action_size = (action_shape,)
+
+        if hasattr(state_shape, "__getitem__"):
+            self.state_size = state_shape
+        else:
+            self.state_size = (state_shape,)
+
         self.bar = None
 
         # Dry run.
         with self._network.train():
-            loss_p, loss_v = self._network(np.random.rand(1, *state_shape))
+            loss_p, loss_v = self._network(np.random.rand(1, *self.state_size))
             loss_p = rm.sum(loss_p)
             loss_v = rm.sum(loss_v)
+
         self._master_critic_variables = loss_v.grad(detach_graph=False)._auto_updates
         self._master_actor_variables = loss_p.grad()._auto_updates
         loss_p = None
         loss_v = None
+
+        self._slave_network = [copy.deepcopy(self._network) for i in range(num_worker)]
+        for slave in self._slave_network:
+            for layer in list(slave.iter_models()):
+                if hasattr(layer, "params") and False:
+                    layer.params = {}
+            slave(np.random.rand(1, *self.state_size))
 
     def action(self, state):
         """This method returns an action according to the given state.
@@ -144,10 +159,12 @@ class A3C(object):
                             action = np.random.randn() * safe_softplus(p[:, dim:]) + p[:, :dim]
                         else:
                             action = env.sample()
+
                         if isinstance(env, BaseEnv):
                             next_state, reward, terminal = env.step(action)
                         elif isinstance(env, OpenAIEnv):
                             next_state, reward, terminal, _ = env.step(action)
+
                         next_state = next_state.reshape(1, *self.state_size)
                         trajectory.append((state, action, reward, next_state, terminal))
                         state = next_state
@@ -207,7 +224,6 @@ class A3C(object):
                     c_grad.update(self._critic_optimizer)
                     network.copy_params(self._network)
                     self.semaphore.release()
-
                     learning_rate = learning_rate - (1e-2 - 1e-7) / (episode_step * episode)
                     learning_rate = float(np.clip(learning_rate, 0, 1e-2))
                     if terminal:
