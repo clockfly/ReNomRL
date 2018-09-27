@@ -1,4 +1,7 @@
-from __future__ import division
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import division, print_function
 import copy
 import numpy as np
 from tqdm import tqdm
@@ -10,25 +13,24 @@ from renom_rl.utility.replaybuffer import ReplayBuffer
 
 
 class DoubleDQN(object):
-    """DQN class
+    """Double DQN class
     This class provides a reinforcement learning agent including training method.
 
     Args:
-        env (Environment):
+        env (BaseEnv): Environment. This must be a child class of BaseEnv.
         q_network (Model): Q-Network.
-        action_pattern (int): The number of action pattern.
-        state_size (tuple, list): The size of state.
-        loss_func (function):
-        optimizer:
+        loss_func (function): Loss function for train q-network.
+        optimizer: Optimizer for train q-network.
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
 
     Example:
         >>> import renom as rm
-        >>> from renom_rl.dqn import DQN
-        >>> model = rm.Sequential()
+        >>> from renom_rl.discrete.dounble_dqn import DoubleDQN
+        >>> from renom_rl.environ.openai import Breakout
+        >>> model = rm.Sequential(...)
         >>> agent = DQN(
-        ...       env,
+        ...       Breakout(),
         ...       model,
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
@@ -37,72 +39,83 @@ class DoubleDQN(object):
         episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
         episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
         episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
+        ...
+
+    References:
+        | Hado van Hasselt, Arthur Guez, David Silver
+        | **Deep Reinforcement Learning with Double Q-learning**
+        | https://arxiv.org/abs/1509.06461
+        |
 
     """
 
     def __init__(self, env, q_network, loss_func=rm.ClippedMeanSquaredError(),
                  optimizer=rm.Rmsprop(lr=0.00025, g=0.95), gamma=0.99, buffer_size=1e6):
-
+        # Reset parameters.
         self._q_network = q_network
-        for layer in self._q_network.iter_models():
-            if hasattr(layer, "params"):
-                layer.params = {}
-        self._target_q_network = copy.deepcopy(self._q_network)
-        self._best_test_q_network = copy.deepcopy(self._q_network)
 
-        self._buffer_size = buffer_size
+        # Copy network architectures.
+        # Target network.
+        self._target_q_network = copy.deepcopy(self._q_network)
+        # The network which earned highest summed reward in each update period.
+        self._best_q_network = copy.deepcopy(self._q_network)
+
         self._gamma = gamma
         self.env = env
         self.loss_func = loss_func
         self._optimizer = optimizer
-        self.buffer_size = buffer_size
         self.gamma = gamma
 
         # Train histories
         self.train_reward_list = []
         self.test_reward_list = []
 
+        # Check Env class type.
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
             state_shape = env.state_shape
         else:
             raise Exception("Argument env must be a object of BaseEnv class.")
 
-        # Check env object
-        # Check sample method.
-        sample = self.env.sample()
-        assert isinstance(sample, int), \
-            "Sampled action from env object must be scalar and integer type. Actual is {}".format(
-                type(sample))
-
         # Check state and action shape
-        assert state_shape == self.env.reset().shape
+        assert state_shape == self.env.reset().shape, \
+            "Expected state shape is {} but accual is {}".format(
+                state_shape, self.env.reset().shape)
+
         action = self._q_network(np.zeros((1, *state_shape))).as_ndarray()
-        assert action.shape[1] == action_shape
-        #####
+        assert action.shape[1] == action_shape, \
+            "Expected action shape is {} but accual is {}".format(action_shape, action.shape[1])
 
-        self._action_size = action_shape
-        self._state_size = state_shape
-        self._buffer = ReplayBuffer([1, ], self._state_size, buffer_size)
-
+        self._action_shape = action_shape
+        self._state_shape = state_shape
+        self._buffer = ReplayBuffer([1, ], self._state_shape, buffer_size)
         self.events = EventHandler()
         self.initialize()
 
     def initialize(self):
-        '''target q-network is initialized with same neural network weights as q-network'''
-        for layer in list(self._target_q_network.iter_models()):
-            if hasattr(layer, "params") and False:
+        '''Target q-network is initialized with same neural network weights of q-network.'''
+        # Reset weight.
+        for layer in self._q_network.iter_models():
+            if hasattr(layer, "params"):
                 layer.params = {}
-        self._target_q_network(np.random.randn(1, *self._state_size))
+
+        for layer in list(self._target_q_network.iter_models()):
+            if hasattr(layer, "params"):
+                layer.params = {}
+
+        # Initiallize weight.
+        self._target_q_network(np.random.randn(1, *self._state_shape))
         self._q_network.copy_params(self._target_q_network)
 
     def action(self, state):
         """This method returns an action according to the given state.
+
         Args:
             state (ndarray): A state of an environment.
 
         Returns:
             (int, ndarray): Action.
+
         """
         self._q_network.set_models(inference=True)
         return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
@@ -123,93 +136,63 @@ class DoubleDQN(object):
 
     def update(self):
         """This function updates target network."""
-        self._target_q_network.copy_params(self._best_test_q_network)
-        self._rec_copy(self._target_q_network, self._best_test_q_network)
+        self._target_q_network.copy_params(self._best_q_network)
+        self._rec_copy(self._target_q_network, self._best_q_network)
 
     def update_best_q_network(self):
-        """This function updates target network."""
-        self._best_test_q_network.copy_params(self._q_network)
-        self._rec_copy(self._best_test_q_network, self._q_network)
+        """This function updates best network in each epoch."""
+        self._best_q_network.copy_params(self._q_network)
+        self._rec_copy(self._best_q_network, self._q_network)
 
-    def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000, test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0, max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
+    def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
+            test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0,
+            max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
+        You can define following callback functions.
+
+        - end_epoch
+            Args:
+                epoch (int):
+                model (DoubleDQN):
+                summed_train_reward_in_current_epoch (float):
+                summed_test_reward_in_current_epoch (float):
+                average_train_lossin_current_epoch (float):
+
         Args:
-            env (function): A function which accepts action as an argument
-                and returns prestate, state,  reward and terminal.
-            loss_func (Model): Loss function for training q-network.
-            optimizer (Optimizer): Optimizer object for training q-network.
             epoch (int): Number of epoch for training.
+            epoch_step (int): Number of step of one epoch.
             batch_size (int): Batch size.
             random_step (int): Number of random step which will be executed before training.
-            epoch_step (int): Number of step of one epoch.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
-            greedy_step (int): Number of step
+            train_frequency (int): For the learning step, training is done at this cycle
             min_greedy (int): Minimum greedy value
             max_greedy (int): Maximum greedy value
+            greedy_step (int): Number of step
             test_greedy (int): Greedy threshold
-            train_frequency (int): For the learning step, training is done at this cycle
-
-        Returns:
-            (dict): A dictionary which includes reward list of training and loss list.
+            render (bool): If True is given, BaseEnv.render() method will be called in test time.
 
         Example:
             >>> import renom as rm
-            >>> from renom_rl.dqn import DQN
+            >>> from renom_rl.discrete.dounble_dqn import DoubleDQN
+            >>> from renom_rl.environ.openai import Breakout
             >>>
             >>> q_network = rm.Sequential([
-            ...    rm.Conv2d(32, filter=8, stride=4),
-            ...    rm.Relu(),
-            ...    rm.Conv2d(64, filter=4, stride=2),
-            ...    rm.Relu(),
-            ...    rm.Conv2d(64, filter=3, stride=1),
-            ...    rm.Relu(),
-            ...    rm.Flatten(),
-            ...    rm.Dense(512),
-            ...    rm.Relu(),
-            ...    rm.Dense(action_pattern)
+            ...    # Define network here.
             ... ])
-            >>>
-            >>> state_size = (4, 84, 84)
-            >>> action_pattern = 4
-            >>>
-            >>> def environment(action):
-            ...     prestate = ...
-            ...     state = ...
-            ...     reward = ...
-            ...     terminal = ...
-            ...     return prestate, state, reward, terminal
-            >>>
-            >>> # Instantiation of DQN object
-            >>> dqn = DQN(model,
-            ...           state_size=state_size,
-            ...           action_pattern=action_pattern,
-            ...           gamma=0.99,
-            ...           buffer_size=buffer_size)
-            >>>
-            >>> # Training
-            >>> train_history = dqn.train(environment,
-            ...           loss_func=rm.ClippedMeanSquaredError(clip=(-1, 1)),
-            ...           epoch=50,
-            ...           random_step=5000,
-            ...           epoch_step=25000,
-            ...           test_step=2500,
-            ...           optimizer=rm.Rmsprop(lr=0.00025, g=0.95))
-            >>>
-            Executing random action for 5000 step...
-            epoch 000 avg loss:0.0060 avg reward:0.023: 100%|██████████| 25000/25000 [19:12<00:00, 21.70it/s]
-                /// Result
-                Average train error: 0.006
-                Avg train reward in one epoch: 1.488
-                Avg test reward in one epoch: 1.216
-                Test reward: 63.000
-                Greedy: 0.0225
-                Buffer: 29537
-                ...
-            >>>
-            >>> print(train_history["train_reward"])
+            >>> model = DoubleDQN(Breakout(), q_network)
+            >>> 
+            >>> @model.event.end_epoch
+            >>> def callback(epoch, ddqn, train_rew, test_rew, avg_loss):
+            ... # This function will be called end of each epoch. 
+            ... 
+            >>> 
+            >>> model.fit()
+            epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
+            epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
+            ...
 
         """
         greedy = min_greedy
@@ -220,10 +203,7 @@ class DoubleDQN(object):
         state = self.env.reset()
         for i in range(1, random_step + 1):
             action = self.env.sample()
-            if isinstance(self.env, BaseEnv):
-                next_state, reward, terminal = self.env.step(action)
-            else:
-                raise Exception("Argument env must be a object of BaseEnv class.")
+            next_state, reward, terminal = self.env.step(action)
 
             self._buffer.store(state, np.array(action),
                                np.array(reward), next_state, np.array(terminal))
@@ -255,10 +235,7 @@ class DoubleDQN(object):
                 else:
                     action = self.env.sample()
 
-                if isinstance(self.env, BaseEnv):
-                    next_state, reward, terminal = self.env.step(action)
-                else:
-                    next_state, reward, terminal, _ = self.env.step(action)
+                next_state, reward, terminal = self.env.step(action)
 
                 greedy += g_step
                 greedy = np.clip(greedy, min_greedy, max_greedy)
@@ -308,11 +285,10 @@ class DoubleDQN(object):
                     sum_reward = 0
                     nth_episode += 1
                     self.env.reset()
-                msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}.".format(e, loss,
-                                                                                                                             np.sum(
-                                                                                                                                 train_sum_rewards_in_each_episode) + sum_reward,
-                                                                                                                             nth_episode,
-                                                                                                                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
+
+                msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
+                    .format(e, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
+                            train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
 
                 tq.set_description(msg)
                 tq.update(1)
@@ -338,7 +314,18 @@ class DoubleDQN(object):
                 "end_epoch", e, self, summed_train_rewards_in_each_epoch[-1], sum_of_test_reward, avg_train_error_list[-1])
 
     def test(self, test_step=2000, test_greedy=0.95, render=False):
-        # Test
+        """
+        Test the trained agent.
+
+        Args:
+            test_step (int): Number of steps for test.
+            test_greedy (float): Greedy ratio of action.
+            render (bool): If True is given, BaseEnv.render() method will be called.
+
+        Returns:
+            (int): Sum of rewards.
+            (list): List of summed rewards of each episode.
+        """
         sum_reward = 0
         reward_in_episode = 0
         avg_rewards_in_each_episode = []
