@@ -6,8 +6,9 @@ import renom as rm
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 
-from renom_rl.environ.env import BaseEnv
 from renom_rl.noise import OU
+from renom_rl.environ import BaseEnv
+from renom_rl.utility.event_handler import EventHandler
 
 
 class DDPG(object):
@@ -43,7 +44,6 @@ class DDPG(object):
 
         self._actor = actor_network
         self._target_actor = copy.deepcopy(self._actor)
-
         self._critic = critic_network
         self._target_critic = copy.deepcopy(self._critic)
         self.env = env
@@ -53,15 +53,14 @@ class DDPG(object):
         self.buffer_size = buffer_size
         self.gamma = gamma
         self.tau = tau
-        self.initalize()
 
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
             state_shape = env.state_shape
-            if isinstance(action_shape, 'int'):
-                action_shape = tuple(action_shape)
-            if isinstance(state_shape, 'int'):
-                state_shape = tuple(state_shape)
+            if not hasattr(action_shape, "__getitem__"):
+                action_shape = (action_shape, )
+            if not hasattr(state_shape, "__getitem__"):
+                state_shape = (state_shape, )
         else:
             raise Exception("Argument env must be a object of BaseEnv class.")
 
@@ -77,14 +76,18 @@ class DDPG(object):
                 type(sample))
 
         # Check state and action shape
-        assert state_shape == self.env.reset().shape
+        assert state_shape == self.env.reset().shape, \
+            "Expected state shape is {}. Actual is {}.".format(state_shape, self.env.reset().shape)
         action_sample = self._actor(np.zeros((1, *state_shape))).as_ndarray()
-        assert action_sample.shape[1:] == action_shape
+        assert action_sample.shape[1:] == action_shape, \
+            "Expected state shape is {}. Actual is {}.".format(
+                action_shape, action_sample.shape[1:])
         #####
-
         self.action_size = action_shape
         self.state_size = state_shape
         self._buffer = ReplayBuffer(self.action_size, self.state_size, buffer_size)
+        self.events = EventHandler()
+        self.initalize()
 
     def action(self, state):
         """This method returns an action according to the given state.
@@ -97,7 +100,7 @@ class DDPG(object):
         self._actor.set_models(inference=True)
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()
 
-    def fit(self, episode=1000, episode_step=2000, batch_size=32, random_step=1000,
+    def fit(self, episode=1000, episode_step=2000, batch_size=64, random_step=5000,
             test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
             exploration_step=10000, test_period=10, noise=OU()):
         """ This method executes training of an actor-network.
@@ -130,6 +133,8 @@ class DDPG(object):
                 state = next_state
 
         train_reward_list = []
+        train_avg_loss_list = []
+        test_reward_list = []
 
         for e in range(1, episode + 1):
             state = self.env.reset()
@@ -138,7 +143,7 @@ class DDPG(object):
             tq = tqdm(range(episode_step))
             for j in range(episode_step):
                 action = self.action(state)
-                sampled_noise = noise.sample(action) * e_rate
+                sampled_noise = noise.sample(action)*e_rate
                 action += sampled_noise
 
                 if isinstance(self.env, BaseEnv):
@@ -169,15 +174,20 @@ class DDPG(object):
 
                     self._critic.set_models(inference=False)
                     with self._critic.train():
-                        value = self._critic.forward(train_prestate, train_action)
+                        value = self._critic(train_prestate, train_action)
                         critic_loss = self.loss_func(value, target_q)
-                    critic_loss.grad().update(self._critic_optimizer)
-                    loss += critic_loss.as_ndarray()
 
                     self._actor.set_models(inference=False)
-                    with self._actor.train():
-                        actor_loss = self.value_function(train_prestate)
-                    actor_loss.grad(-1 * np.ones_like(actor_loss)).update(self._actor_optimizer)
+                    with self._actor.train(), self._critic.train():
+                        actor_loss = self.value_function(train_prestate)/len(train_prestate)
+                    target_actor_loss = self.target_value_function(
+                        train_prestate)/len(train_prestate)
+
+                    critic_loss.grad().update(self._critic_optimizer)
+                    with self._critic.prevent_update():
+                        actor_loss.grad(-1*np.ones_like(actor_loss)).update(self._actor_optimizer)
+
+                    loss += critic_loss.as_ndarray()
                     self.update()
 
                 sum_reward = float(sum_reward)
@@ -187,9 +197,11 @@ class DDPG(object):
                 if terminal:
                     break
 
+            avg_loss = float(loss) / (j + 1)
             train_reward_list.append(sum_reward)
+            train_avg_loss_list.append(avg_loss)
             msg = "episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] exploration:{:5.3f}"
-            tq.set_description(msg.format(e, float(loss) / (j + 1), sum_reward, e_rate))
+            tq.set_description(msg.format(e, avg_loss, sum_reward, e_rate))
             if e % test_period == 0:
                 tq.set_description("Running test for {} step".format(test_step))
                 tq.update(0)
@@ -197,9 +209,13 @@ class DDPG(object):
                 msg = "episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] exploration:{:5.3f}"
                 tq.set_description(msg.format(e, float(loss) / (j + 1),
                                               sum_reward, test_total_reward, e_rate))
+                test_reward_list.append(test_total_reward)
             tq.update(0)
             tq.refresh()
             tq.close()
+
+            self.events.on("end_epoch",
+                           e, self, train_reward_list, test_reward_list, train_avg_loss_list)
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
@@ -208,8 +224,8 @@ class DDPG(object):
         Returns:
             value: Q(s,a) value
         '''
-        action = self._actor.forward(state)
-        value = self._critic.forward(state, action)
+        action = self._actor(state)
+        value = self._critic(state, action)
         return value
 
     def target_value_function(self, state):
@@ -219,23 +235,31 @@ class DDPG(object):
         Returns:
             value: Q(s,a) value
         '''
-        action = self._target_actor.forward(state)
-        value = self._target_critic.forward(state, action)
+        action = self._target_actor(state)
+        value = self._target_critic(state, action)
         return value
 
     def initalize(self):
         '''target actor and critic networks are initialized with same neural network weights as actor & critic network'''
         for layer in list(self._walk_model(self._target_critic)) + list(self._walk_model(self._target_actor)):
-            if hasattr(layer, "params"):
+            if hasattr(layer, "params") and False:
                 layer.params = {}
-        self._target_actor.copy_params(self._actor)
-        self._target_critic.copy_params(self._critic)
+
+        for layer in list(self._walk_model(self._critic)) + list(self._walk_model(self._actor)):
+            if hasattr(layer, "params") and False:
+                layer.params = {}
+
+        state = np.random.rand(1, *self.state_size)
+        action = self._target_actor(state)
+        self._target_critic(state, action)
+        self._actor.copy_params(self._target_actor)
+        self._critic.copy_params(self._target_critic)
 
     def _walk_model(self, model):
-        yield self
-        for k, v in sorted(self.__dict__.items(), key=lambda x: x[0]):
-            if isinstance(v, rm.Model):
-                yield self._walk_model(v)
+        yield model
+        for k, v in sorted(model.__dict__.items(), key=lambda x: x[0]):
+            if isinstance(v, rm.Model) and v != self:
+                yield from self._walk_model(v)
 
     def update(self):
         '''updare target networks'''
@@ -260,7 +284,7 @@ class DDPG(object):
         sum_reward = 0
         state = self.env.reset()
         for _ in range(test_steps):
-            action = self._actor.forward(state.reshape(1, *self.state_size)).as_ndarray()[0]
+            action = self.action(state)
             if isinstance(self.env, BaseEnv):
                 state, reward, terminal = self.env.step(action)
             else:
@@ -269,5 +293,5 @@ class DDPG(object):
             if render:
                 self.env.render()
             if terminal:
-                break
+                state = self.env.reset()
         return sum_reward
