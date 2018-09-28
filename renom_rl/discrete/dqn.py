@@ -7,20 +7,21 @@ import numpy as np
 from tqdm import tqdm
 
 import renom as rm
+from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
 
 
-class DQN(object):
+class DQN(AgentBase):
     """DQN class
     This class provides a reinforcement learning agent including training method.
 
     Args:
         env (BaseEnv): Environment. This must be a child class of BaseEnv.
         q_network (Model): Q-Network.
-        loss_func (function): Loss function for train q-network.
-        optimizer: Optimizer for train q-network.
+        loss_func (function): Loss function for train q-network. rm.ClippedMeanSquaredError().
+        optimizer: Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95).
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
 
@@ -47,10 +48,19 @@ class DQN(object):
         | https://arxiv.org/abs/1312.5602
         |
 
+
     """
 
-    def __init__(self, env, q_network, loss_func=rm.ClippedMeanSquaredError(),
-                 optimizer=rm.Rmsprop(lr=0.00025, g=0.95), gamma=0.99, buffer_size=1e6):
+    def __init__(self, env, q_network, loss_func=None,
+                 optimizer=None, gamma=0.99, buffer_size=1e6):
+        super(DQN, self).__init__()
+
+        if loss_func is None:
+            loss_func = rm.ClippedMeanSquaredError()
+
+        if optimizer is None:
+            optimizer = rm.Rmsprop(lr=0.00025, g=0.95)
+
         # Reset parameters.
         self._q_network = q_network
 
@@ -66,10 +76,6 @@ class DQN(object):
         self._optimizer = optimizer
         self.gamma = gamma
 
-        # Train histories
-        self.train_reward_list = []
-        self.test_reward_list = []
-
         # Check Env class type.
         if isinstance(env, BaseEnv):
             action_shape = env.action_shape
@@ -83,8 +89,8 @@ class DQN(object):
                 state_shape, self.env.reset().shape)
 
         action = self._q_network(np.zeros((1, *state_shape))).as_ndarray()
-        assert action.shape[1] == action_shape, \
-            "Expected action shape is {} but accual is {}".format(action_shape, action.shape[1])
+        assert action.shape[1:] == action_shape, \
+            "Expected action shape is {} but accual is {}".format(action_shape, action.shape[1:])
 
         self._action_shape = action_shape
         self._state_shape = state_shape
@@ -212,22 +218,18 @@ class DQN(object):
                 state = self.env.reset()
 
         # History of Learning
-        avg_train_error_list = []
-        summed_train_rewards_in_each_epoch = []
-        summed_test_rewards_in_each_epoch = []
         max_reward_in_each_update_period = -np.Inf
 
         count = 0
         for e in range(1, epoch + 1):
-            nth_episode = 0
-            state = self.env.reset()
-            train_sum_rewards_in_each_episode = []
-            train_error_in_each_epoch = []
-
-            tq = tqdm(range(epoch_step))
             sum_reward = 0
+            train_loss = 0
+            nth_episode = 0
+            train_sum_rewards_in_each_episode = []
+            tq = tqdm(range(epoch_step))
+            state = self.env.reset()
+
             for j in range(epoch_step):
-                loss = 0
                 if greedy > np.random.rand():  # and state is not None:
                     self._q_network.set_models(inference=True)
                     action = np.argmax(np.atleast_2d(self._q_network(
@@ -255,6 +257,7 @@ class DQN(object):
                     target = self._q_network(train_prestate).as_ndarray()
 
                     target.setflags(write=True)
+                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                     value = np.amax(self._target_q_network(train_state).as_ndarray(),
                                     axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
 
@@ -268,7 +271,7 @@ class DQN(object):
                         ls = self.loss_func(z, target)
                     ls.grad().update(self._optimizer)
                     loss = np.sum(ls.as_ndarray())
-                    train_error_in_each_epoch.append(loss)
+                    train_loss += loss
 
                     if count % update_period == 0 and count:
                         max_reward_in_each_update_period = -np.Inf
@@ -292,59 +295,74 @@ class DQN(object):
                 tq.set_description(msg)
                 tq.update(1)
 
-            avg_train_error_list.append(np.mean(train_error_in_each_epoch))
-            summed_train_rewards_in_each_epoch.append(
-                np.sum(train_sum_rewards_in_each_episode) + sum_reward)
+            # Calc
+            avg_error = train_loss/(j+1)
+            avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
+            summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
+            summed_test_reward = self.test(test_step, test_greedy, render)
 
-            # Test
-            sum_of_test_reward, test_sum_rewards_in_each_episode = self.test(
-                test_step, test_greedy, render)
+            self._append_history(e, avg_error, avg_train_reward,
+                                 summed_train_reward, summed_test_reward)
+
             msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                "avg reward in episode:[train:{:4.3f} test:{:4.3f}] e-greedy:{:4.3f}"
-            msg = msg.format(e, avg_train_error_list[-1], summed_train_rewards_in_each_epoch[-1],
-                             sum_of_test_reward, np.mean(train_sum_rewards_in_each_episode),
-                             np.mean(test_sum_rewards_in_each_episode), greedy)
+                "avg train reward in episode:train:{:4.3f} e-greedy:{:4.3f}"
+            msg = msg.format(e, avg_error, summed_train_reward,
+                             summed_test_reward, avg_train_reward, greedy)
+
+            self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
+                           summed_train_reward, summed_test_reward)
 
             tq.set_description(msg)
             tq.update(0)
             tq.refresh()
             tq.close()
-            self.events.on(
-                "end_epoch", e, self, summed_train_rewards_in_each_epoch[-1], sum_of_test_reward, avg_train_error_list[-1])
 
-    def test(self, test_step=2000, test_greedy=0.95, render=False):
+    def test(self, test_step=None, test_greedy=0.95, render=False):
         """
         Test the trained agent.
 
         Args:
-            test_step (int): Number of steps for test.
+            test_step (int, None): Number of steps for test. If None is given, this method tests just 1 episode.
             test_greedy (float): Greedy ratio of action.
             render (bool): If True is given, BaseEnv.render() method will be called.
 
         Returns:
             (int): Sum of rewards.
-            (list): List of summed rewards of each episode.
         """
         sum_reward = 0
-        reward_in_episode = 0
-        avg_rewards_in_each_episode = []
         state = self.env.reset()
 
-        for j in range(test_step):
-            if test_greedy > np.random.rand():
-                action = self.action(state)
-            else:
-                action = self.env.sample()
-            if isinstance(self.env, BaseEnv):
+        if test_step is None:
+            while True:
+                if test_greedy > np.random.rand():
+                    action = self.action(state)
+                else:
+                    action = self.env.sample()
+
                 state, reward, terminal = self.env.step(action)
-            else:
-                state, reward, terminal, _ = self.env.step(action)
-            sum_reward += float(reward)
-            reward_in_episode += float(reward)
-            if render:
-                self.env.render()
-            if terminal:
-                avg_rewards_in_each_episode.append(reward_in_episode)
-                reward_in_episode = 0
-                self.env.reset()
-        return sum_reward, avg_rewards_in_each_episode
+
+                sum_reward += float(reward)
+
+                if render:
+                    self.env.render()
+
+                if terminal:
+                    break
+        else:
+            for j in range(test_step):
+                if test_greedy > np.random.rand():
+                    action = self.action(state)
+                else:
+                    action = self.env.sample()
+
+                state, reward, terminal = self.env.step(action)
+
+                sum_reward += float(reward)
+
+                if render:
+                    self.env.render()
+
+                if terminal:
+                    self.env.reset()
+
+        return sum_reward
