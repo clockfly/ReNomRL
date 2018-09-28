@@ -305,7 +305,7 @@ class DQN(AgentBase):
                                  summed_train_reward, summed_test_reward)
 
             msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                "avg train reward in episode:train:{:4.3f} e-greedy:{:4.3f}"
+                "avg train reward in episode:{:4.3f} e-greedy:{:4.3f}"
             msg = msg.format(e, avg_error, summed_train_reward,
                              summed_test_reward, avg_train_reward, greedy)
 

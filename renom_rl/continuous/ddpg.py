@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import copy
 import numpy as np
 from tqdm import tqdm
@@ -6,41 +9,49 @@ import renom as rm
 from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 
+from renom_rl import AgentBase
 from renom_rl.noise import OU
 from renom_rl.environ import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 
 
-class DDPG(object):
+class DDPG(AgentBase):
     """DDPG class
-    Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,
-    Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,
-    Continuous control with deep reinforcement learning
-    https://arxiv.org/abs/1509.02971
 
     This class provides a reinforcement learning agent including training and testing methods.
     This class only accepts 'Environment' as a object of 'BaseEnv' class.
 
     Args:
-        env (BaseEnv, openAI-Env): An instance of Environment to be learned.
-                        For example, 'Pendulum-v0' environment, has methods reset, step.
-                        env.reset() --> resets initial state of environment
-                        env.step(action) --> take action value and returns (next_state, reward, terminal, _)
+        env (BaseEnv): An instance of Environment to be learned.
         actor_network (Model): Actor-Network. If it is None, default ANN is created
                                 with [400, 300] hidden layer sizes
         critic_network (Model): basically a Q(s,a) function Network.
-        actor_optimizer : Optimizer object for training actor network.
-        critic_optimizer : Optimizer object for training actor network.
-        loss_func: Loss function for critic network.
+        loss_func: Loss function for critic network. Default is MeanSquaredError()
+        actor_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.0001)
+        critic_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.001)
         gamma (float): Discount rate.
         tau (float): target_networks update parameter. If this is 0, weight parameters will be copied.
-        batch_size (int): mini batch size.
         buffer_size (float, int): The size of replay buffer.
+
+    Reference:
+        | Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,
+        | Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,
+        | Continuous control with deep reinforcement learning
+        | https://arxiv.org/abs/1509.02971
+        |
+
     """
 
-    def __init__(self, env, actor_network, critic_network, loss_func=rm.mse,
-                 actor_optimizer=rm.Adam(0.0001), critic_optimizer=rm.Adam(0.001), gamma=0.99,
+    def __init__(self, env, actor_network, critic_network, loss_func=None,
+                 actor_optimizer=None, critic_optimizer=None, gamma=0.99,
                  tau=0.001, buffer_size=1e6):
+        super(DDPG, self).__init__()
+        if loss_func is None:
+            loss_func = rm.MeanSquaredError()
+        if actor_optimizer is None:
+            actor_optimizer = rm.Adam(0.0001)
+        if critic_optimizer is None:
+            critic_optimizer = rm.Adam(0.001)
 
         self._actor = actor_network
         self._target_actor = copy.deepcopy(self._actor)
@@ -98,16 +109,16 @@ class DDPG(object):
             (int, ndarray): Action.
         """
         self._actor.set_models(inference=True)
-        return self._actor(state.reshape(1, *self.state_size)).as_ndarray()
+        return self._actor(state.reshape(1, *self.state_size)).as_ndarray()[0]
 
-    def fit(self, episode=1000, episode_step=2000, batch_size=64, random_step=5000,
+    def fit(self, epoch=1000, epoch_step=2000, batch_size=64, random_step=5000,
             test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
-            exploration_step=10000, test_period=10, noise=OU()):
+            exploration_step=10000, noise=OU()):
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
         Args:
-            episode (int): training number of episodes
-            episode_step (int): Depends on the type of Environment in-built setting.
+            epoch (int): training number of epochs
+            epoch_step (int): Depends on the type of Environment in-built setting.
                              Environment reaches terminal situation in two cases.
                             (i) In the type of Game, it is game over
                             (ii) Maximum time steps to play
@@ -132,16 +143,14 @@ class DDPG(object):
             else:
                 state = next_state
 
-        train_reward_list = []
-        train_avg_loss_list = []
-        test_reward_list = []
-
-        for e in range(1, episode + 1):
+        for e in range(1, epoch + 1):
             state = self.env.reset()
-            sum_reward = 0.0
             loss = 0.0
-            tq = tqdm(range(episode_step))
-            for j in range(episode_step):
+            sum_reward = 0.0
+            sum_reward_episode = 0.0
+            each_episode_reward = []
+            tq = tqdm(range(epoch_step))
+            for j in range(epoch_step):
                 action = self.action(state)
                 sampled_noise = noise.sample(action)*e_rate
                 action += sampled_noise
@@ -152,6 +161,7 @@ class DDPG(object):
                 self._buffer.store(state, action,
                                    np.array(reward), next_state, np.array(terminal))
                 sum_reward += reward
+                sum_reward_episode += reward
                 state = next_state
                 e_rate += e_step
                 e_rate = np.clip(e_rate, min_exploration_rate, max_exploration_rate)
@@ -191,31 +201,34 @@ class DDPG(object):
                     self.update()
 
                 sum_reward = float(sum_reward)
-                tq.set_description("episode: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
+                tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
                 tq.update(1)
 
                 if terminal:
+                    each_episode_reward.append(sum_reward_episode)
+                    sum_reward_episode = 0.0
                     break
 
             avg_loss = float(loss) / (j + 1)
-            train_reward_list.append(sum_reward)
-            train_avg_loss_list.append(avg_loss)
-            msg = "episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:-] exploration:{:5.3f}"
-            tq.set_description(msg.format(e, avg_loss, sum_reward, e_rate))
-            if e % test_period == 0:
-                tq.set_description("Running test for {} step".format(test_step))
-                tq.update(0)
-                test_total_reward = self.test(test_step)
-                msg = "episode {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] exploration:{:5.3f}"
-                tq.set_description(msg.format(e, float(loss) / (j + 1),
-                                              sum_reward, test_total_reward, e_rate))
-                test_reward_list.append(test_total_reward)
+            avg_train_reward = np.mean(each_episode_reward)
+            train_reward = sum_reward
+            test_reward = self.test(test_step)
+
+            self._append_history(e, avg_loss, avg_train_reward,
+                                 train_reward, test_reward)
+
+            tq.set_description("Running test for {} step".format(test_step))
+            tq.update(0)
+            msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
+            tq.set_description(msg.format(e, avg_loss, train_reward,
+                                          test_reward, avg_train_reward, e_rate))
+
             tq.update(0)
             tq.refresh()
             tq.close()
 
             self.events.on("end_epoch",
-                           e, self, train_reward_list, test_reward_list, train_avg_loss_list)
+                           e, self, avg_loss, avg_train_reward, train_reward, test_reward)
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
@@ -275,23 +288,41 @@ class DDPG(object):
             for k in ql.params.keys():
                 tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
-    def test(self, test_steps=2000, render=False):
-        '''test the trained network
+    def test(self, test_step=None, render=False):
+        """
+        Test the trained agent.
+
         Args:
-        Return:
-            (list): A list of cumulative test rewards
-        '''
+            test_step (int, None): Number of steps for test. If None is given, this method tests just 1 episode.
+            render (bool): If True is given, BaseEnv.render() method will be called.
+
+        Returns:
+            (int): Sum of rewards.
+        """
         sum_reward = 0
         state = self.env.reset()
-        for _ in range(test_steps):
-            action = self.action(state)
-            if isinstance(self.env, BaseEnv):
+
+        if test_step is None:
+            while True:
+                action = self.action(state)
                 state, reward, terminal = self.env.step(action)
-            else:
-                state, reward, terminal, _ = self.env.step(action)
-            sum_reward += reward
-            if render:
-                self.env.render()
-            if terminal:
-                state = self.env.reset()
+                sum_reward += float(reward)
+
+                if render:
+                    self.env.render()
+
+                if terminal:
+                    break
+        else:
+            for j in range(test_step):
+                action = self.action(state)
+                state, reward, terminal = self.env.step(action)
+                sum_reward += float(reward)
+
+                if render:
+                    self.env.render()
+
+                if terminal:
+                    self.env.reset()
+
         return sum_reward
