@@ -1,5 +1,5 @@
 API
-================
+====
 
 .. toctree::
 
@@ -7,5 +7,6 @@ API
     discrete/renom_rl.discrete
     environ/renom_rl.environ
     noise/renom_rl.noise
+    utility/renom_rl.utility
     
 
