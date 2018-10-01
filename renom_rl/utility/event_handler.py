@@ -1,5 +1,5 @@
-import os
-import numpy as np
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
 class EventHandler(object):

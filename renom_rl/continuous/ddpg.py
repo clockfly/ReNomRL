@@ -152,7 +152,7 @@ class DDPG(AgentBase):
             tq = tqdm(range(epoch_step))
             for j in range(epoch_step):
                 action = self.action(state)
-                sampled_noise = noise.sample(action)*e_rate
+                sampled_noise = noise.sample(action) * e_rate
                 action += sampled_noise
 
                 if isinstance(self.env, BaseEnv):
@@ -189,13 +189,13 @@ class DDPG(AgentBase):
 
                     self._actor.set_models(inference=False)
                     with self._actor.train(), self._critic.train():
-                        actor_loss = self.value_function(train_prestate)/len(train_prestate)
+                        actor_loss = self.value_function(train_prestate) / len(train_prestate)
                     target_actor_loss = self.target_value_function(
-                        train_prestate)/len(train_prestate)
+                        train_prestate) / len(train_prestate)
 
                     critic_loss.grad().update(self._critic_optimizer)
                     with self._critic.prevent_update():
-                        actor_loss.grad(-1*np.ones_like(actor_loss)).update(self._actor_optimizer)
+                        actor_loss.grad(-1 * np.ones_like(actor_loss)).update(self._actor_optimizer)
 
                     loss += critic_loss.as_ndarray()
                     self.update()

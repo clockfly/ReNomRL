@@ -296,7 +296,7 @@ class DQN(AgentBase):
                 tq.update(1)
 
             # Calc
-            avg_error = train_loss/(j+1)
+            avg_error = train_loss / (j + 1)
             avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
             summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
             summed_test_reward = self.test(test_step, test_greedy, render)
