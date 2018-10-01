@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
+"POT-Creation-Date: 2018-10-01 17:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,66 +22,78 @@ msgid "renom_rl.continuous.ddpg"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :class:`renom_rl.AgentBase`"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG:1
-msgid ""
-"DDPG class Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel, "
-"Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra, "
-"Continuous control with deep reinforcement learning "
-"https://arxiv.org/abs/1509.02971"
+msgid "DDPG class"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:7
+#: of renom_rl.continuous.ddpg.DDPG:3
 msgid ""
 "This class provides a reinforcement learning agent including training and"
 " testing methods. This class only accepts 'Environment' as a object of "
-"'BaseEnv' class or OpenAI-Gym 'Env' class."
+"'BaseEnv' class."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:10
-msgid ""
-"An instance of Environment to be learned. For example, 'Pendulum-v0' "
-"environment, has methods reset, step. env.reset() --> resets initial "
-"state of environment env.step(action) --> take action value and returns "
-"(next_state, reward, terminal, _)"
+#: of renom_rl.continuous.ddpg.DDPG:6
+msgid "An instance of Environment to be learned."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:15
+#: of renom_rl.continuous.ddpg.DDPG:8
 msgid ""
 "Actor-Network. If it is None, default ANN is created with [400, 300] "
 "hidden layer sizes"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:18
+#: of renom_rl.continuous.ddpg.DDPG:11
 msgid "basically a Q(s,a) function Network."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:20 renom_rl.continuous.ddpg.DDPG:21
-msgid "Optimizer object for training actor network."
+#: of renom_rl.continuous.ddpg.DDPG:13
+msgid "Loss function for critic network. Default is MeanSquaredError()"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:22
-msgid "Loss function for critic network."
+#: of renom_rl.continuous.ddpg.DDPG:14
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.0001)"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:23
+#: of renom_rl.continuous.ddpg.DDPG:15
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.001)"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:16
 msgid "Discount rate."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:25
+#: of renom_rl.continuous.ddpg.DDPG:18
 msgid ""
 "target_networks update parameter. If this is 0, weight parameters will be"
 " copied."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:27
-msgid "mini batch size."
+#: of renom_rl.continuous.ddpg.DDPG:20
+msgid "The size of replay buffer."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:29
-msgid "The size of replay buffer."
+#: of renom_rl.continuous.ddpg.DDPG:31
+msgid "Reference:"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Continuous control with deep reinforcement learning"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "https://arxiv.org/abs/1509.02971"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG.action:1
@@ -98,9 +110,8 @@ msgstr ""
 msgid ""
 "This method executes training of an actor-network. Here, target actor & "
 "critic network weights are updated after every actor & critic update "
-"using self.tau :param episode: training number of episodes :type episode:"
-" int :param episode_step: Depends on the type of Environment in-built "
-"setting."
+"using self.tau :param epoch: training number of epochs :type epoch: int "
+":param epoch_step: Depends on the type of Environment in-built setting."
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:6
@@ -143,6 +154,76 @@ msgid "updare target networks"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG.test:1
-msgid "test the trained network Args: :returns: A list of cumulative test rewards"
+msgid "Test the trained agent."
 msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:3
+msgid ""
+"Number of steps for test. If None is given, this method tests just 1 "
+"episode."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:5
+msgid "If True is given, BaseEnv.render() method will be called."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:9
+msgid "Sum of rewards."
+msgstr ""
+
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "DDPG class Timothy P. Lillicrap, "
+#~ "Jonathan J. Hunt, Alexander Pritzel, "
+#~ "Nicolas Heess, Tom Erez, Yuval Tassa,"
+#~ " David Silver, Daan Wierstra, Continuous"
+#~ " control with deep reinforcement learning"
+#~ " https://arxiv.org/abs/1509.02971"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This class provides a reinforcement "
+#~ "learning agent including training and "
+#~ "testing methods. This class only accepts"
+#~ " 'Environment' as a object of "
+#~ "'BaseEnv' class or OpenAI-Gym 'Env' "
+#~ "class."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "An instance of Environment to be "
+#~ "learned. For example, 'Pendulum-v0' "
+#~ "environment, has methods reset, step. "
+#~ "env.reset() --> resets initial state of"
+#~ " environment env.step(action) --> take "
+#~ "action value and returns (next_state, "
+#~ "reward, terminal, _)"
+#~ msgstr ""
+
+#~ msgid "Optimizer object for training actor network."
+#~ msgstr ""
+
+#~ msgid "Loss function for critic network."
+#~ msgstr ""
+
+#~ msgid "mini batch size."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This method executes training of an "
+#~ "actor-network. Here, target actor & "
+#~ "critic network weights are updated after"
+#~ " every actor & critic update using"
+#~ " self.tau :param episode: training number"
+#~ " of episodes :type episode: int "
+#~ ":param episode_step: Depends on the type"
+#~ " of Environment in-built setting."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "test the trained network Args: :returns:"
+#~ " A list of cumulative test rewards"
+#~ msgstr ""
 

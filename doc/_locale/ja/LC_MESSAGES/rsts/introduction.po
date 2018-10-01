@@ -3,94 +3,71 @@
 # This file is distributed under the same license as the ReNomRL package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2018-10-01 17:50+0900\n"
+"PO-Revision-Date: 2018-10-01 17:53+0900\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.1.1\n"
 
 #: ../../rsts/introduction.rst:2
 msgid "Introduction"
-msgstr ""
+msgstr "はじめに"
 
-#: ../../rsts/introduction.rst:4
-msgid "**blahblah** .. .. image:: /_static/image/top.png"
-msgstr ""
-
-#: ../../rsts/introduction.rst:9
-msgid "1. blahblah"
-msgstr ""
-
-#: ../../rsts/introduction.rst:13
+#: ../../rsts/introduction.rst:6
 msgid ""
-"The concept of ReNomRL is **blahblah**. .. Recent developing deep "
-"learning technology realizes extremely big improvement at recognition "
-"accuracy. .. However if you would create a recognition model for any "
-"business scene such as recognising damages of manufactured products, "
-"there are still many problems for earning high accuracy recognition "
-"model. .. For example, correcting training dataset, programming "
-"recognition model and train it, evaluating the model, and so on. .. "
-"Especially, even if deep learning era, it is required to tune up the "
-"hyper parameters of the recognition model. It requires many try and "
-"errors. .. ReNomIMG allows you to build object detection model easily."
+"Due to Deep Learning, the technology to learn from large data set has "
+"evolved exponentially and now, we are able to recognize certain objects "
+"and increase translation accuracy, especially for image and voice "
+"recognition purpose. There have even been reports that these models "
+"outperform specialists in certain fields. However, when we look back, we "
+"realize that humans can learn without input data. In machine learning, "
+"there is a machine learning field called “Reinforcement Learning”, which "
+"bases its algorithm on finding the optimal action using the intuitive "
+"human behavior of trial and error."
 msgstr ""
+"昨今、画像認識や音声認識の分野において、過去のデータから学習する技術は大"
+"きく進化しており、写真の中に写っている物体を認識することや、多言語間の翻"
+"訳等の認識性能を向上させた深層学習と呼ばれる手法が話題となっています。そ"
+"の性能は、専門的な知見をもつ人間の能力と同等か超えている分野もある程で"
+"す。一方で、人間は、データを与えなくとも自ら経験から学び、スキルを上達さ"
+"せることができます。機械学習の中でも、このようなアプローチで試行錯誤をし"
+"ながら行動を最適化する手法をとるものが強化学習(Reinforcement Learning)と"
+"呼ばれる分野です。"
 
-#: ../../rsts/introduction.rst:31
-msgid "2. blahblah"
-msgstr ""
-
-#: ../../rsts/introduction.rst:33
-msgid "ReNomIMG provides gui tool and python api."
-msgstr ""
-
-#: ../../rsts/introduction.rst:36
-msgid "GUI tool"
-msgstr ""
-
-#: ../../rsts/introduction.rst:38
+#: ../../rsts/introduction.rst:8
 msgid ""
-"ReNomIMG GUI tool allows you to build object detection models. What users"
-" have to do are **preparing training data**, **setting train "
-"configuration** and **pushing run button**."
+"Reinforcement learning is a method where the agent learns the optimal "
+"input scheme from rewards only. Applying pictures and sensor data to "
+"reinforcement learning was a difficult task, due to the finite state the "
+"algorithm can handle, but due to appliance of deep learning, more "
+"difficult problems can be handled where problems use images or sensory "
+"data."
 msgstr ""
+"強化学習とは、報酬を与えるだけで自動的に報酬を得るための最適入力を生成し"
+"てくれる学習方法であり、更に深層学習と組み合わせることで、画像やセンサ"
+"データ等、強化学習のみで適用できなかった高度な課題に対して、取り組むこと"
+"が可能となり近年注目されています。"
 
-#: ../../rsts/introduction.rst:46
-msgid "image:: /_static/image/renomimg_gui_top.png"
-msgstr ""
-
-#: ../../rsts/introduction.rst:50
-msgid "Python API"
-msgstr ""
-
-#: ../../rsts/introduction.rst:51
+#: ../../rsts/introduction.rst:10
 msgid ""
-"ReNomIMG API is a python api which provides you not only modern **object "
-"detection model** but also **classification model**, **segmentation "
-"model**."
+"Recently, information about reinforcement learning on the internet has "
+"increased, but without sufficient knowledge and considering the "
+"appliance to real world problems, research becomes time consuming, and "
+"difficulty of applying reinforcement learning to real world problem "
+"arises. To overcome this problem, we thought of providing “ReNomRL”, an "
+"API that can help people understand this field more clearly."
 msgstr ""
-
-#: ../../rsts/introduction.rst:54
-msgid ""
-"And more, all those models have pretrained weights. This makes models "
-"more accurate one."
-msgstr ""
-
-#: ../../rsts/introduction.rst:57
-msgid ""
-"An example code is bellow. Using ReNomIMG, you can build a model and "
-"train it in 3 lines. .. **Building a VGG16 Model** .. .. code-block :: "
-"python"
-msgstr ""
-
-#: ../../rsts/introduction.rst:63
-msgid "12,13,16"
-msgstr ""
-
+"近年では様々な文献がインターネット上に公開されていますが、これらを実ビジ"
+"ネスの課題に適用させ、且つ、強化学習の知識が浅い状態でゼロから実装しよう"
+"とすると、文献リサーチ等に時間が費やされてしまい、結果的に取り組みたくて"
+"も取り組めないのが現状だと考えています。そのような状況において、少しでも"
+"実装が容易になり、様々な人々が躊躇なく強化学習を取り組めるような仕組みを"
+"整えたいと考え、我々はReNomRL というAPIを提供することになりました。"
