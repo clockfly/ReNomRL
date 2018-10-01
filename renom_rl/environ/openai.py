@@ -10,6 +10,10 @@ from .env import BaseEnv
 class Pendulum(BaseEnv):
     """A wrapper environment of OpenAI gym "Pendulum-v0".
 
+    | -**OpenAI Gym**
+    | https://github.com/openai/gym
+    |
+
     Example:
         >>> import renom as rm
         >>> from renom_rl.discrete.dqn import DQN
