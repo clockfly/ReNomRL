@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
+"POT-Creation-Date: 2018-10-01 17:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "renom_rl.discrete.dqn"
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :class:`renom_rl.AgentBase`"
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:1
@@ -31,48 +31,76 @@ msgid ""
 "training method."
 msgstr ""
 
+#: of renom_rl.discrete.dqn.DQN:4
+msgid "Environment. This must be a child class of BaseEnv."
+msgstr ""
+
 #: of renom_rl.discrete.dqn.DQN:6
 msgid "Q-Network."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:8
-msgid "The number of action pattern."
+msgid "Loss function for train q-network. rm.ClippedMeanSquaredError()."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:10
-msgid "The size of state."
+msgid "Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95)."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:15
+#: of renom_rl.discrete.dqn.DQN:11
 msgid "Discount rate."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:17
+#: of renom_rl.discrete.dqn.DQN:13
 msgid "The size of replay buffer."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:22 renom_rl.discrete.dqn.DQN.fit:40
+#: of renom_rl.discrete.dqn.DQN:18 renom_rl.discrete.dqn.DQN.fit:41
 msgid "Example"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:36
+msgid "References"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:37
+msgid ""
+"Volodymyr Mnih Koray Kavukcuoglu David Silver Alex Graves Ioannis "
+"Antonoglou Daan Wierstra Martin Riedmille"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:38
+msgid "**Playing Atari with Deep Reinforcement Learning**"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN:39
+msgid "https://arxiv.org/abs/1312.5602"
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.initialize:1
 msgid ""
-"target q-network is initialized with same neural network weights as "
-"q-network"
+"Target q-network is initialized with same neural network weights of "
+"q-network."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.action:1
-msgid ""
-"This method returns an action according to the given state. :param state:"
-" A state of an environment."
+msgid "This method returns an action according to the given state."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.action:6
+#: of renom_rl.discrete.dqn.DQN.action:3
+msgid "A state of an environment."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.action:7
 msgid "Action."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.update:1
 msgid "This function updates target network."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.update_best_q_network:1
+msgid "This function updates best network in each epoch."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.fit:1
@@ -82,64 +110,126 @@ msgid ""
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.fit:4
+msgid "You can define following callback functions."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:12
+msgid "end_epoch"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:12
+msgid "Args:"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:8
 msgid ""
-"A function which accepts action as an argument and returns prestate, "
-"state,  reward and terminal."
+"epoch (int): model (DQN): summed_train_reward_in_current_epoch (float): "
+"summed_test_reward_in_current_epoch (float): "
+"average_train_lossin_current_epoch (float):"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:7
-msgid "Loss function for training q-network."
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:9
-msgid "Optimizer object for training q-network."
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:11
+#: of renom_rl.discrete.dqn.DQN.fit:14
 msgid "Number of epoch for training."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:13
-msgid "Batch size."
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:15
-msgid "Number of random step which will be executed before training."
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:17
+#: of renom_rl.discrete.dqn.DQN.fit:16
 msgid "Number of step of one epoch."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:19
+#: of renom_rl.discrete.dqn.DQN.fit:18
+msgid "Batch size."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:20
+msgid "Number of random step which will be executed before training."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:22
 msgid "Number of test step."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:21
+#: of renom_rl.discrete.dqn.DQN.fit:24
 msgid "Period of updating target network."
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:23
-msgid "Number of step"
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:25
-msgid "Minimum greedy value"
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:27
-msgid "Maximum greedy value"
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:29
-msgid "Greedy threshold"
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:31
+#: of renom_rl.discrete.dqn.DQN.fit:26
 msgid "For the learning step, training is done at this cycle"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:35
-msgid "A dictionary which includes reward list of training and loss list."
+#: of renom_rl.discrete.dqn.DQN.fit:28
+msgid "Minimum greedy value"
 msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:30
+msgid "Maximum greedy value"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:32
+msgid "Number of step"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:34
+msgid "Greedy threshold"
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.fit:36
+msgid "If True is given, BaseEnv.render() method will be called in test time."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.test:1
+msgid "Test the trained agent."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.test:3
+msgid ""
+"Number of steps for test. If None is given, this method tests just 1 "
+"episode."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.test:5
+msgid "Greedy ratio of action."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.test:7
+msgid "If True is given, BaseEnv.render() method will be called."
+msgstr ""
+
+#: of renom_rl.discrete.dqn.DQN.test:11
+msgid "Sum of rewards."
+msgstr ""
+
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
+
+#~ msgid "The number of action pattern."
+#~ msgstr ""
+
+#~ msgid "The size of state."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "target q-network is initialized with "
+#~ "same neural network weights as q-network"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This method returns an action according"
+#~ " to the given state. :param state:"
+#~ " A state of an environment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A function which accepts action as "
+#~ "an argument and returns prestate, state,"
+#~ "  reward and terminal."
+#~ msgstr ""
+
+#~ msgid "Loss function for training q-network."
+#~ msgstr ""
+
+#~ msgid "Optimizer object for training q-network."
+#~ msgstr ""
+
+#~ msgid "A dictionary which includes reward list of training and loss list."
+#~ msgstr ""
 

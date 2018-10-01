@@ -42,12 +42,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.jsmath',
+ #   'sphinx.ext.jsmath',
     'sphinx.ext.napoleon',
     'IPython.sphinxext.ipython_console_highlighting'
 ]
 
-jsmath_path = 'jsMath-3.6e/easy/load.js'
+#jsmath_path = 'jsMath-3.6e/easy/load.js'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates', '**.ipynb_checkpoints']
