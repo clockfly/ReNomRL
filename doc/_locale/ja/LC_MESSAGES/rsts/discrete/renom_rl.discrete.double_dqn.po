@@ -87,17 +87,14 @@ msgstr ""
 msgid ""
 "Target q-network is initialized with same neural network weights of "
 "q-network."
-msgstr ""
 msgstr "Target Q-networkをQ-networkと同じ重みパラメータで初期化する."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.action:1
 msgid "This method returns an action according to the given state."
-msgstr ""
 msgstr "与えられた状態(state)に応じた行動を返す."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.action:3
 msgid "A state of an environment."
-msgstr ""
 msgstr "環境の状態."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.action
@@ -162,7 +159,7 @@ msgstr "summed_test_reward_in_current_epoch (float): Test時に獲得した報�
 msgid ""
 "average_train_loss_in_current_epoch (float): Average train loss in "
 "current epoch."
-msgstr "average_train_lossin_current_epoch (float): 現在のepochにおける学習誤差の平均."
+msgstr "average_train_loss_in_current_epoch (float): 現在のepochにおける学習誤差の平均."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.fit:15
 msgid "Number of epoch for training."
