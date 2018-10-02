@@ -23,7 +23,7 @@ class Pendulum(BaseEnv):
         ...     rm.Dense(10),
         ...     rm.Dense(1),
         ... ])
-        ... 
+        ...
         >>> agent = DQN(env, model)
         >>> agent.fit()
     """
@@ -58,13 +58,13 @@ class Breakout(BaseEnv):
     Example:
         >>> import renom as rm
         >>> from renom_rl.discrete.dqn import DQN
-        >>> from renom_rl.environ.openai import Pendulum
-        >>> env = Pendulum()
+        >>> from renom_rl.environ.openai import Breakout
+        >>> env = Breakout()
         >>> model = rm.Sequential([
         ...     rm.Dense(10),
         ...     rm.Dense(1),
         ... ])
-        ... 
+        ...
         >>> agent = DQN(env, model)
         >>> agent.fit()
     """
