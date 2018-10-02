@@ -220,15 +220,16 @@ class DDPG(AgentBase):
             tq.set_description("Running test for {} step".format(test_step))
             tq.update(0)
             msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
-            tq.set_description(msg.format(e, avg_loss, train_reward,
-                                          test_reward, avg_train_reward, e_rate))
+            msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
 
+            self.events.on("end_epoch",
+                           e, self, avg_loss, avg_train_reward, train_reward, test_reward)
+
+            tq.set_description(msg)
             tq.update(0)
             tq.refresh()
             tq.close()
 
-            self.events.on("end_epoch",
-                           e, self, avg_loss, avg_train_reward, train_reward, test_reward)
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
