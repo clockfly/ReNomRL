@@ -76,21 +76,35 @@ class BaseEnv(object):
         This method must accept single action and return `next state`,
         `reward` and `terminal`.
         When overriding this method, don't forget to return above data.
+
+        Returns:
+            | (ndarray): Environment's next state.
+            | (float): Reward gotten from the transition.
+            | (bool): Terminal flag.
+            |
+
         """
         raise NotImplementedError("Please override `step` method.")
 
     def sample(self):
         """This method must be overridden.
         This method must return random action.
+
+        Returns:
+            (int, ndarray): Sampled action. Its shape must be same as BaseEnv.action_shape.
         """
         raise NotImplementedError("Please override `sample` method.")
 
     def reset(self):
         """This method must be overridden.
+
+        Returns:
+            (int, ndarray): Initial state. Its shape must be same as BaseEnv.state_shape.
         """
         raise NotImplementedError("Please override `reset` method.")
 
     def render(self):
-        """
+        """Rendering method.
+        If you want to render environment states, please override this method.
         """
         pass

@@ -35,16 +35,20 @@ class Pendulum(BaseEnv):
         super(Pendulum, self).__init__()
 
     def reset(self):
+        """"""
         return self.env.reset().reshape(3)
 
     def sample(self):
+        """"""
         return self.env.action_space.sample()
 
     def step(self, action):
+        """"""
         state, reward, terminal = self.env.step(action)[:3]
         return state.reshape(3), reward, terminal
 
     def render(self):
+        """"""
         self.env.render()
 
 
@@ -75,6 +79,7 @@ class Breakout(BaseEnv):
         super(Breakout, self).__init__()
 
     def reset(self):
+        """"""
         if self._reset_flag:
             self._reset_flag = False
             self.env.reset()
@@ -84,9 +89,11 @@ class Breakout(BaseEnv):
         return state
 
     def sample(self):
+        """"""
         return self.env.action_space.sample()
 
     def render(self):
+        """"""
         self.env.render()
 
     def _preprocess(self, state):
@@ -96,6 +103,7 @@ class Breakout(BaseEnv):
         return final_image
 
     def step(self, action):
+        """"""
         state_list = []
         reward_list = []
         terminal = False
