@@ -20,7 +20,7 @@ class DQN(AgentBase):
     Args:
         env (BaseEnv): Environment. This must be a child class of BaseEnv.
         q_network (Model): Q-Network.
-        loss_func (function): Loss function for train q-network. rm.ClippedMeanSquaredError().
+        loss_func (function): Loss function for train q-network. Default is ClippedMeanSquaredError().
         optimizer: Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95).
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
@@ -146,7 +146,7 @@ class DQN(AgentBase):
         self._rec_copy(self._target_q_network, self._best_q_network)
 
     def update_best_q_network(self):
-        """This function updates best network in each epoch."""
+        """This function updates best network in each target update period."""
         self._best_q_network.copy_params(self._q_network)
         self._rec_copy(self._best_q_network, self._q_network)
 
@@ -158,13 +158,14 @@ class DQN(AgentBase):
 
         You can define following callback functions.
 
-        - end_epoch
-            Args:
-                epoch (int):
-                model (DQN):
-                summed_train_reward_in_current_epoch (float):
-                summed_test_reward_in_current_epoch (float):
-                average_train_lossin_current_epoch (float):
+        | - end_epoch
+        |     Args:
+        |         epoch (int): The number of current epoch.
+        |         model (DQN): Object of DQN which is on training.
+        |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
+        |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
+        |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
+        |
 
         Args:
             epoch (int): Number of epoch for training.

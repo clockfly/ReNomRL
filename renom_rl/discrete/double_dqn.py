@@ -20,14 +20,14 @@ class DoubleDQN(AgentBase):
     Args:
         env (BaseEnv): Environment. This must be a child class of BaseEnv.
         q_network (Model): Q-Network.
-        loss_func (function): Loss function for train q-network. rm.ClippedMeanSquaredError().
+        loss_func (function): Loss function for train q-network. Default is ClippedMeanSquaredError().
         optimizer: Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95).
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
 
     Example:
         >>> import renom as rm
-        >>> from renom_rl.discrete.dounble_dqn import DoubleDQN
+        >>> from renom_rl.discrete.double_dqn import DoubleDQN
         >>> from renom_rl.environ.openai import Breakout
         >>> model = rm.Sequential(...)
         >>> agent = DQN(
@@ -36,7 +36,7 @@ class DoubleDQN(AgentBase):
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
         ...   )
-        >>> agent.train(episode=10000)
+        >>> agent.fit(episode=10000)
         episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
         episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
         episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
@@ -157,13 +157,14 @@ class DoubleDQN(AgentBase):
 
         You can define following callback functions.
 
-        - end_epoch
-            Args:
-                epoch (int):
-                model (DoubleDQN):
-                summed_train_reward_in_current_epoch (float):
-                summed_test_reward_in_current_epoch (float):
-                average_train_lossin_current_epoch (float):
+        | - end_epoch
+        |     Args:
+        |         epoch (int): The number of current epoch.
+        |         model (DQN): Object of DQN which is on training.
+        |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
+        |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
+        |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
+        |
 
         Args:
             epoch (int): Number of epoch for training.
@@ -172,7 +173,7 @@ class DoubleDQN(AgentBase):
             random_step (int): Number of random step which will be executed before training.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
-            train_frequency (int): For the learning step, training is done at this cycle
+            train_frequency (int): For the learning step, training is done at this cycle.
             min_greedy (int): Minimum greedy value
             max_greedy (int): Maximum greedy value
             greedy_step (int): Number of step
@@ -181,7 +182,7 @@ class DoubleDQN(AgentBase):
 
         Example:
             >>> import renom as rm
-            >>> from renom_rl.discrete.dounble_dqn import DoubleDQN
+            >>> from renom_rl.discrete.double_dqn import DoubleDQN
             >>> from renom_rl.environ.openai import Breakout
             >>>
             >>> q_network = rm.Sequential([

@@ -8,118 +8,114 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
+"POT-Creation-Date: 2018-10-02 09:18+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: ../../rsts/continuous/renom_rl.continuous.a3c_old.rst:2
 msgid "renom_rl.continuous.a3c_old"
 msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:1
-msgid "Bases: :class:`object`"
-msgstr ""
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:1
-msgid ""
-"A3C class Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel, "
-"Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra, "
-"Continuous control with deep reinforcement learning "
-"https://arxiv.org/abs/1509.02971"
-msgstr ""
+#~ msgid ""
+#~ "A3C class Timothy P. Lillicrap, Jonathan"
+#~ " J. Hunt, Alexander Pritzel, Nicolas "
+#~ "Heess, Tom Erez, Yuval Tassa, David "
+#~ "Silver, Daan Wierstra, Continuous control "
+#~ "with deep reinforcement learning "
+#~ "https://arxiv.org/abs/1509.02971"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:7
-msgid ""
-"This class provides a reinforcement learning agent including training and"
-" testing methods. This class only accepts 'Environment' as a object of "
-"'BaseEnv' class or OpenAI-Gym 'Env' class."
-msgstr ""
+#~ msgid ""
+#~ "This class provides a reinforcement "
+#~ "learning agent including training and "
+#~ "testing methods. This class only accepts"
+#~ " 'Environment' as a object of "
+#~ "'BaseEnv' class or OpenAI-Gym 'Env' "
+#~ "class."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:10
-msgid ""
-"An instance of Environment to be learned. For example, 'Pendulum-v0' "
-"environment, has methods reset, step. env.reset() --> resets initial "
-"state of environment env.step(action) --> take action value and returns "
-"(next_state, reward, terminal, _)"
-msgstr ""
+#~ msgid ""
+#~ "An instance of Environment to be "
+#~ "learned. For example, 'Pendulum-v0' "
+#~ "environment, has methods reset, step. "
+#~ "env.reset() --> resets initial state of"
+#~ " environment env.step(action) --> take "
+#~ "action value and returns (next_state, "
+#~ "reward, terminal, _)"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:15
-msgid ""
-"Actor-Network. If it is None, default ANN is created with [400, 300] "
-"hidden layer sizes"
-msgstr ""
+#~ msgid ""
+#~ "Actor-Network. If it is None, "
+#~ "default ANN is created with [400, "
+#~ "300] hidden layer sizes"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:18
-msgid "basically a Q(s,a) function Network."
-msgstr ""
+#~ msgid "basically a Q(s,a) function Network."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:20 renom_rl.continuous.a3c_old.A3C:21
-msgid "Optimizer object for training actor network."
-msgstr ""
+#~ msgid "Optimizer object for training actor network."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:22
-msgid "Loss function for critic network."
-msgstr ""
+#~ msgid "Loss function for critic network."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:23
-msgid "Discount rate."
-msgstr ""
+#~ msgid "Discount rate."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:25
-msgid ""
-"target_networks update parameter. If this is 0, weight parameters will be"
-" copied."
-msgstr ""
+#~ msgid ""
+#~ "target_networks update parameter. If this "
+#~ "is 0, weight parameters will be "
+#~ "copied."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:27
-msgid "mini batch size."
-msgstr ""
+#~ msgid "mini batch size."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C:29
-msgid "The size of replay buffer."
-msgstr ""
+#~ msgid "The size of replay buffer."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.action:1
-msgid ""
-"This method returns an action according to the given state. :param state:"
-" A state of an environment."
-msgstr ""
+#~ msgid ""
+#~ "This method returns an action according"
+#~ " to the given state. :param state:"
+#~ " A state of an environment."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.action:6
-msgid "Action."
-msgstr ""
+#~ msgid "Action."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.fit:1
-msgid ""
-"This method executes training of an actor-network. Here, target actor & "
-"critic network weights are updated after every actor & critic update "
-"using self.tau :param episode: training number of episodes :type episode:"
-" int :param episode_step: Depends on the type of Environment in-built "
-"setting."
-msgstr ""
+#~ msgid ""
+#~ "This method executes training of an "
+#~ "actor-network. Here, target actor & "
+#~ "critic network weights are updated after"
+#~ " every actor & critic update using"
+#~ " self.tau :param episode: training number"
+#~ " of episodes :type episode: int "
+#~ ":param episode_step: Depends on the type"
+#~ " of Environment in-built setting."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.fit:6
-msgid "Environment reaches terminal situation in two cases."
-msgstr ""
+#~ msgid "Environment reaches terminal situation in two cases."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.fit:7
-msgid "In the type of Game, it is game over"
-msgstr ""
+#~ msgid "In the type of Game, it is game over"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.fit:8
-msgid "Maximum time steps to play"
-msgstr ""
+#~ msgid "Maximum time steps to play"
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.fit:11
-msgid "A dictionary which includes reward list of training and loss list."
-msgstr ""
+#~ msgid "A dictionary which includes reward list of training and loss list."
+#~ msgstr ""
 
-#: of renom_rl.continuous.a3c_old.A3C.test:1
-msgid "test the trained network Args: :returns: A list of cumulative test rewards"
-msgstr ""
+#~ msgid ""
+#~ "test the trained network Args: :returns:"
+#~ " A list of cumulative test rewards"
+#~ msgstr ""
 
