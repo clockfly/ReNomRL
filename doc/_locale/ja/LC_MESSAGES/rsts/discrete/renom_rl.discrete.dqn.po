@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-01 17:50+0900\n"
+"POT-Creation-Date: 2018-10-02 10:10+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: ../../rsts/discrete/renom_rl.discrete.dqn.rst:2
 msgid "renom_rl.discrete.dqn"
@@ -29,51 +29,57 @@ msgstr ""
 msgid ""
 "DQN class This class provides a reinforcement learning agent including "
 "training method."
+msgstr "Deep Q Learning(DQN) 強化学習エージェント. "
+
+#: of renom_rl.discrete.dqn.DQN renom_rl.discrete.dqn.DQN.action
+#: renom_rl.discrete.dqn.DQN.fit renom_rl.discrete.dqn.DQN.test
+msgid "Parameters"
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:4
 msgid "Environment. This must be a child class of BaseEnv."
-msgstr ""
+msgstr "エージェントを訓練させる環境. 環境オブジェクトはReNomRLが提供するBaseEnvクラスの子クラスである必要がある."
 
 #: of renom_rl.discrete.dqn.DQN:6
 msgid "Q-Network."
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:8
-msgid "Loss function for train q-network. rm.ClippedMeanSquaredError()."
-msgstr ""
+#, fuzzy
+msgid "Loss function for train q-network. Default is ClippedMeanSquaredError()."
+msgstr "Q-networkを訓練させるための誤差関数. デフォルトでは, ClippedMeanSquaredError()."
 
 #: of renom_rl.discrete.dqn.DQN:10
 msgid "Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95)."
-msgstr ""
+msgstr "Q-networkを学習させるための勾配降下手法. デフォルトでは, Rmsprop(lr=0.00025, g=0.95)."
 
 #: of renom_rl.discrete.dqn.DQN:11
 msgid "Discount rate."
-msgstr ""
+msgstr "割引率"
 
 #: of renom_rl.discrete.dqn.DQN:13
 msgid "The size of replay buffer."
-msgstr ""
+msgstr "Experience Replay Bufferのサイズ."
 
-#: of renom_rl.discrete.dqn.DQN:18 renom_rl.discrete.dqn.DQN.fit:41
+#: of renom_rl.discrete.dqn.DQN:17 renom_rl.discrete.dqn.DQN.fit:41
 msgid "Example"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:36
+#: of renom_rl.discrete.dqn.DQN:35
 msgid "References"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:37
+#: of renom_rl.discrete.dqn.DQN:36
 msgid ""
 "Volodymyr Mnih Koray Kavukcuoglu David Silver Alex Graves Ioannis "
 "Antonoglou Daan Wierstra Martin Riedmille"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:38
+#: of renom_rl.discrete.dqn.DQN:37
 msgid "**Playing Atari with Deep Reinforcement Learning**"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:39
+#: of renom_rl.discrete.dqn.DQN:38
 msgid "https://arxiv.org/abs/1312.5602"
 msgstr ""
 
@@ -81,155 +87,147 @@ msgstr ""
 msgid ""
 "Target q-network is initialized with same neural network weights of "
 "q-network."
-msgstr ""
+msgstr "Target Q-networkをQ-networkと同じ重みパラメータで初期化する."
 
 #: of renom_rl.discrete.dqn.DQN.action:1
 msgid "This method returns an action according to the given state."
-msgstr ""
+msgstr "与えられた状態(state)に応じた行動を返す."
 
 #: of renom_rl.discrete.dqn.DQN.action:3
 msgid "A state of an environment."
-msgstr ""
+msgstr "環境の状態."
 
-#: of renom_rl.discrete.dqn.DQN.action:7
+#: of renom_rl.discrete.dqn.DQN.action renom_rl.discrete.dqn.DQN.test
+msgid "Returns"
+msgstr "戻り値"
+
+#: of renom_rl.discrete.dqn.DQN.action:6
 msgid "Action."
-msgstr ""
+msgstr "行動"
+
+#: of renom_rl.discrete.dqn.DQN.action renom_rl.discrete.dqn.DQN.test
+msgid "Return type"
+msgstr "戻り値の型"
 
 #: of renom_rl.discrete.dqn.DQN.update:1
 msgid "This function updates target network."
-msgstr ""
+msgstr "Target Q-networkを更新する."
 
 #: of renom_rl.discrete.dqn.DQN.update_best_q_network:1
-msgid "This function updates best network in each epoch."
-msgstr ""
+msgid "This function updates best network in each target update period."
+msgstr "それぞれのTarget Q-network更新期間において, 最も高い報酬を獲得したQ-networkを更新する."
 
 #: of renom_rl.discrete.dqn.DQN.fit:1
 msgid ""
 "This method executes training of a q-network. Training will be done with "
 "epsilon-greedy method."
-msgstr ""
+msgstr "Q-Networkの学習を実行する関数. 学習はe-greedy法に基づいて行われる."
 
 #: of renom_rl.discrete.dqn.DQN.fit:4
 msgid "You can define following callback functions."
+msgstr "fit関数には, 以下のようなコールバック関数を定義することができる.下に示すExampleのように, デコレータを用いてコールバックを実装できる."
+
+#: of renom_rl.discrete.dqn.DQN.fit:6
+msgid "- end_epoch"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN.fit:12
-msgid "end_epoch"
-msgstr ""
-
-#: of renom_rl.discrete.dqn.DQN.fit:12
+#: of renom_rl.discrete.dqn.DQN.fit:7
 msgid "Args:"
 msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN.fit:8
+msgid "epoch (int): The number of current epoch."
+msgstr "epoch (int): 現在のepoch番号."
+
+#: of renom_rl.discrete.dqn.DQN.fit:9
+msgid "model (DQN): Object of DQN which is on training."
+msgstr "model (DQN): 現在学習中のDQNオブジェクト."
+
+#: of renom_rl.discrete.dqn.DQN.fit:10
 msgid ""
-"epoch (int): model (DQN): summed_train_reward_in_current_epoch (float): "
-"summed_test_reward_in_current_epoch (float): "
-"average_train_lossin_current_epoch (float):"
-msgstr ""
+"summed_train_reward_in_current_epoch (float): Sum of train rewards earned"
+" in current epoch."
+msgstr "summed_train_reward_in_current_epoch (float): 現在のepochにおいて得られた報酬の総和."
 
-#: of renom_rl.discrete.dqn.DQN.fit:14
+#: of renom_rl.discrete.dqn.DQN.fit:11
+msgid "summed_test_reward_in_current_epoch (float): Sum of test rewards."
+msgstr "summed_test_reward_in_current_epoch (float): Test時に獲得した報酬の総和."
+
+#: of renom_rl.discrete.dqn.DQN.fit:12
+msgid ""
+"average_train_loss_in_current_epoch (float): Average train loss in "
+"current epoch."
+msgstr "average_train_lossin_current_epoch (float): 現在のepochにおける学習誤差の平均."
+
+#: of renom_rl.discrete.dqn.DQN.fit:15
 msgid "Number of epoch for training."
-msgstr ""
+msgstr "学習するepoch数."
 
-#: of renom_rl.discrete.dqn.DQN.fit:16
+#: of renom_rl.discrete.dqn.DQN.fit:17
 msgid "Number of step of one epoch."
-msgstr ""
+msgstr "それぞれのepochで実行するstep数."
 
-#: of renom_rl.discrete.dqn.DQN.fit:18
+#: of renom_rl.discrete.dqn.DQN.fit:19
 msgid "Batch size."
-msgstr ""
+msgstr "バッチサイズ."
 
-#: of renom_rl.discrete.dqn.DQN.fit:20
+#: of renom_rl.discrete.dqn.DQN.fit:21
 msgid "Number of random step which will be executed before training."
-msgstr ""
+msgstr "学習前に, ランダムに経験を獲得するstep数."
 
-#: of renom_rl.discrete.dqn.DQN.fit:22
+#: of renom_rl.discrete.dqn.DQN.fit:23
 msgid "Number of test step."
-msgstr ""
+msgstr "Test時に実行するstep数"
 
-#: of renom_rl.discrete.dqn.DQN.fit:24
+#: of renom_rl.discrete.dqn.DQN.fit:25
 msgid "Period of updating target network."
-msgstr ""
+msgstr "Target Networkを更新する頻度."
 
-#: of renom_rl.discrete.dqn.DQN.fit:26
+#: of renom_rl.discrete.dqn.DQN.fit:27
 msgid "For the learning step, training is done at this cycle"
-msgstr ""
+msgstr "Q-networkを学習する頻度."
 
-#: of renom_rl.discrete.dqn.DQN.fit:28
+#: of renom_rl.discrete.dqn.DQN.fit:29
 msgid "Minimum greedy value"
-msgstr ""
+msgstr "Greedy値の最小値."
 
-#: of renom_rl.discrete.dqn.DQN.fit:30
+#: of renom_rl.discrete.dqn.DQN.fit:31
 msgid "Maximum greedy value"
-msgstr ""
+msgstr "Greedy値の最大値."
 
-#: of renom_rl.discrete.dqn.DQN.fit:32
+#: of renom_rl.discrete.dqn.DQN.fit:33
 msgid "Number of step"
-msgstr ""
+msgstr "Greedyを最小から最大まで増加させるまでのstep数"
 
-#: of renom_rl.discrete.dqn.DQN.fit:34
+#: of renom_rl.discrete.dqn.DQN.fit:35
 msgid "Greedy threshold"
-msgstr ""
+msgstr "Test時に使用するGreedy値."
 
-#: of renom_rl.discrete.dqn.DQN.fit:36
+#: of renom_rl.discrete.dqn.DQN.fit:37
 msgid "If True is given, BaseEnv.render() method will be called in test time."
-msgstr ""
+msgstr "Trueが与えられた場合, BaseEnv.render()メソッドが実行される."
 
 #: of renom_rl.discrete.dqn.DQN.test:1
 msgid "Test the trained agent."
-msgstr ""
+msgstr "エージェントをテストを実行するメソッド."
 
 #: of renom_rl.discrete.dqn.DQN.test:3
 msgid ""
 "Number of steps for test. If None is given, this method tests just 1 "
 "episode."
-msgstr ""
+msgstr "Test時に実行するstep数. Noneが与えられた場合, 1episode分のTestが実行される."
 
 #: of renom_rl.discrete.dqn.DQN.test:5
 msgid "Greedy ratio of action."
 msgstr ""
+"与えられた割合(greedy)に応じて, 学習した価値関数, 方策に基づいて行動する. (1 - greedy)に応じて, "
+"行動をランダムに選択する."
 
 #: of renom_rl.discrete.dqn.DQN.test:7
 msgid "If True is given, BaseEnv.render() method will be called."
-msgstr ""
+msgstr "Trueが与えられた時, BaseEnv.render()メソッドが呼ばれます."
 
-#: of renom_rl.discrete.dqn.DQN.test:11
+#: of renom_rl.discrete.dqn.DQN.test:10
 msgid "Sum of rewards."
-msgstr ""
-
-#~ msgid "Bases: :class:`object`"
-#~ msgstr ""
-
-#~ msgid "The number of action pattern."
-#~ msgstr ""
-
-#~ msgid "The size of state."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "target q-network is initialized with "
-#~ "same neural network weights as q-network"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This method returns an action according"
-#~ " to the given state. :param state:"
-#~ " A state of an environment."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "A function which accepts action as "
-#~ "an argument and returns prestate, state,"
-#~ "  reward and terminal."
-#~ msgstr ""
-
-#~ msgid "Loss function for training q-network."
-#~ msgstr ""
-
-#~ msgid "Optimizer object for training q-network."
-#~ msgstr ""
-
-#~ msgid "A dictionary which includes reward list of training and loss list."
-#~ msgstr ""
+msgstr "獲得報酬の総和"
 

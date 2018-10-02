@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:56+0900\n"
+"POT-Creation-Date: 2018-10-02 09:18+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: ../../rsts/continuous/renom_rl.continuous.a3c.rst:2
 msgid "renom_rl.continuous.a3c"
@@ -38,6 +38,10 @@ msgid ""
 "This class provides a reinforcement learning agent including training and"
 " testing methods. This class only accepts 'Environment' as a object of "
 "'BaseEnv' class or OpenAI-Gym 'Env' class."
+msgstr ""
+
+#: of renom_rl.continuous.a3c.A3C
+msgid "Parameters"
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C:10
@@ -87,11 +91,19 @@ msgstr ""
 #: of renom_rl.continuous.a3c.A3C.action:1
 msgid ""
 "This method returns an action according to the given state. :param state:"
-" A state of an environment."
+" A state of an environment. :type state: ndarray"
 msgstr ""
 
-#: of renom_rl.continuous.a3c.A3C.action:6
+#: of renom_rl.continuous.a3c.A3C.action renom_rl.continuous.a3c.A3C.fit
+msgid "Returns"
+msgstr ""
+
+#: of renom_rl.continuous.a3c.A3C.action:5
 msgid "Action."
+msgstr ""
+
+#: of renom_rl.continuous.a3c.A3C.action renom_rl.continuous.a3c.A3C.fit
+msgid "Return type"
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C.fit:1
@@ -99,27 +111,54 @@ msgid ""
 "This method executes training of an actor-network. Here, target actor & "
 "critic network weights are updated after every actor & critic update "
 "using self.tau :param episode: training number of episodes :type episode:"
-" int :param episode_step: Depends on the type of Environment in-built "
-"setting."
+" int :param episode_step:"
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C.fit:6
-msgid "Environment reaches terminal situation in two cases."
+msgid "Depends on the type of Environment in-built setting."
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C.fit:7
-msgid "In the type of Game, it is game over"
+msgid "Environment reaches terminal situation in two cases."
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C.fit:8
+msgid "In the type of Game, it is game over"
+msgstr ""
+
+#: of renom_rl.continuous.a3c.A3C.fit:9
 msgid "Maximum time steps to play"
 msgstr ""
 
-#: of renom_rl.continuous.a3c.A3C.fit:11
+#: of renom_rl.continuous.a3c.A3C.fit:12
 msgid "A dictionary which includes reward list of training and loss list."
 msgstr ""
 
 #: of renom_rl.continuous.a3c.A3C.test:1
-msgid "test the trained network Args: :returns: A list of cumulative test rewards"
+msgid ""
+"test the trained network Args: :returns: A list of cumulative test "
+"rewards :rtype: (list)"
 msgstr ""
+
+#~ msgid ""
+#~ "This method returns an action according"
+#~ " to the given state. :param state:"
+#~ " A state of an environment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This method executes training of an "
+#~ "actor-network. Here, target actor & "
+#~ "critic network weights are updated after"
+#~ " every actor & critic update using"
+#~ " self.tau :param episode: training number"
+#~ " of episodes :type episode: int "
+#~ ":param episode_step: Depends on the type"
+#~ " of Environment in-built setting."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "test the trained network Args: :returns:"
+#~ " A list of cumulative test rewards"
+#~ msgstr ""
 
