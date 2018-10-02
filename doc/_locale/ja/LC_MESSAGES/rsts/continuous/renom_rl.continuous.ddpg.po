@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-01 17:50+0900\n"
+"POT-Creation-Date: 2018-10-02 15:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 
 #: ../../rsts/continuous/renom_rl.continuous.ddpg.rst:2
 msgid "renom_rl.continuous.ddpg"
@@ -34,49 +34,60 @@ msgid ""
 "This class provides a reinforcement learning agent including training and"
 " testing methods. This class only accepts 'Environment' as a object of "
 "'BaseEnv' class."
+msgstr "Deep Deterministic Policy Gradient(DDPG)クラス."
+
+#: of renom_rl.continuous.ddpg.DDPG renom_rl.continuous.ddpg.DDPG.fit
+#: renom_rl.continuous.ddpg.DDPG.target_value_function
+#: renom_rl.continuous.ddpg.DDPG.test
+#: renom_rl.continuous.ddpg.DDPG.value_function
+msgid "Parameters"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG:6
 msgid "An instance of Environment to be learned."
-msgstr ""
+msgstr "エージェントを訓練する環境オブジェクト."
 
 #: of renom_rl.continuous.ddpg.DDPG:8
-msgid ""
-"Actor-Network. If it is None, default ANN is created with [400, 300] "
-"hidden layer sizes"
+msgid "Actor-Network."
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:11
-msgid "basically a Q(s,a) function Network."
-msgstr ""
+#: of renom_rl.continuous.ddpg.DDPG:10
+msgid "Critic-Network. Basically this is a Q(s,a) function Network."
+msgstr "Critic-Network."
+
+#: of renom_rl.continuous.ddpg.DDPG:12
+msgid "Loss function for critic network. Default is MeanSquaredError()"
+msgstr "Critic-Networkを学習させるための誤差関数. デフォルトでは, MeanSquaredError()."
 
 #: of renom_rl.continuous.ddpg.DDPG:13
-msgid "Loss function for critic network. Default is MeanSquaredError()"
-msgstr ""
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.0001)"
+msgstr "Actor-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.0001)."
 
 #: of renom_rl.continuous.ddpg.DDPG:14
-msgid "Optimizer object for training actor network. Default is Adam(lr=0.0001)"
-msgstr ""
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.001)"
+msgstr "Critic-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.001)."
 
 #: of renom_rl.continuous.ddpg.DDPG:15
-msgid "Optimizer object for training actor network. Default is Adam(lr=0.001)"
-msgstr ""
-
-#: of renom_rl.continuous.ddpg.DDPG:16
 msgid "Discount rate."
-msgstr ""
+msgstr "割引率."
 
-#: of renom_rl.continuous.ddpg.DDPG:18
+#: of renom_rl.continuous.ddpg.DDPG:17
 msgid ""
 "target_networks update parameter. If this is 0, weight parameters will be"
 " copied."
 msgstr ""
+"Target Networkの重みパラメータを更新するモメンタム係数. target_weight <- (1 - "
+"tau)*target_weight + tau*weight"
 
-#: of renom_rl.continuous.ddpg.DDPG:20
+#: of renom_rl.continuous.ddpg.DDPG:19
 msgid "The size of replay buffer."
+msgstr "Experience replay bufferのサイズ."
+
+#: of renom_rl.continuous.ddpg.DDPG:23 renom_rl.continuous.ddpg.DDPG.fit:35
+msgid "Example"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG:31
+#: of renom_rl.continuous.ddpg.DDPG:59
 msgid "Reference:"
 msgstr ""
 
@@ -99,131 +110,151 @@ msgstr ""
 #: of renom_rl.continuous.ddpg.DDPG.action:1
 msgid ""
 "This method returns an action according to the given state. :param state:"
-" A state of an environment."
+" A state of an environment. :type state: ndarray"
+msgstr "与えられた状態(state)に応じた行動を返す."
+
+#: of renom_rl.continuous.ddpg.DDPG.action
+#: renom_rl.continuous.ddpg.DDPG.target_value_function
+#: renom_rl.continuous.ddpg.DDPG.test
+#: renom_rl.continuous.ddpg.DDPG.value_function
+msgid "Returns"
 msgstr ""
 
-#: of renom_rl.continuous.ddpg.DDPG.action:6
+#: of renom_rl.continuous.ddpg.DDPG.action:5
 msgid "Action."
+msgstr "行動"
+
+#: of renom_rl.continuous.ddpg.DDPG.action
+#: renom_rl.continuous.ddpg.DDPG.target_value_function
+#: renom_rl.continuous.ddpg.DDPG.test
+#: renom_rl.continuous.ddpg.DDPG.value_function
+msgid "Return type"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:1
 msgid ""
 "This method executes training of an actor-network. Here, target actor & "
 "critic network weights are updated after every actor & critic update "
-"using self.tau :param epoch: training number of epochs :type epoch: int "
-":param epoch_step: Depends on the type of Environment in-built setting."
+"using self.tau"
+msgstr "定数tauに基づいて, Target Networkを更新する."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:4
+msgid "- end_epoch"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:5
+msgid "Args:"
 msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:6
-msgid "Environment reaches terminal situation in two cases."
-msgstr ""
+msgid "epoch (int): The number of current epoch."
+msgstr "epoch (int): 現在のepoch番号."
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:7
-msgid "In the type of Game, it is game over"
-msgstr ""
+#, fuzzy
+msgid "model (DDPG): Object of DDPG which is on training."
+msgstr "model (DQN): 学習中のDDPGオブジェクト."
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:8
-msgid "Maximum time steps to play"
-msgstr ""
+msgid ""
+"summed_train_reward_in_current_epoch (float): Sum of train rewards earned"
+" in current epoch."
+msgstr "summed_train_reward_in_current_epoch (float): 現在のepochにおける獲得報酬の総和."
 
-#: of renom_rl.continuous.ddpg.DDPG.fit:11
-msgid "A dictionary which includes reward list of training and loss list."
-msgstr ""
+#: of renom_rl.continuous.ddpg.DDPG.fit:9
+msgid "summed_test_reward_in_current_epoch (float): Sum of test rewards."
+msgstr "summed_test_reward_in_current_epoch (float): Test時における獲得報酬の総和."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:10
+msgid ""
+"average_train_loss_in_current_epoch (float): Average train loss in "
+"current epoch."
+msgstr "average_train_loss_in_current_epoch (float): 現在のepochにおける平均学習誤差."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:13
+#, fuzzy
+msgid "Training number of epochs."
+msgstr "学習を行うepoch数."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:15
+msgid "Number of step of one epoch."
+msgstr "それぞれのepochで実行するstep数."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:17
+msgid "Batch size."
+msgstr "バッチサイズ."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:19
+msgid "Number of random step which will be executed before training."
+msgstr "学習前に, ランダムに経験を獲得するstep数."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:21
+msgid "Number of test step."
+msgstr "Test時に実行するstep数."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:23
+msgid "For the learning step, training is done at this cycle."
+msgstr "Networkを学習する頻度."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:25
+msgid "Minimum greedy value."
+msgstr "Greedy値の最小値."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:27
+msgid "Maximum greedy value."
+msgstr "Greedy値の最大値."
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:29
+msgid "Number of step."
+msgstr "Greedyを最小から最大まで増加させるまでのstep数"
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:31
+msgid "Ornstein-uhlenbeck noise or gaussian noise."
+msgstr "Ornstein-uhlenbeckノイズ, もしくは gaussianノイズ."
 
 #: of renom_rl.continuous.ddpg.DDPG.value_function:1
-msgid "Value of predict network Q_predict(s,a) :param state: input state"
-msgstr ""
+msgid "Value of predict network Q_predict(s,a)"
+msgstr "行動a, 状態sに対する価値Q(s, a)"
 
-#: of renom_rl.continuous.ddpg.DDPG.target_value_function:4
-#: renom_rl.continuous.ddpg.DDPG.value_function:4
+#: of renom_rl.continuous.ddpg.DDPG.target_value_function:3
+#: renom_rl.continuous.ddpg.DDPG.value_function:3
+msgid "input state"
+msgstr "状態"
+
+#: of renom_rl.continuous.ddpg.DDPG.target_value_function:5
+#: renom_rl.continuous.ddpg.DDPG.value_function:5
 msgid "Q(s,a) value"
-msgstr ""
+msgstr "価値Q(s, a)"
 
 #: of renom_rl.continuous.ddpg.DDPG.target_value_function:1
-msgid "Value of target network Q_target(s,a). :param state: input state"
-msgstr ""
+msgid "Value of target network Q_target(s,a)."
+msgstr "状態s, 行動aに対する価値Q(s, a)."
 
 #: of renom_rl.continuous.ddpg.DDPG.initalize:1
 msgid ""
-"target actor and critic networks are initialized with same neural network"
+"Target actor and critic networks are initialized with same neural network"
 " weights as actor & critic network"
-msgstr ""
+msgstr "Target Networkを初期化する."
 
 #: of renom_rl.continuous.ddpg.DDPG.update:1
-msgid "updare target networks"
-msgstr ""
+msgid "Updare target networks"
+msgstr "Target Networkを更新する."
 
 #: of renom_rl.continuous.ddpg.DDPG.test:1
 msgid "Test the trained agent."
-msgstr ""
+msgstr "エージェントをテストを実行するメソッド."
 
 #: of renom_rl.continuous.ddpg.DDPG.test:3
 msgid ""
 "Number of steps for test. If None is given, this method tests just 1 "
 "episode."
-msgstr ""
+msgstr "Test時に実行するstep数. Noneが与えられた場合, 1episode分のTestが実行される."
 
 #: of renom_rl.continuous.ddpg.DDPG.test:5
 msgid "If True is given, BaseEnv.render() method will be called."
-msgstr ""
+msgstr "Trueが与えられた場合, BaseEnv.render()が呼ばれる."
 
-#: of renom_rl.continuous.ddpg.DDPG.test:9
+#: of renom_rl.continuous.ddpg.DDPG.test:8
 msgid "Sum of rewards."
-msgstr ""
-
-#~ msgid "Bases: :class:`object`"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "DDPG class Timothy P. Lillicrap, "
-#~ "Jonathan J. Hunt, Alexander Pritzel, "
-#~ "Nicolas Heess, Tom Erez, Yuval Tassa,"
-#~ " David Silver, Daan Wierstra, Continuous"
-#~ " control with deep reinforcement learning"
-#~ " https://arxiv.org/abs/1509.02971"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This class provides a reinforcement "
-#~ "learning agent including training and "
-#~ "testing methods. This class only accepts"
-#~ " 'Environment' as a object of "
-#~ "'BaseEnv' class or OpenAI-Gym 'Env' "
-#~ "class."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "An instance of Environment to be "
-#~ "learned. For example, 'Pendulum-v0' "
-#~ "environment, has methods reset, step. "
-#~ "env.reset() --> resets initial state of"
-#~ " environment env.step(action) --> take "
-#~ "action value and returns (next_state, "
-#~ "reward, terminal, _)"
-#~ msgstr ""
-
-#~ msgid "Optimizer object for training actor network."
-#~ msgstr ""
-
-#~ msgid "Loss function for critic network."
-#~ msgstr ""
-
-#~ msgid "mini batch size."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This method executes training of an "
-#~ "actor-network. Here, target actor & "
-#~ "critic network weights are updated after"
-#~ " every actor & critic update using"
-#~ " self.tau :param episode: training number"
-#~ " of episodes :type episode: int "
-#~ ":param episode_step: Depends on the type"
-#~ " of Environment in-built setting."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "test the trained network Args: :returns:"
-#~ " A list of cumulative test rewards"
-#~ msgstr ""
+msgstr "獲得報酬の総和"
 

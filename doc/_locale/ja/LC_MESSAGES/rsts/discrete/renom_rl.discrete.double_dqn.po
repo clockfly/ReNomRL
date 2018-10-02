@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:10+0900\n"
+"POT-Creation-Date: 2018-10-02 14:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,7 +186,8 @@ msgid "Period of updating target network."
 msgstr "Target Networkを更新する頻度."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.fit:27
-msgid "For the learning step, training is done at this cycle"
+#, fuzzy
+msgid "For the learning step, training is done at this cycle."
 msgstr "Q-networkを学習する頻度."
 
 #: of renom_rl.discrete.double_dqn.DoubleDQN.fit:29
@@ -219,7 +220,6 @@ msgid ""
 "episode."
 msgstr "Test時に実行するstep数. Noneが与えられた場合, 1episode分のTestが実行される."
 
-
 #: of renom_rl.discrete.double_dqn.DoubleDQN.test:5
 msgid "Greedy ratio of action."
 msgstr ""
@@ -233,3 +233,4 @@ msgstr "Trueが与えられた時, BaseEnv.render()メソッドが呼ばれま�
 #: of renom_rl.discrete.double_dqn.DoubleDQN.test:10
 msgid "Sum of rewards."
 msgstr "獲得報酬の総和"
+

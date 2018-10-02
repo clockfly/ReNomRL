@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 11:22+0900\n"
+"POT-Creation-Date: 2018-10-02 14:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,10 +19,6 @@ msgstr ""
 
 #: ../../rsts/environ/renom_rl.environ.openai.rst:2
 msgid "renom_rl.environ.openai"
-msgstr ""
-
-#: of renom_rl.environ.openai.Breakout:1 renom_rl.environ.openai.Pendulum:1
-msgid "Bases: :class:`renom_rl.environ.env.BaseEnv`"
 msgstr ""
 
 #: of renom_rl.environ.openai.Pendulum:1
@@ -41,76 +37,6 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: of renom_rl.environ.openai.Breakout.reset:1
-#: renom_rl.environ.openai.Pendulum.reset:1
-msgid "This method must be overridden."
-msgstr "このメソッドは, 必ずオーバライドされる必要がある."
-
-#: of renom_rl.environ.openai.Breakout.reset
-#: renom_rl.environ.openai.Breakout.sample
-#: renom_rl.environ.openai.Breakout.step renom_rl.environ.openai.Pendulum.reset
-#: renom_rl.environ.openai.Pendulum.sample
-#: renom_rl.environ.openai.Pendulum.step
-msgid "Returns"
-msgstr ""
-
-#: of renom_rl.environ.openai.Breakout.reset:3
-#: renom_rl.environ.openai.Pendulum.reset:3
-msgid "Initial state. Its shape must be same as BaseEnv.state_shape."
-msgstr "環境の初期状態."
-
-#: of renom_rl.environ.openai.Breakout.reset
-#: renom_rl.environ.openai.Breakout.sample
-#: renom_rl.environ.openai.Breakout.step renom_rl.environ.openai.Pendulum.reset
-#: renom_rl.environ.openai.Pendulum.sample
-#: renom_rl.environ.openai.Pendulum.step
-msgid "Return type"
-msgstr ""
-
-#: of renom_rl.environ.openai.Breakout.sample:1
-#: renom_rl.environ.openai.Pendulum.sample:1
-msgid "This method must be overridden. This method must return random action."
-msgstr "ランダムな行動を返す. このメソッドは, 必ずオーバライドされる必要がある."
-
-#: of renom_rl.environ.openai.Breakout.sample:4
-#: renom_rl.environ.openai.Pendulum.sample:4
-msgid "Sampled action. Its shape must be same as BaseEnv.action_shape."
-msgstr "ランダムに選択された行動."
-
-#: of renom_rl.environ.openai.Breakout.step:1
-#: renom_rl.environ.openai.Pendulum.step:1
-msgid ""
-"This method must be overridden. This method must accept single action and"
-" return `next state`, `reward` and `terminal`. When overriding this "
-"method, don't forget to return above data."
-msgstr ""
-"強化学習における, 行動->次状態への遷移を実装するための抽象メソッド.Actionを受け取り, (次状態, 報酬, 終了フラグ)を返す様に, "
-"オーバライドされる必要がある."
-
-#: of renom_rl.environ.openai.Breakout.step:6
-#: renom_rl.environ.openai.Pendulum.step:6
-msgid ""
-"Environment's next state. | (float): Reward gotten from the transition. |"
-" (bool): Terminal flag. |"
-msgstr "環境の次状態. | (float): 環境の状態遷移において得られた報酬. | (bool): episodeの終了を表すフラグ."
-
-#: of renom_rl.environ.openai.Breakout.step:10
-#: renom_rl.environ.openai.Pendulum.step:10
-msgid "| (ndarray)"
-msgstr ""
-
-#: of renom_rl.environ.openai.Breakout.step
-#: renom_rl.environ.openai.Pendulum.step
-msgid "(ndarray)"
-msgstr ""
-
-#: of renom_rl.environ.openai.Breakout.render:1
-#: renom_rl.environ.openai.Pendulum.render:1
-msgid ""
-"Rendering method. If you want to render environment states, please "
-"override this method."
-msgstr "描画用抽象メソッド. 描画処理を実装したい場合, このメソッドを実装してください."
-
 #: of renom_rl.environ.openai.Breakout:1
 msgid "A wrapper environment of OpenAI gym \"Breakout-v0\"."
 msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラス."
@@ -120,4 +46,53 @@ msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラス."
 #~ "Reward gotten from the transition. "
 #~ "terminal(bool): Terminal flag."
 #~ msgstr ""
+
+#~ msgid "Bases: :class:`renom_rl.environ.env.BaseEnv`"
+#~ msgstr ""
+
+#~ msgid "This method must be overridden."
+#~ msgstr "このメソッドは, 必ずオーバライドされる必要がある."
+
+#~ msgid "Returns"
+#~ msgstr ""
+
+#~ msgid "Initial state. Its shape must be same as BaseEnv.state_shape."
+#~ msgstr "環境の初期状態."
+
+#~ msgid "Return type"
+#~ msgstr ""
+
+#~ msgid "This method must be overridden. This method must return random action."
+#~ msgstr "ランダムな行動を返す. このメソッドは, 必ずオーバライドされる必要がある."
+
+#~ msgid "Sampled action. Its shape must be same as BaseEnv.action_shape."
+#~ msgstr "ランダムに選択された行動."
+
+#~ msgid ""
+#~ "This method must be overridden. This "
+#~ "method must accept single action and "
+#~ "return `next state`, `reward` and "
+#~ "`terminal`. When overriding this method, "
+#~ "don't forget to return above data."
+#~ msgstr ""
+#~ "強化学習における, 行動->次状態への遷移を実装するための抽象メソッド.Actionを受け取り, (次状態, "
+#~ "報酬, 終了フラグ)を返す様に, オーバライドされる必要がある."
+
+#~ msgid ""
+#~ "Environment's next state. | (float): "
+#~ "Reward gotten from the transition. | "
+#~ "(bool): Terminal flag. |"
+#~ msgstr "環境の次状態. | (float): 環境の状態遷移において得られた報酬. | (bool): episodeの終了を表すフラグ."
+
+#~ msgid "| (ndarray)"
+#~ msgstr ""
+
+#~ msgid "(ndarray)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Rendering method. If you want to "
+#~ "render environment states, please override "
+#~ "this method."
+#~ msgstr "描画用抽象メソッド. 描画処理を実装したい場合, このメソッドを実装してください."
 

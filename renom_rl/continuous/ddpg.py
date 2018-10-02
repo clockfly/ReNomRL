@@ -23,9 +23,8 @@ class DDPG(AgentBase):
 
     Args:
         env (BaseEnv): An instance of Environment to be learned.
-        actor_network (Model): Actor-Network. If it is None, default ANN is created
-                                with [400, 300] hidden layer sizes
-        critic_network (Model): basically a Q(s,a) function Network.
+        actor_network (Model): Actor-Network.
+        critic_network (Model): Critic-Network. Basically this is a Q(s,a) function Network.
         loss_func: Loss function for critic network. Default is MeanSquaredError()
         actor_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.0001)
         critic_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.001)
@@ -149,14 +148,14 @@ class DDPG(AgentBase):
         | - end_epoch
         |     Args:
         |         epoch (int): The number of current epoch.
-        |         model (DQN): Object of DQN which is on training.
+        |         model (DDPG): Object of DDPG which is on training.
         |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
         |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
         |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
         |
 
         Args:
-            epoch (int): training number of epochs.
+            epoch (int): Training number of epochs.
             epoch_step (int): Number of step of one epoch.
             batch_size (int): Batch size.
             random_step (int): Number of random step which will be executed before training.
@@ -310,8 +309,10 @@ class DDPG(AgentBase):
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
+
         Args:
             state: input state
+
         Returns:
             value: Q(s,a) value
         '''
@@ -321,8 +322,10 @@ class DDPG(AgentBase):
 
     def target_value_function(self, state):
         '''Value of target network Q_target(s,a).
+
         Args:
             state: input state
+
         Returns:
             value: Q(s,a) value
         '''
@@ -331,7 +334,7 @@ class DDPG(AgentBase):
         return value
 
     def initalize(self):
-        '''target actor and critic networks are initialized with same neural network weights as actor & critic network'''
+        '''Target actor and critic networks are initialized with same neural network weights as actor & critic network'''
         for layer in list(self._walk_model(self._target_critic)) + list(self._walk_model(self._target_actor)):
             if hasattr(layer, "params") and False:
                 layer.params = {}
@@ -353,7 +356,7 @@ class DDPG(AgentBase):
                 yield from self._walk_model(v)
 
     def update(self):
-        '''updare target networks'''
+        '''Updare target networks'''
         for ql, tql in zip(self._walk_model(self._actor), self._walk_model(self._target_actor)):
             if not hasattr(ql, 'params'):
                 continue
