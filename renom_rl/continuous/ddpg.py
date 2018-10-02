@@ -33,6 +33,35 @@ class DDPG(AgentBase):
         tau (float): target_networks update parameter. If this is 0, weight parameters will be copied.
         buffer_size (float, int): The size of replay buffer.
 
+    Example:
+        >>> import renom as rm
+        >>> from renom_rl.continuous.ddpg import DDPG
+        >>> from renom_rl.environ.openai import Pendulum
+        >>>
+        >>> class Critic(rm.Model):
+        ...
+        ...     def __init__(self):
+        ...         self.l1 = rm.Dense(2)
+        ...         self.l2 = rm.Dense(1)
+        ...
+        ...     def forward(self, state, action):
+        ...         h = rm.concat(self.l1(state), action)
+        ...         return self.l2(rm.relu(h))
+        ...
+        >>> actor = rm.Sequential(...)
+        >>> critic = Critic()
+        >>> agent = DDPG(
+        ...       Pendulum(),
+        ...       actor,
+        ...       critic,
+        ...       loss_func=rm.ClippedMeanSquaredError(),
+        ...       buffer_size=1e6
+        ...   )
+        >>> agent.fit(episode=10000)
+        episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
+        episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
+        episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
+
     Reference:
         | Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,
         | Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,
@@ -112,22 +141,71 @@ class DDPG(AgentBase):
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()[0]
 
     def fit(self, epoch=1000, epoch_step=2000, batch_size=64, random_step=5000,
-            test_step=2000, train_frequency=1, min_exploration_rate=0.01, max_exploration_rate=1.0,
-            exploration_step=10000, noise=OU()):
+            test_step=2000, train_frequency=1, min_greedy=0.01, max_greedy=1.0,
+            greedy_step=10000, noise=OU()):
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
+
+        | - end_epoch
+        |     Args:
+        |         epoch (int): The number of current epoch.
+        |         model (DQN): Object of DQN which is on training.
+        |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
+        |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
+        |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
+        |
+
         Args:
-            epoch (int): training number of epochs
-            epoch_step (int): Depends on the type of Environment in-built setting.
-                             Environment reaches terminal situation in two cases.
-                            (i) In the type of Game, it is game over
-                            (ii) Maximum time steps to play
-        Returns:
-            (dict): A dictionary which includes reward list of training and loss list.
+            epoch (int): training number of epochs.
+            epoch_step (int): Number of step of one epoch.
+            batch_size (int): Batch size.
+            random_step (int): Number of random step which will be executed before training.
+            test_step (int): Number of test step.
+            train_frequency (int): For the learning step, training is done at this cycle.
+            min_greedy (int): Minimum greedy value.
+            max_greedy (int): Maximum greedy value.
+            greedy_step (int): Number of step.
+            noise (OU, GP): Ornstein-uhlenbeck noise or gaussian noise.
+
+        Example:
+            >>> import renom as rm
+            >>> from renom_rl.continuous.ddpg import DDPG
+            >>> from renom_rl.environ.openai import Pendulum
+            >>>
+            >>> class Critic(rm.Model):
+            ...
+            ...     def __init__(self):
+            ...         self.l1 = rm.Dense(2)
+            ...         self.l2 = rm.Dense(1)
+            ...
+            ...     def forward(self, state, action):
+            ...         h = rm.concat(self.l1(state), action)
+            ...         return self.l2(rm.relu(h))
+            ...
+            >>> actor = rm.Sequential(...)
+            >>> critic = Critic()
+            >>> 
+            >>> agent = DDPG(
+            ...       Pendulum(),
+            ...       actor,
+            ...       critic,
+            ...       loss_func=rm.ClippedMeanSquaredError(),
+            ...       buffer_size=1e6
+            ...   )
+            >>> @agent.event.end_epoch
+            >>> def callback(epoch, ddpg_model, train_rew, test_rew, avg_loss):
+            ... # This function will be called end of each epoch. 
+            ... 
+            >>> 
+            >>> agent.fit()
+            epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
+            epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
+            ...
+
         """
 
-        e_rate = max_exploration_rate
-        e_step = (min_exploration_rate - max_exploration_rate) / exploration_step
+        e_rate = max_greedy
+        e_step = (min_greedy - max_greedy) / greedy_step
 
         state = self.env.reset()
         for _ in range(1, random_step + 1):
@@ -164,7 +242,7 @@ class DDPG(AgentBase):
                 sum_reward_episode += reward
                 state = next_state
                 e_rate += e_step
-                e_rate = np.clip(e_rate, min_exploration_rate, max_exploration_rate)
+                e_rate = np.clip(e_rate, min_greedy, max_greedy)
 
                 if len(self._buffer) > batch_size and j % train_frequency == 0:
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
@@ -223,13 +301,12 @@ class DDPG(AgentBase):
             msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
 
             self.events.on("end_epoch",
-                           e, self, avg_loss, avg_train_reward, train_reward, test_reward)
+                           e, self, train_reward, test_reward, avg_loss)
 
             tq.set_description(msg)
             tq.update(0)
             tq.refresh()
             tq.close()
-
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)

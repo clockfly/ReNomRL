@@ -42,7 +42,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
- #   'sphinx.ext.jsmath',
+    #   'sphinx.ext.jsmath',
     'sphinx.ext.napoleon',
     'IPython.sphinxext.ipython_console_highlighting'
 ]
@@ -91,6 +91,7 @@ locale_dirs = ["_locale"]
 gettext_compact = False
 language = 'en'
 autodoc_member_order = "bysource"
+undoc_members = False
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
 #

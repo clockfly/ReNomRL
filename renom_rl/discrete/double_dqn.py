@@ -36,7 +36,7 @@ class DoubleDQN(AgentBase):
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
         ...   )
-        >>> agent.train(episode=10000)
+        >>> agent.fit(episode=10000)
         episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
         episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
         episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]
@@ -173,7 +173,7 @@ class DoubleDQN(AgentBase):
             random_step (int): Number of random step which will be executed before training.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
-            train_frequency (int): For the learning step, training is done at this cycle
+            train_frequency (int): For the learning step, training is done at this cycle.
             min_greedy (int): Minimum greedy value
             max_greedy (int): Maximum greedy value
             greedy_step (int): Number of step
@@ -182,7 +182,7 @@ class DoubleDQN(AgentBase):
 
         Example:
             >>> import renom as rm
-            >>> from renom_rl.discrete.dounble_dqn import DoubleDQN
+            >>> from renom_rl.discrete.double_dqn import DoubleDQN
             >>> from renom_rl.environ.openai import Breakout
             >>>
             >>> q_network = rm.Sequential([
