@@ -1,4 +1,4 @@
-# ReNomRL - Reinforcement Learning Modules
+# ReNomRL beta0.0 - Reinforcement Learning Modules
 
 !!(URL of renom.jp)
 
