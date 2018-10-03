@@ -1,0 +1,4 @@
+-e git+https://github.com/ReNom-dev-team/ReNom.git#egg=renom-2.6.1
+gym==0.10.5
+numpy==1.14.5
+tqdm==4.26.0
