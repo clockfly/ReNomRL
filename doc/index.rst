@@ -10,5 +10,6 @@ Welcome to ReNomsRL's documentation!
     :maxdepth: 3
     
     rsts/introduction
+    rsts/how_to_use
     rsts/api
-..    rsts/how_to_use
+
