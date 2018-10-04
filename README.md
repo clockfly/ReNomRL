@@ -43,10 +43,15 @@ apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb lib
 pip install 'gym[all]'
 ```
 
-<!-- ### Uninstall
+### Uninstall
+Go to the directory where you install ReNomRL.
+From there, do the following process.
+```
+pip uninstall renom_rl
+rm -rf ReNomRL
+```
 
-
-
+<!--
 #### Install with pip
 
 
