@@ -95,30 +95,26 @@ msgid ""
 msgstr "オリジナルの環境を作成する場合は、オブジェクトを継承し、以下の変数および関数を書き換える必要があります。"
 
 #: ../../rsts/how_to_use.rst:35
-#, fuzzy
-msgid "**action shape:** the shape of action"
-msgstr "** Action_shape: ** actionの形状"
+msgid "**action_shape:** the shape of action"
+msgstr "**action_shape:** actionの形状"
 
 #: ../../rsts/how_to_use.rst:36
-msgid "**state shape:** the shape of state"
-msgstr "**State_shape:** stateの形状"
+msgid "**state_shape:** the shape of state"
+msgstr "**state_shape:** stateの形状"
 
 #: ../../rsts/how_to_use.rst:37
-#, fuzzy
 msgid "**reset():** the function that resets the environment"
-msgstr "**Reset():** リセット時の初期stateを指定"
+msgstr "**reset():** リセット時の初期stateを指定"
 
 #: ../../rsts/how_to_use.rst:38
-#, fuzzy
 msgid "**sample():** the function that chooses random action"
-msgstr "**Sample():** action のサンプル手段を指定"
+msgstr "**sample():** action のサンプル手段を指定"
 
 #: ../../rsts/how_to_use.rst:39
-#, fuzzy
 msgid ""
 "**step():** the function that outputs state, reward, terminal when taking"
 " a step"
-msgstr "**Step():** action 取った時のstate, reward, terminal を指定"
+msgstr "**step():** action 取った時のstate, reward, terminal を指定"
 
 #: ../../rsts/how_to_use.rst:41
 msgid ""
@@ -157,4 +153,3 @@ msgid ""
 "By implement as shown above, we can run DQN. For more information, please"
 " refer the API page on environment, and other algorithms."
 msgstr "このように実装することで、DQNを実行することが可能です。環境、その他の強化学習アルゴリズムについてはAPIページを参照いただけると幸いです。"
-
