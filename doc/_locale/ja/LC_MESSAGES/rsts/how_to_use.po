@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-03 16:22+0900\n"
+"POT-Creation-Date: 2018-10-04 11:08+0900\n"
 "PO-Revision-Date: 2018-10-03 16:23+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
-"X-Generator: Poedit 2.1.1\n"
 
 #: ../../rsts/how_to_use.rst:2
 msgid "How to Use"
@@ -29,26 +28,24 @@ msgstr "はじめに"
 
 #: ../../rsts/how_to_use.rst:7
 msgid ""
-"When using neural networks in reinforcement learning, neural network is used as an "
-"agent with multiple signals as input and action as output. However, due to the "
-"difference in problems users are facing( such as what information the agent acquires "
-"from the environment, or what types of actions are required ) we should not only "
-"define the agent structure, but also the environment as well."
+"When using neural networks in reinforcement learning, neural network is "
+"used as an agent with multiple signals as input and action as output. "
+"However, due to the difference in problems users are facing( such as what"
+" information the agent acquires from the environment, or what types of "
+"actions are required ) we should not only define the agent structure, but"
+" also the environment as well."
 msgstr ""
-"強化学習においてニューラルネットワーク を用いる場合、入力関数を多変数とし、出力を行動"
-"とするエージェントして学習させます。しかし、問題によって、何を環境変数として捉える"
-"か、出力のタイプはどのようなものを求めるかが異なるため、エージェントの構造のみなら"
-"ず、エージェントに入る情報、報酬、リセットの条件等の環境情報を設定する必要がありま"
-"す。"
+"強化学習においてニューラルネットワーク "
+"を用いる場合、入力関数を多変数とし、出力を行動とするエージェントして学習させます。しかし、問題によって、何を環境変数として捉えるか、出力のタイプはどのようなものを求めるかが異なるため、エージェントの構造のみならず、エージェントに入る情報、報酬、リセットの条件等の環境情報を設定する必要があります。"
 
 #: ../../rsts/how_to_use.rst:9
 msgid ""
-"ReNom RL has multiple built-in algorithm, such as DQN, A3C etc. When implementing "
-"reinforcement learning with ReNom RL, the following 3 actions are required:"
+"ReNom RL has multiple built-in algorithm, such as DQN, A3C etc. When "
+"implementing reinforcement learning with ReNom RL, the following 3 "
+"actions are required:"
 msgstr ""
-"ReNom RLの特徴として、DQN、A３C等の複雑なアルゴリズムが既に実装されているところにあり"
-"ます。強化学習を実装する上において、主にユーザーに実施していただく操作として以下の3つ"
-"があります。"
+"ReNom "
+"RLの特徴として、DQN、A３C等の複雑なアルゴリズムが既に実装されているところにあります。強化学習を実装する上において、主にユーザーに実施していただく操作として以下の3つがあります。"
 
 #: ../../rsts/how_to_use.rst:11
 msgid "Environment Preparation"
@@ -68,13 +65,11 @@ msgstr "1-環境の準備"
 
 #: ../../rsts/how_to_use.rst:18
 msgid ""
-"In order to use quickly apply the environment, fitting the environment structure "
-"according to BaseEnv module is required. In this section, we will introduce 2 ways "
-"of preparing the environment: using pre-prepared environment and implementing "
-"environment from scratch."
-msgstr ""
-"簡易的に学習するために、環境モデルをBaseEnvに合わせた構造にしなければなりません。ここ"
-"では既存のモデルを使った方法と、0から実装する方法を紹介します。"
+"In order to use quickly apply the environment, fitting the environment "
+"structure according to BaseEnv module is required. In this section, we "
+"will introduce 2 ways of preparing the environment: using pre-prepared "
+"environment and implementing environment from scratch."
+msgstr "簡易的に学習するために、環境モデルをBaseEnvに合わせた構造にしなければなりません。ここでは既存のモデルを使った方法と、0から実装する方法を紹介します。"
 
 #: ../../rsts/how_to_use.rst:21
 msgid "Using Pre-prepared Environment"
@@ -82,11 +77,12 @@ msgstr "既存のモデルを使った方法"
 
 #: ../../rsts/how_to_use.rst:23
 msgid ""
-"We prepared environment models that uses Open AI. For example, if the user wants to "
-"use breakout model for its test, we could call the environment as shown below."
+"We prepared environment models that uses Open AI. For example, if the "
+"user wants to use breakout model for its test, we could call the "
+"environment as shown below."
 msgstr ""
-"Open AIを使った環境モデルを一つの関数として用意しております。例えばBreakoutのモデルを"
-"利用する場合は、以下のように呼び出すこともできます。"
+"Open "
+"AIを使った環境モデルを一つの関数として用意しております。例えばBreakoutのモデルを利用する場合は、以下のように呼び出すこともできます。"
 
 #: ../../rsts/how_to_use.rst:31
 msgid "Implementing Environment from Scratch"
@@ -94,14 +90,13 @@ msgstr "0から実装する方法"
 
 #: ../../rsts/how_to_use.rst:33
 msgid ""
-"When creating an original environment, the object must be inherited, overwriting the "
-"variables and the function as mentioned below:"
-msgstr ""
-"オリジナルの環境を作成する場合は、オブジェクトを継承し、以下の変数および関数を書き換"
-"える必要があります。"
+"When creating an original environment, the object must be inherited, "
+"overwriting the variables and the function as mentioned below:"
+msgstr "オリジナルの環境を作成する場合は、オブジェクトを継承し、以下の変数および関数を書き換える必要があります。"
 
 #: ../../rsts/how_to_use.rst:35
-msgid "**Action shape:** the shape of action"
+#, fuzzy
+msgid "**action shape:** the shape of action"
 msgstr "** Action_shape: ** actionの形状"
 
 #: ../../rsts/how_to_use.rst:36
@@ -109,25 +104,27 @@ msgid "**state shape:** the shape of state"
 msgstr "**State_shape:** stateの形状"
 
 #: ../../rsts/how_to_use.rst:37
-msgid "**Reset():** the function that resets the environment"
+#, fuzzy
+msgid "**reset():** the function that resets the environment"
 msgstr "**Reset():** リセット時の初期stateを指定"
 
 #: ../../rsts/how_to_use.rst:38
-msgid "**Sample():** the function that chooses random action"
+#, fuzzy
+msgid "**sample():** the function that chooses random action"
 msgstr "**Sample():** action のサンプル手段を指定"
 
 #: ../../rsts/how_to_use.rst:39
+#, fuzzy
 msgid ""
-"**Step():** the function that outputs state, reward, terminal when taking a step"
+"**step():** the function that outputs state, reward, terminal when taking"
+" a step"
 msgstr "**Step():** action 取った時のstate, reward, terminal を指定"
 
 #: ../../rsts/how_to_use.rst:41
 msgid ""
-"For example, when creating an original environment called CustomEnv(), the "
-"implemetation can be done as shown below:"
-msgstr ""
-"例えば CustomEnv() というオブジェクトを新たに作るとしたら、CustomEnv の概略は以下のよ"
-"うになります。"
+"For example, when creating an original environment called CustomEnv(), "
+"the implemetation can be done as shown below:"
+msgstr "例えば CustomEnv() というオブジェクトを新たに作るとしたら、CustomEnv の概略は以下のようになります。"
 
 #: ../../rsts/how_to_use.rst:115
 msgid "2-Model Preparation"
@@ -135,11 +132,9 @@ msgstr "2-モデルの準備"
 
 #: ../../rsts/how_to_use.rst:117
 msgid ""
-"In this section, we use ReNom DL to build a model. Define the model as shown below "
-"when using a standard neural network."
-msgstr ""
-"ここでは、ReNomDL のモデルを作成します。通常のモデルを定義する場合は、以下のように定"
-"義してください。"
+"In this section, we use ReNom DL to build a model. Define the model as "
+"shown below when using a standard neural network."
+msgstr "ここでは、ReNomDL のモデルを作成します。通常のモデルを定義する場合は、以下のように定義してください。"
 
 #: ../../rsts/how_to_use.rst:133
 msgid "3-Implementation of Reinforcement Learning"
@@ -147,20 +142,19 @@ msgstr "3-強化学習の実装"
 
 #: ../../rsts/how_to_use.rst:135
 msgid ""
-"After preparing the environment and the model, we now implement using a certain "
-"algorithm. The script below describes the algorithm for DQN."
-msgstr ""
-"以上の２つを用意した上で、次に強化学習を用いた学習方法を紹介します。今回は、DQN のモ"
-"デルを例として使用します。"
+"After preparing the environment and the model, we now implement using a "
+"certain algorithm. The script below describes the algorithm for DQN."
+msgstr "以上の２つを用意した上で、次に強化学習を用いた学習方法を紹介します。今回は、DQN のモデルを例として使用します。"
 
-#: ../../rsts/how_to_use.rst:149
-msgid "After finishing the model, we run the module by implementing as shown below:"
+#: ../../rsts/how_to_use.rst:144
+msgid ""
+"After finishing the model, we run the module by implementing as shown "
+"below:"
 msgstr "最後にDQNのmodelを実行します。実行する際には以下のように記述してください。"
 
-#: ../../rsts/how_to_use.rst:155
+#: ../../rsts/how_to_use.rst:150
 msgid ""
-"By implement as shown above, we can run DQN. For more information, please refer the "
-"API page on environment, and other algorithms."
-msgstr ""
-"このように実装することで、DQNを実行することが可能です。環境、その他の強化学習アルゴリ"
-"ズムについてはAPIページを参照いただけると幸いです。"
+"By implement as shown above, we can run DQN. For more information, please"
+" refer the API page on environment, and other algorithms."
+msgstr "このように実装することで、DQNを実行することが可能です。環境、その他の強化学習アルゴリズムについてはAPIページを参照いただけると幸いです。"
+

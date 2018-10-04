@@ -13,7 +13,7 @@ URL: https://github.com/ReNom-dev-team/ReNomRL.git
    pip install -e .
 
 OpenAI’s Gym are frequently used in tutorials, problem solving, etc. We recommend you download it.
-    
+
 URL : https://github.com/openai/gym#installation
 
 .. code-block:: sh
@@ -26,14 +26,17 @@ URL : https://github.com/openai/gym#installation
     brew install cmake boost boost-python sdl2 swig wget
     # Ubuntu 14.04:
     apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
-    
+
     # Install all games
      pip install 'gym[all]'
 
 
-**Requirements**   
+**Requirements**
 
+-	Linux/Ubuntu
 -	Python 2.7 3.6
--	ReNom DL
--	OpenAI Gym
+-	ReNom DL 2.6 (or over)
+- numpy 1.14.5
+- tqdm 4.26.0
+-	Gym 0.10.5
 -	Homebrew (For OSX)

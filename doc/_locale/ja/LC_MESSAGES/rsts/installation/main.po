@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-03 18:00+0900\n"
+"POT-Creation-Date: 2018-10-04 11:13+0900\n"
 "PO-Revision-Date: 2018-10-03 17:56+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
@@ -37,28 +37,38 @@ msgid ""
 msgstr "また Open AIのgym を利用する場面が多くあります。ダウンロードすることを推奨します。"
 
 #: ../../rsts/installation/main.rst:17
-msgid ""
-"Reference: https://qiita.com/ishizakiiii/items/75bc2176a1e0b65bdd16 "
-"https://github.com/openai/gym#installation"
+msgid "URL : https://github.com/openai/gym#installation"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:36
+#: ../../rsts/installation/main.rst:34
 msgid "**Requirements**"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:38
+#: ../../rsts/installation/main.rst:36
+msgid "Linux/Ubuntu"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:37
 msgid "Python 2.7 3.6"
 msgstr ""
 
+#: ../../rsts/installation/main.rst:38
+msgid "ReNom DL 2.6 (or over)"
+msgstr ""
+
 #: ../../rsts/installation/main.rst:39
-msgid "ReNom DL"
+msgid "numpy 1.14.5"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:40
-msgid "OpenAI Gym"
+msgid "tqdm 4.26.0"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:41
+msgid "Gym 0.10.5"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:42
 msgid "Homebrew (For OSX)"
 msgstr ""
 
@@ -76,6 +86,34 @@ msgstr ""
 #~ "       Homebrew (For OSX)"
 #~ msgstr ""
 
-#~ msgid "*Requirements*"
-#~ msgstr ""
+#: ../../rsts/installation/main.rst:34
+msgid "**Requirements**"
+msgstr ""
 
+#: ../../rsts/installation/main.rst:36
+msgid "Linux/Ubuntu"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:37
+msgid "Python 2.7 3.6"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:38
+msgid "ReNom DL 2.6 (or over)"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:39
+msgid "numpy 1.14.5"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:40
+msgid "tqdm 4.26.0"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:41
+msgid "Gym 0.10.5"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:42
+msgid "Homebrew (For OSX)"
+msgstr ""
