@@ -32,8 +32,8 @@ Implementing Environment from Scratch
 
 When creating an original environment, the object must be inherited, overwriting the variables and the function as mentioned below:
 
-* **action shape:** the shape of action
-* **state shape:** the shape of state
+* **action_shape:** the shape of action
+* **state_shape:** the shape of state
 * **reset():** the function that resets the environment
 * **sample():** the function that chooses random action
 * **step():** the function that outputs state, reward, terminal when taking a step

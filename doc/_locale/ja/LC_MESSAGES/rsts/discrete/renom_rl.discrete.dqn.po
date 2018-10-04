@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:10+0900\n"
+"POT-Creation-Date: 2018-10-04 11:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.5.3\n"
 
 #: ../../rsts/discrete/renom_rl.discrete.dqn.rst:2
 msgid "renom_rl.discrete.dqn"
@@ -30,11 +30,6 @@ msgid ""
 "DQN class This class provides a reinforcement learning agent including "
 "training method."
 msgstr "Deep Q Learning(DQN) 強化学習エージェント. "
-
-#: of renom_rl.discrete.dqn.DQN renom_rl.discrete.dqn.DQN.action
-#: renom_rl.discrete.dqn.DQN.fit renom_rl.discrete.dqn.DQN.test
-msgid "Parameters"
-msgstr ""
 
 #: of renom_rl.discrete.dqn.DQN:4
 msgid "Environment. This must be a child class of BaseEnv."
@@ -61,25 +56,25 @@ msgstr "割引率"
 msgid "The size of replay buffer."
 msgstr "Experience Replay Bufferのサイズ."
 
-#: of renom_rl.discrete.dqn.DQN:17 renom_rl.discrete.dqn.DQN.fit:41
+#: of renom_rl.discrete.dqn.DQN:18 renom_rl.discrete.dqn.DQN.fit:42
 msgid "Example"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:35
+#: of renom_rl.discrete.dqn.DQN:36
 msgid "References"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:36
+#: of renom_rl.discrete.dqn.DQN:37
 msgid ""
 "Volodymyr Mnih Koray Kavukcuoglu David Silver Alex Graves Ioannis "
 "Antonoglou Daan Wierstra Martin Riedmille"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:37
+#: of renom_rl.discrete.dqn.DQN:38
 msgid "**Playing Atari with Deep Reinforcement Learning**"
 msgstr ""
 
-#: of renom_rl.discrete.dqn.DQN:38
+#: of renom_rl.discrete.dqn.DQN:39
 msgid "https://arxiv.org/abs/1312.5602"
 msgstr ""
 
@@ -97,17 +92,9 @@ msgstr "与えられた状態(state)に応じた行動を返す."
 msgid "A state of an environment."
 msgstr "環境の状態."
 
-#: of renom_rl.discrete.dqn.DQN.action renom_rl.discrete.dqn.DQN.test
-msgid "Returns"
-msgstr "戻り値"
-
-#: of renom_rl.discrete.dqn.DQN.action:6
+#: of renom_rl.discrete.dqn.DQN.action:7
 msgid "Action."
 msgstr "行動"
-
-#: of renom_rl.discrete.dqn.DQN.action renom_rl.discrete.dqn.DQN.test
-msgid "Return type"
-msgstr "戻り値の型"
 
 #: of renom_rl.discrete.dqn.DQN.update:1
 msgid "This function updates target network."
@@ -227,7 +214,16 @@ msgstr ""
 msgid "If True is given, BaseEnv.render() method will be called."
 msgstr "Trueが与えられた時, BaseEnv.render()メソッドが呼ばれます."
 
-#: of renom_rl.discrete.dqn.DQN.test:10
+#: of renom_rl.discrete.dqn.DQN.test:11
 msgid "Sum of rewards."
 msgstr "獲得報酬の総和"
+
+#~ msgid "Parameters"
+#~ msgstr ""
+
+#~ msgid "Returns"
+#~ msgstr "戻り値"
+
+#~ msgid "Return type"
+#~ msgstr "戻り値の型"
 
