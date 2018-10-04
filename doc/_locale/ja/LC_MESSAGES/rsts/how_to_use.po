@@ -127,7 +127,7 @@ msgid ""
 "implemetation can be done as shown below:"
 msgstr ""
 "例えば CustomEnv() というオブジェクトを新たに作るとしたら、CustomEnv の概略は以下のよ"
-"うになる。"
+"うになります。"
 
 #: ../../rsts/how_to_use.rst:115
 msgid "2-Model Preparation"

@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the ReNomRL package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2018-10-03 18:00+0900\n"
+"PO-Revision-Date: 2018-10-03 17:56+0900\n"
+"Last-Translator: \n"
+"Language: ja\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,85 +23,59 @@ msgid "Installation"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:4
-msgid "You have to take following steps to use ReNom in your environment."
-msgstr ""
+msgid "ReNom RL can be downloaded from the URL below."
+msgstr "ReNom RL は以下のURL からダウンロード可能です。"
 
 #: ../../rsts/installation/main.rst:6
-msgid "Install the python(we cofirm the operation in python 2.7 and python 3.4)"
-msgstr ""
-
-#: ../../rsts/installation/main.rst:7
-msgid "Install the ReNom environment"
-msgstr ""
-
-#: ../../rsts/installation/main.rst:9
-msgid ""
-"First, you have to install the python. There are many web pages that "
-"explain how to intall the python. And, you can download ReNom from "
-"following link."
-msgstr ""
-
-#: ../../rsts/installation/main.rst:13
-msgid "URL: https://github.com/ReNom-dev-team/ReNom"
+msgid "URL: https://github.com/ReNom-dev-team/ReNomRL.git"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:15
-msgid "If you already installed the GPU environments."
-msgstr ""
+msgid ""
+"OpenAI’s Gym are frequently used in tutorials, problem solving, etc. We "
+"recommend you download it."
+msgstr "また Open AIのgym を利用する場面が多くあります。ダウンロードすることを推奨します。"
 
-#: ../../rsts/installation/main.rst:24
-msgid "If you did not set the GPU environments."
-msgstr ""
-
-#: ../../rsts/installation/main.rst:32
-msgid "**Requirements**"
-msgstr ""
-
-#: ../../rsts/installation/main.rst:34
-msgid "ReNom requires following libraries."
+#: ../../rsts/installation/main.rst:17
+msgid ""
+"Reference: https://qiita.com/ishizakiiii/items/75bc2176a1e0b65bdd16 "
+"https://github.com/openai/gym#installation"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:36
-msgid "Linux / Ubuntu"
-msgstr ""
-
-#: ../../rsts/installation/main.rst:37
-msgid "Python 2.7, 3.4"
+msgid "**Requirements**"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:38
-msgid "Numpy 1.13.0, 1.12.1 http://www.numpy.org/"
+msgid "Python 2.7 3.6"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:39
-msgid "cuDNN 5.1 https://developer.nvidia.com/cudnn"
+msgid "ReNom DL"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:40
-msgid "CUDA ToolKit 8.0 https://developer.nvidia.com/cuda-toolkit"
+msgid "OpenAI Gym"
 msgstr ""
 
 #: ../../rsts/installation/main.rst:41
-msgid "bottle 0.12.13 https://bottlepy.org/docs/dev/"
+msgid "Homebrew (For OSX)"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:42
-msgid "matplotlib 2.0.2 https://matplotlib.org"
-msgstr ""
+#~ msgid "Reference:"
+#~ msgstr ""
 
-#: ../../rsts/installation/main.rst:43
-msgid "networkx 1.11 https://networkx.github.io"
-msgstr ""
+#~ msgid ""
+#~ "https://qiita.com/ishizakiiii/items/75bc2176a1e0b65bdd16 "
+#~ "https://github.com/openai/gym#installation"
+#~ msgstr ""
 
-#: ../../rsts/installation/main.rst:44
-msgid "pandas 0.20.3 http://pandas.pydata.org"
-msgstr ""
+#~ msgid ""
+#~ "*Requirements* -       Python 2.7 3.6 -"
+#~ "       ReNom DL -       OpenAI Gym -"
+#~ "       Homebrew (For OSX)"
+#~ msgstr ""
 
-#: ../../rsts/installation/main.rst:45
-msgid "scikit-learn 0.18.2 http://scikit-learn.org/stable/"
-msgstr ""
-
-#: ../../rsts/installation/main.rst:46
-msgid "scipy https://www.scipy.org"
-msgstr ""
+#~ msgid "*Requirements*"
+#~ msgstr ""
 

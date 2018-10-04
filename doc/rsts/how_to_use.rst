@@ -4,7 +4,7 @@ How to Use
 Overview
 -----------------
 
-When using neural networks in reinforcement learning, neural network is used as an agent with multiple signals as input and action as output. However, due to the difference in problems users are facing( such as what information the agent acquires from the environment, or what types of actions are required ) we should not only define the agent structure, but also the environment as well. 
+When using neural networks in reinforcement learning, neural network is used as an agent with multiple signals as input and action as output. However, due to the difference in problems users are facing( such as what information the agent acquires from the environment, or what types of actions are required ) we should not only define the agent structure, but also the environment as well.
 
 ReNom RL has multiple built-in algorithm, such as DQN, A3C etc. When implementing reinforcement learning with ReNom RL, the following 3 actions are required:
 
@@ -32,11 +32,11 @@ Implementing Environment from Scratch
 
 When creating an original environment, the object must be inherited, overwriting the variables and the function as mentioned below:
 
-* **Action shape:** the shape of action
+* **action shape:** the shape of action
 * **state shape:** the shape of state
-* **Reset():** the function that resets the environment
-* **Sample():** the function that chooses random action
-* **Step():** the function that outputs state, reward, terminal when taking a step
+* **reset():** the function that resets the environment
+* **sample():** the function that chooses random action
+* **step():** the function that outputs state, reward, terminal when taking a step
 
 For example, when creating an original environment called CustomEnv(), the implemetation can be done as shown below:
 
@@ -44,11 +44,11 @@ For example, when creating an original environment called CustomEnv(), the imple
 
     import gym
     from renom_rl.environ import BaseEnv
-    
+
     env = gym.make('BreakoutNoFrameskip-v4')
-    
+
     class CustomEnv(BaseEnv):
-        
+
         def __init__(self, env):
             self.env = env
             self.action_shape = 4
@@ -57,7 +57,7 @@ For example, when creating an original environment called CustomEnv(), the imple
             self._reset_flag = True
             self._last_live = 5
             super(CustomEnv, self).__init__()
-            
+
         def reset(self):
             if self._reset_flag:
                 self._reset_flag = False
@@ -66,13 +66,13 @@ For example, when creating an original environment called CustomEnv(), the imple
             for _ in range(n_step):
                 state, _, _ = self.step(self.env.action_space.sample())
             return state
-            
+
         def sample(self):
             return self.env.action_space.sample()
-            
+
         def render(self):
             self.env.render()
-            
+
         def _preprocess(self, state):
             resized_image = Image.fromarray(state).resize((84, 110)).convert('L')
             image_array = np.asarray(resized_image)/255.
@@ -80,7 +80,7 @@ For example, when creating an original environment called CustomEnv(), the imple
             # Confirm that the image is processed correctly.
             # Image.fromarray(np.clip(final_image.reshape(84, 84)*255, 0, 255).astype(np.uint8)).save("test.png")
             return final_image
-            
+
         def step(self, action):
             state_list = []
             reward_list = []
@@ -100,16 +100,16 @@ For example, when creating an original environment called CustomEnv(), the imple
                         self._reset_flag = True
                 if t:
                     terminal = True
-                    
+
             if len(self.previous_frames) > 3:
                 self.previous_frames = self.previous_frames[1:] + [state]
             else:
                 self.previous_frames += [state]
             state = np.stack(self.previous_frames)
             return state, np.array(np.sum(reward_list) > 0), terminal
-            
+
     new_env=CustomEnv()
-    
+
 
 2-Model Preparation
 -----------------
@@ -118,16 +118,16 @@ In this section, we use ReNom DL to build a model. Define the model as shown bel
 
 .. code-block:: python
 
-    q_network = rm.Sequential([rm.Conv2d(32, filter=8, stride=4, ignore_bias=True),
+    q_network = rm.Sequential([rm.Conv2d(32, filter=8, stride=4),
                                rm.Relu(),
-                               rm.Conv2d(64, filter=4, stride=2, ignore_bias=True),
+                               rm.Conv2d(64, filter=4, stride=2),
                                rm.Relu(),
-                               rm.Conv2d(64, filter=3, stride=1, ignore_bias=True),
-                               rm.Relu(), 
-                               rm.Flatten(), 
-                               rm.Dense(512, ignore_bias=True),
+                               rm.Conv2d(64, filter=3, stride=1),
                                rm.Relu(),
-                               rm.Dense(custom_env.action_shape, ignore_bias=True)])
+                               rm.Flatten(),
+                               rm.Dense(512),
+                               rm.Relu(),
+                               rm.Dense(custom_env.action_shape)])
 
 3-Implementation of Reinforcement Learning
 -----------------
@@ -136,14 +136,9 @@ After preparing the environment and the model, we now implement using a certain 
 
 .. code-block:: python
 
-    set_cuda_active(True)
-    model = DQN(custom_env, q_network)
     import renom as rm
-    import matplotlib.pyplot as plt
-    from renom.cuda import set_cuda_active
     from renom_rl.discrete.dqn import DQN
 
-    set_cuda_active(True)
     model = DQN(custom_env, q_network)
 
 After finishing the model, we run the module by implementing as shown below:
@@ -153,6 +148,3 @@ After finishing the model, we run the module by implementing as shown below:
     result = model.fit(render=False, greedy_step=1000000, random_step=5000, update_period=10000)
 
 By implement as shown above, we can run DQN. For more information, please refer the API page on environment, and other algorithms.
-
-
-
