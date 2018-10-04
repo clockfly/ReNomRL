@@ -4,6 +4,7 @@
 
 ### Requirements
 
+- Linux / Ubuntu
 -	Python 2.7 3.6
 -	ReNom DL 2.6.1
 - numpy 1.14.5
