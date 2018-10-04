@@ -7,6 +7,6 @@ requires = [
 setup(
     install_requires=requires,
     name="renom_rl",
-    version="0.0beta",
+    version="0.0.0b",
     packages=find_packages(),
 )
