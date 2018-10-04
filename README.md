@@ -1,13 +1,24 @@
-# ReNomRL Reinforcement Learning Modules
+# ReNomRL beta0.0 - Reinforcement Learning Modules
 
-ReNomRL provides not only python RL modules but also
-Matlab modules and environments.
+!!(URL of renom.jp)
 
-If you only use ReNomRL with python, following modules are required.
+### Requirements
+!!(Write module name and version)
+- 
+
+### Install
 
 
-And RL needs `environment` which is a space that RL agent does try and error.
-The python module OpenAI gym is suitable for trying RL algorithm.
+### Uninstall
 
-You can install it from following URL.  
-https://github.com/openai/gym
+
+#### Install with pip
+
+
+#### Install from source
+
+
+#### License
+“ReNom” is provided by GRID inc., as subscribed software.  By downloading ReNom, you are agreeing to be bound by our ReNom Subscription agreement between you and GRID inc.
+To use ReNom for commercial purposes, you must first obtain a paid license. Please contact us or one of our resellers.  If you are an individual wishing to use ReNom for academic, educational and/or product evaluation purposes, you may use ReNom royalty-free.
+The ReNom Subscription agreements are subject to change without notice. You agree to be bound by any such revisions. You are responsible for visiting www.renom.jp to determine the latest terms to which you are bound.
