@@ -17,7 +17,7 @@ done
 if [ "$FLG_A" = "TRUE" ]; then
     echo "Update po files."
     make gettext
-    sphinx-intl update -p _build/locale -l ja -l id
+    sphinx-intl update -p _build/locale -l ja
 fi
 
 if [ "$FLG_B" = "TRUE" ]; then
