@@ -70,7 +70,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ReNomRL'
-copyright = u'2017, grid'
+copyright = u'2018, grid'
 author = u'grid'
 
 # The version info for the project you're documenting, acts as replacement for
