@@ -103,8 +103,53 @@ class BaseEnv(object):
         """
         raise NotImplementedError("Please override `reset` method.")
 
-    def render(self):
-        """Rendering method.
-        If you want to render environment states, please override this method.
+    ## change def()
+    def terminate(self):
+        """This is optional.
+        In some cases, users want to terminate learning for certain conditions.
+        By overriding this function, you will able to terminate the learning process
+        once a certain condition is met. The return value is False by default.
+        """
+        return False
+
+    def train_start(self):
+        """ This is optional.
+        This method will be called when training starts.
+        """
+        pass
+
+    def train_epoch(self):
+        """ This is optional.
+        This method will be called when epoch is reset.
+        """
+        pass
+
+    def train_step(self):
+        """ This is optional.
+        This method will be called when epoch_step is processed.
+        """
+        pass
+
+    def train_close(self):
+        """ This is optional.
+        This method will be called when train is closed.
+        """
+        pass
+
+    def test_start(self):
+        """ This is optional.
+        This method will be called when test is starting.
+        """
+        pass
+
+    def test_step(self):
+        """ This is optional.
+        This method will be called when test_step is processed.
+        """
+        pass
+
+    def test_close(self):
+        """ This is optional.
+        This method will be called when test is done.
         """
         pass
