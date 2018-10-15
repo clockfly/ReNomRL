@@ -11,6 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
+from renom_rl.function.epsilon import EpsilonUpdate
 
 
 class DQN(AgentBase):
@@ -75,6 +76,7 @@ class DQN(AgentBase):
         self.loss_func = loss_func
         self._optimizer = optimizer
         self.gamma = gamma
+        self.epsilon_update=None
 
         # Check Env class type.
         if isinstance(env, BaseEnv):
@@ -158,6 +160,9 @@ class DQN(AgentBase):
         self._best_q_network.copy_params(self._q_network)
         self._rec_copy(self._best_q_network, self._q_network)
 
+    def epsilon_setting(self, mode="step_0", **kwargs):
+        self.epsilon_update = EpsilonUpdate(mode, **kwargs)
+
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0,
             max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
@@ -182,7 +187,7 @@ class DQN(AgentBase):
             random_step (int): Number of random step which will be executed before training.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
-            train_frequency (int): For the learning step, training is done at this cycle
+            uency (int): For the learning step, training is done at this cycle
             min_greedy (int): Minimum greedy value
             max_greedy (int): Maximum greedy value
             greedy_step (int): Number of step
@@ -210,8 +215,13 @@ class DQN(AgentBase):
             ...
 
         """
-        greedy = min_greedy
-        g_step = (max_greedy - min_greedy) / greedy_step
+
+        greedy_update = self.epsilon_update if self.epsilon_update is not None\
+            else EpsilonUpdate(mode="step_0",initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step)
+            
+        assert isinstance(greedy_update,EpsilonUpdate), "Check the greedy update function"
+
+        greedy=greedy_update.init()
 
         print("Run random {} step for storing experiences".format(random_step))
 
@@ -240,12 +250,13 @@ class DQN(AgentBase):
             loss=0
 
             for j in range(epoch_step):
+
                 action=self.greedy_epsilon(state,greedy)
 
                 next_state, reward, terminal = self.env.step(action)
 
-                greedy += g_step
-                greedy = np.clip(greedy, min_greedy, max_greedy)
+                greedy = greedy_update.push()
+
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
@@ -301,6 +312,7 @@ class DQN(AgentBase):
                 tq.update(1)
 
                 if self.env.terminate():
+                    print("terminated")
                     break
 
             else:
