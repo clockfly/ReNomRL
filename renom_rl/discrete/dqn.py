@@ -375,4 +375,4 @@ class DQN(AgentBase):
                     self.env.reset()
 
         self.env.test_close()
-        return sum_rewad
+        return sum_reward
