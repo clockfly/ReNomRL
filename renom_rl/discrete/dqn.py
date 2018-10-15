@@ -126,6 +126,14 @@ class DQN(AgentBase):
         self._q_network.set_models(inference=True)
         return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
 
+    def greedy_epsilon(self,state,greedy=0.95):
+            if greedy > np.random.rand():  # and state is not None:
+                action = self.action(state)
+            else:
+                action = self.env.sample()
+
+            return action
+
     def _walk_model(self, model):
         yield self
         for k, v in sorted(self.__dict__.items(), key=lambda x: x[0]):
@@ -190,12 +198,12 @@ class DQN(AgentBase):
             ...    # Define network here.
             ... ])
             >>> model = DQN(Breakout(), q_network)
-            >>> 
+            >>>
             >>> @model.event.end_epoch
             >>> def callback(epoch, ddqn, train_rew, test_rew, avg_loss):
-            ... # This function will be called end of each epoch. 
-            ... 
-            >>> 
+            ... # This function will be called end of each epoch.
+            ...
+            >>>
             >>> model.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
             epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
@@ -229,14 +237,10 @@ class DQN(AgentBase):
             train_sum_rewards_in_each_episode = []
             tq = tqdm(range(epoch_step))
             state = self.env.reset()
+            loss=0
 
             for j in range(epoch_step):
-                if greedy > np.random.rand():  # and state is not None:
-                    self._q_network.set_models(inference=True)
-                    action = np.argmax(np.atleast_2d(self._q_network(
-                        state[None, ...]).as_ndarray()), axis=1)
-                else:
-                    action = self.env.sample()
+                action=self.greedy_epsilon(state,greedy)
 
                 next_state, reward, terminal = self.env.step(action)
 
@@ -335,10 +339,7 @@ class DQN(AgentBase):
 
         if test_step is None:
             while True:
-                if test_greedy > np.random.rand():
-                    action = self.action(state)
-                else:
-                    action = self.env.sample()
+                action=self.greedy_epsilon(state,test_greedy)
 
                 state, reward, terminal = self.env.step(action)
 
@@ -351,10 +352,7 @@ class DQN(AgentBase):
                     break
         else:
             for j in range(test_step):
-                if test_greedy > np.random.rand():
-                    action = self.action(state)
-                else:
-                    action = self.env.sample()
+                action=self.greedy_epsilon(state,test_greedy)
 
                 state, reward, terminal = self.env.step(action)
 
