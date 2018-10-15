@@ -300,6 +300,16 @@ class DQN(AgentBase):
                 tq.set_description(msg)
                 tq.update(1)
 
+                if self.env.terminate():
+                    break
+
+            else:
+                continue
+            tq.update(0)
+            tq.refresh()
+            tq.close()
+            break
+
             # Calc
             avg_error = train_loss / (j + 1)
             avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
@@ -335,6 +345,7 @@ class DQN(AgentBase):
             (int): Sum of rewards.
         """
         sum_reward = 0
+        self.env.test_start()
         state = self.env.reset()
 
         if test_step is None:
@@ -345,11 +356,11 @@ class DQN(AgentBase):
 
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_step()
 
                 if terminal:
                     break
+
         else:
             for j in range(test_step):
                 action=self.greedy_epsilon(state,test_greedy)
@@ -358,10 +369,10 @@ class DQN(AgentBase):
 
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_step()
 
                 if terminal:
                     self.env.reset()
 
-        return sum_reward
+        self.env.test_close()
+        return sum_rewad
