@@ -2,15 +2,15 @@ import numpy as np
 
 class EpsilonUpdate(object):
 
-    def __init__(self, mode="step_0", **kwargs):
+    def __init__(self, mode="step_linear", **kwargs):
 
         self.f_dictionary={
-            "step_0":self.by_step_0,
-            "episode_0":self.by_episode_0
+            "step_linear":self._step_linear,
+            "episode_base":self._episode_base,
         }
 
         # set "step_0" by default
-        self.func=self.f_dictionary[mode] if mode in self.f_dictionary else self.f_dictionary["step_0"]
+        self.func=self.f_dictionary[mode] if mode in self.f_dictionary else self.f_dictionary["step_linear"]
 
 
         #creating obj as instance
@@ -19,14 +19,24 @@ class EpsilonUpdate(object):
         #setting greedy as initial constant
         self.greedy=kwargs["initial"]
 
+
     def init(self):
+        """ Initializer
+        This initialize the greedy.
+        """
         self.greedy=self.ref["initial"]
         return self.greedy
 
     def push(self):
+        """ Pusher
+        This push and updates the greed value.
+        """
         return self.func()
 
-    def by_step_0(self):
+    def _step_linear(self):
+        """
+        Linear Incrementing function.
+        """
         ref=self.ref
         max=ref["max"]
         min=ref["min"]
@@ -36,16 +46,15 @@ class EpsilonUpdate(object):
 
         return self.greedy
 
-
-
-    def by_episode_0(self):
+    def _episode_base(self):
+        """
+        episode based increment function.
+        """
         ref=self.ref
-        max=ref["max"]
-        min=ref["min"]
-        greedy_step=ref["greedy_step"]
+        alpha=np.clip(ref["alpha"],0,1)
         episode=ref["nth_episode"]
 
-        self.greedy=self._clip(greedy+(max-min)/greedy_step*episode)
+        self.greedy=self._clip(1-1/(1+episode*alpa))
 
         return self.greedy
 

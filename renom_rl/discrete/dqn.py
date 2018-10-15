@@ -217,8 +217,8 @@ class DQN(AgentBase):
         """
 
         greedy_update = self.epsilon_update if self.epsilon_update is not None\
-            else EpsilonUpdate(mode="step_0",initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step)
-            
+            else EpsilonUpdate(mode="step_linear",initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step)
+
         assert isinstance(greedy_update,EpsilonUpdate), "Check the greedy update function"
 
         greedy=greedy_update.init()
