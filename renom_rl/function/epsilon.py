@@ -83,15 +83,16 @@ class EpsilonUpdate(object):
         Linear Incrementing function.
         """
         ref=self.ref
-        max=ref["max"]
-        min=ref["min"]
-        greedy_step=ref["greedy_step"]
+        max=self.max
+        min=self.min
+        greedy_step=self.greedy_step
 
         self.greedy += (max-min)/greedy_step
 
         self.greedy = self._clip(self.greedy)
 
         return self.greedy
+
 
     def _episode_base(self,**var):
         """

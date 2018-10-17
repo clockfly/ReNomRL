@@ -46,6 +46,19 @@ class EpsilonGreedy(object):
 
         return action_f
 
+
+    def test(self,action, env, **var):
+
+        greedy = var["greedy"]
+
+        if greedy > np.random.rand():  # and state is not None:
+            action_f = action
+        else:
+            action_f = env.sample()
+
+        return action_f
+
+
     def value(self):
 
         return self.epsilon.value()
