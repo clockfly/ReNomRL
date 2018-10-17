@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function
 
-__version__ == "0.0.0b"
+__version__ = "0.0.0b"
 
 
 class AgentBase(object):
