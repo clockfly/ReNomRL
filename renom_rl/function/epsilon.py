@@ -57,7 +57,10 @@ class EpsilonUpdate(object):
         self.ref=kwargs
 
         #setting greedy as initial constant
-        self.greedy=kwargs["initial"]
+        self.greedy=kwargs["initial"] if "initial" in self.ref else 0
+        self.min=kwargs["min"] if "min" in self.ref else 0
+        self.max=kwargs["max"] if "max" in self.ref else 1
+        self.greedy_step=kwargs["greedy_step"] if "greedy_step" in self.ref else 250000
 
 
     def init(self):
@@ -67,15 +70,15 @@ class EpsilonUpdate(object):
         self.greedy=self.ref["initial"]
         return self.greedy
 
-    def push(self):
-        """ Pusher
+    def update(self,**var):
+        """ Updater
         This push and updates the greed value. The required variables depend on the mode of function.
         """
-        return self.func()
+        return self.func(**var)
 
 
 
-    def _step_linear(self):
+    def _step_linear(self,**var):
         """step linear
         Linear Incrementing function.
         """
@@ -84,19 +87,21 @@ class EpsilonUpdate(object):
         min=ref["min"]
         greedy_step=ref["greedy_step"]
 
-        self.greedy = self._clip(self.greedy+(max-min)/greedy_step)
+        self.greedy += (max-min)/greedy_step
+
+        self.greedy = self._clip(self.greedy)
 
         return self.greedy
 
-    def _episode_base(self):
+    def _episode_base(self,**var):
         """
         episode based increment function.
         """
         ref=self.ref
         alpha=np.clip(ref["alpha"],0,1)
-        episode=ref["episode"]
+        episode=var["episode"]
 
-        self.greedy=self._clip(1-1/(1+episode*alpa))
+        self.greedy=self._clip(1-1/(1+episode*alpha))
 
         return self.greedy
 
@@ -106,5 +111,12 @@ class EpsilonUpdate(object):
         """
         clipping function
         """
-        greedy = np.clip(greedy, self.ref["min"], self.ref["max"])
+        greedy = np.clip(greedy, self.min, self.max)
         return greedy
+
+
+    def value(self):
+        """
+        returns value
+        """
+        return self.greedy
