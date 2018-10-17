@@ -190,12 +190,12 @@ class DQN(AgentBase):
             ...    # Define network here.
             ... ])
             >>> model = DQN(Breakout(), q_network)
-            >>> 
+            >>>
             >>> @model.event.end_epoch
             >>> def callback(epoch, ddqn, train_rew, test_rew, avg_loss):
-            ... # This function will be called end of each epoch. 
-            ... 
-            >>> 
+            ... # This function will be called end of each epoch.
+            ...
+            >>>
             >>> model.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
             epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
@@ -248,37 +248,38 @@ class DQN(AgentBase):
                 sum_reward += reward
                 state = next_state
 
-                if len(self._buffer) > batch_size:
-                    train_prestate, train_action, train_reward, train_state, train_terminal = \
-                        self._buffer.get_minibatch(batch_size)
+                if j % train_frequency == 0 and j:
+                    if len(self._buffer) > batch_size:
+                        train_prestate, train_action, train_reward, train_state, train_terminal = \
+                            self._buffer.get_minibatch(batch_size)
 
-                    self._q_network.set_models(inference=True)
-                    self._target_q_network.set_models(inference=True)
+                        self._q_network.set_models(inference=True)
+                        self._target_q_network.set_models(inference=True)
 
-                    target = self._q_network(train_prestate).as_ndarray()
+                        target = self._q_network(train_prestate).as_ndarray()
 
-                    target.setflags(write=True)
-                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
-                    value = np.amax(self._target_q_network(train_state).as_ndarray(),
-                                    axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
+                        target.setflags(write=True)
+                        max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
+                        value = np.amax(self._target_q_network(train_state).as_ndarray(),
+                                        axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
 
-                    for i in range(batch_size):
-                        a = train_action[i, 0].astype(np.integer)
-                        target[i, a] = train_reward[i] + value[i]
+                        for i in range(batch_size):
+                            a = train_action[i, 0].astype(np.integer)
+                            target[i, a] = train_reward[i] + value[i]
 
-                    self._q_network.set_models(inference=False)
-                    with self._q_network.train():
-                        z = self._q_network(train_prestate)
-                        ls = self.loss_func(z, target)
-                    ls.grad().update(self._optimizer)
-                    loss = np.sum(ls.as_ndarray())
-                    train_loss += loss
+                        self._q_network.set_models(inference=False)
+                        with self._q_network.train():
+                            z = self._q_network(train_prestate)
+                            ls = self.loss_func(z, target)
+                        ls.grad().update(self._optimizer)
+                        loss = np.sum(ls.as_ndarray())
+                        train_loss += loss
 
-                    if count % update_period == 0 and count:
-                        max_reward_in_each_update_period = -np.Inf
-                        self.update()
-                        count = 0
-                    count += 1
+                        if count % update_period == 0 and count:
+                            max_reward_in_each_update_period = -np.Inf
+                            self.update()
+                            count = 0
+                        count += 1
 
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
