@@ -1,6 +1,4 @@
 import numpy as np
-from .epsilon import EpsilonUpdate
-
 
 class ActionFilter(object):
     """

@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.function.filter import EpsilonGreedyFilter, ConstantFilter, ActionFilter
+from renom_rl.utility.filter import EpsilonGreedyFilter, ConstantFilter, ActionFilter
 
 
 class DQN(AgentBase):
