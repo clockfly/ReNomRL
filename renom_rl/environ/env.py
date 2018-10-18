@@ -103,7 +103,7 @@ class BaseEnv(object):
         """
         raise NotImplementedError("Please override `reset` method.")
 
-    ## change def()
+    # change def()
     def terminate(self):
         """This is optional.
         In some cases, users want to terminate learning for certain conditions.
@@ -112,25 +112,19 @@ class BaseEnv(object):
         """
         return False
 
-    def train_start(self):
+    def start(self):
         """ This is optional.
         This method will be called when training starts.
         """
         pass
 
-    def train_epoch(self):
+    def epoch(self):
         """ This is optional.
         This method will be called when epoch is reset.
         """
         pass
 
-    def train_step(self):
-        """ This is optional.
-        This method will be called when epoch_step is processed.
-        """
-        pass
-
-    def train_close(self):
+    def close(self):
         """ This is optional.
         This method will be called when train is closed.
         """
@@ -140,16 +134,16 @@ class BaseEnv(object):
         """ This is optional.
         This method will be called when test is starting.
         """
-        pass
+        self.starts
 
     def test_step(self):
         """ This is optional.
         This method will be called when test_step is processed.
         """
-        pass
+        self.step()
 
     def test_close(self):
         """ This is optional.
         This method will be called when test is done.
         """
-        pass
+        self.close()

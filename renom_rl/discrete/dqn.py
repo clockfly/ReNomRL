@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.function.filter import EpsilonGreedy
+from renom_rl.function.filter import EpsilonGreedyFilter, ConstantFilter, ActionFilter
 
 
 class DQN(AgentBase):
@@ -76,9 +76,7 @@ class DQN(AgentBase):
         self.loss_func = loss_func
         self._optimizer = optimizer
         self.gamma = gamma
-        self.epsilon_update=None
-        self.action_filter=None
-        self.action_filter_test=None
+        self.epsilon_update = None
 
         # Check Env class type.
         if isinstance(env, BaseEnv):
@@ -117,7 +115,7 @@ class DQN(AgentBase):
         self._target_q_network(np.random.randn(1, *self._state_shape))
         self._q_network.copy_params(self._target_q_network)
 
-    def action_step(self, state):
+    def action(self, state):
         """This method returns an action according to the given state.
 
         Args:
@@ -129,25 +127,6 @@ class DQN(AgentBase):
         """
         self._q_network.set_models(inference=True)
         return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
-
-    # def greedy_epsilon(self,state,greedy=0.95):
-    #         if greedy > np.random.rand():  # and state is not None:
-    #             action = self.action(state)
-    #         else:
-    #             action = self.env.sample()
-    #
-    #         return action
-
-    def action(self, state, **var):
-        action = self.action_step(state)
-        return self.action_filter(action, self.env, **var)
-
-    def action_test(self, state, **var):
-        action = self.action_step(state)
-        return self.action_filter_test.test(action, self.env, **var)
-
-    # def action_setting(self,filter="epsilon_greedy",**kwargs):
-    #     self.action_filter=ActionFilter(filter,**kwargs)
 
     def _walk_model(self, model):
         yield self
@@ -177,7 +156,7 @@ class DQN(AgentBase):
         self.epsilon_update = EpsilonUpdate(mode, **kwargs)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4, filter_obj = None, render=False, callback_end_epoch=None, **kwargs):
+            test_step=2000, update_period=10000, train_frequency=4, action_filter=None, test_action_filter=None, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -228,21 +207,15 @@ class DQN(AgentBase):
 
         """
 
-        min_greedy = kwargs["min_greedy"] if "min_greedy" in kwargs else 0
-        max_greedy = kwargs["max_greedy"] if "max_greedy" in kwargs else 0.9
-        greedy_step = kwargs["greedy_step"] if "greedy_step" in kwargs else 250000
-
         # action filter is set
-        self.action_filter = EpsilonGreedy(initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step) \
-                            if filter_obj is None else filter_obj
+        if action_filter is None:
+            action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
+                                          greedy_step=int(0.8 * epoch * epoch_step))
+        assert isinstance(action_filter, ActionFilter)
 
-        # action filter during test is the same as action filter
-        self.action_filter_test = self.action_filter
-
-        #
-        # assert isinstance(greedy_update,EpsilonUpdate), "Check the greedy update function"
-        #
-        # greedy=greedy_update.init()
+        if test_action_filter is None:
+            test_action_filter = ConstantFilter(threshold=0.95)
+        assert isinstance(test_action_filter, ActionFilter)
 
         print("Run random {} step for storing experiences".format(random_step))
 
@@ -261,6 +234,8 @@ class DQN(AgentBase):
         max_reward_in_each_update_period = -np.Inf
 
         count = 0
+        step_count = 0
+        episode_count = 0
         for e in range(1, epoch + 1):
             sum_reward = 0
             train_loss = 0
@@ -268,16 +243,13 @@ class DQN(AgentBase):
             train_sum_rewards_in_each_episode = []
             tq = tqdm(range(epoch_step))
             state = self.env.reset()
-            loss=0
+            loss = 0
 
             for j in range(epoch_step):
-
-                action=self.action(state, episode=nth_episode, step= j)
-
-                greedy=self.action_filter.value()
+                action = action_filter(self.action(state), self.env.sample(),
+                                       step=step_count, episode=episode_count, epoch=e)
 
                 next_state, reward, terminal = self.env.step(action)
-
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
@@ -323,15 +295,13 @@ class DQN(AgentBase):
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
+                    episode_count
                     self.env.reset()
-                msg = "greedy{:.4f} epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
-                    .format(greedy,e, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
+                msg = "epoch {:04d} greedy{:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
+                    .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
 
-                # msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
-                #     .format(e, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
-                #             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
-
+                step_count += 1
                 tq.set_description(msg)
                 tq.update(1)
 
@@ -368,7 +338,7 @@ class DQN(AgentBase):
             tq.refresh()
             tq.close()
 
-    def test(self, test_step=None , filter_obj=None, **kwargs):
+    def test(self, test_step=None, action_filter=None, **kwargs):
         """
         Test the trained agent.
 
@@ -380,12 +350,10 @@ class DQN(AgentBase):
         Returns:
             (int): Sum of rewards.
         """
-        #if filter_obj argument was specified, the change the object
-        self.action_filter_test = self.action_filter_test if filter_obj is None else filter_obj
-
-        #if test was conducted with no fitting
-        self.action_filter_test = EpsilonGreedy(initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step) \
-                            if self.action_filter_test  is None else self.action_filter_test
+        # if filter_obj argument was specified, the change the object
+        if action_filter is None:
+            # This means full greedy policy.
+            action_filter = ConstantFilter(threshold=1.0)
 
         sum_reward = 0
         self.env.test_start()
@@ -393,12 +361,10 @@ class DQN(AgentBase):
 
         if test_step is None:
             while True:
-                action=self.action_test(state,**kwargs)
+                action = action_filter(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
-
                 sum_reward += float(reward)
-
                 self.env.test_step()
 
                 if terminal:
@@ -406,7 +372,7 @@ class DQN(AgentBase):
 
         else:
             for j in range(test_step):
-                action=self.action_test(state,**kwargs)
+                action = action_filter(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 

@@ -1,64 +1,58 @@
 import numpy as np
 from .epsilon import EpsilonUpdate
 
+
 class ActionFilter(object):
     """
 
     """
-    def __init__(self, filter="epsilon_greedy", **kwargs):
 
-        self.f_dictionary={
-            "epsilon_greedy":EpsilonGreedy,
-        }
-
-        self.obj=self.f_dictionary[filter](**kwargs)
-        self.filter=filter
-
-        # set "step_0" by default
-
-    def __call__(self, action, env, **var):
-        return self.obj(action,env,**var)
-
-    def value(self):
-        return self.obj.value()
+    def __call__(self, action_greedy, action_random,
+                 step=None, eposode=None, epoch=None):
+        raise NotImplemented
 
 
-
-
-class EpsilonGreedy(object):
+class EpsilonGreedyFilter(ActionFilter):
     """
     """
-    def __init__(self,**kwargs):
 
-        self.epsilon=EpsilonUpdate(**kwargs)
+    def __init__(self, initial, min, max, step):
+        self.initial = initial
+        self.max = max
+        self.min = min
+        self.step_size = (max - min) / step
 
-        self.kwargs=kwargs
-
-
-    def __call__(self,action,env,**var):
-
-        greedy=self.epsilon.update(**var)
-
-        if greedy > np.random.rand():  # and state is not None:
-            action_f = action
+    def __call__(self, greedy_action, random_action,
+                 step=None, episode=None, epoch=None):
+        """
+        Args:
+            greedy_action(float)
+            random_action(float)
+        """
+        assert step is not None, \
+            "Please give the `step` argument to EpsilonGreedyFilter.__call__."
+        greedy_ratio = np.clip(self.step_size * step + self.min, self.min, self.max)
+        if np.random.rand() < greedy_ratio:
+            return greedy_action
         else:
-            action_f = env.sample()
-
-        return action_f
+            return random_action
 
 
-    def test(self,action, env, **var):
+class ConstantFilter(ActionFilter):
+    """
+    """
 
-        greedy = var["greedy"]
+    def __init__(self, threshold):
+        self.th = threshold
 
-        if greedy > np.random.rand():  # and state is not None:
-            action_f = action
+    def __call__(self, greedy_action, random_action,
+                 step=None, episode=None, epoch=None):
+        """
+        Args:
+            action_greedy(float)
+            action_random(float)
+        """
+        if np.random.rand() < self.th:
+            return greedy_action
         else:
-            action_f = env.sample()
-
-        return action_f
-
-
-    def value(self):
-
-        return self.epsilon.value()
+            return random_action

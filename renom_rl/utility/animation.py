@@ -3,6 +3,7 @@ from JSAnimation.IPython_display import display_animation
 from matplotlib import animation
 from IPython.display import display
 
+
 class Animation(object):
     """Animation Class.
 
@@ -32,40 +33,41 @@ class Animation(object):
         ...
     """
 
-    def __init__(self,dpi=72.0,ratio=72.0):
-        self.frames=[]
-        self.dpi=dpi
-        self.ratio=ratio
+    def __init__(self, dpi=72.0, ratio=72.0):
+        self.frames = []
+        self.dpi = dpi
+        self.ratio = ratio
 
     def __len__(self):
         return len(self.frames)
 
-    def store(self,frame):
+    def store(self, frame):
         """
         This function stores the image (render) data to a lists.
         append image with the same size.
         """
         self.frames.append(frame)
 
-    def run(self,reset=False):
+    def run(self, reset=False):
         """
         This function creates the animation. The animation frame size is based on the first element of the stored image.
         Users can use the reset option in order to reset the stored image. Note that only the stored image will reset
         but the animation will be kept. If you redo this function with reset=True, you will get an error.
         """
-        assert len(self)>0,"No length"
-        frame_r=self.frames
+        assert len(self) > 0, "No length"
+        frame_r = self.frames
 
-        plt.figure(figsize=(frame_r[0].shape[1]/self.ratio, frame_r[0].shape[0]/self.ratio), dpi=self.dpi)
-        image=plt.imshow(frame_r[0])
+        plt.figure(figsize=(frame_r[0].shape[1] / self.ratio,
+                            frame_r[0].shape[0] / self.ratio), dpi=self.dpi)
+        image = plt.imshow(frame_r[0])
         plt.axis("off")
 
         def animate(i):
             image.set_data(frame_r[i])
 
-        anim=animation.FuncAnimation(plt.gcf(),animate,frames=len(frame_r),interval=50)
+        anim = animation.FuncAnimation(plt.gcf(), animate, frames=len(frame_r), interval=50)
 
-        #anim.save("movie_cartpole.mp4")
+        # anim.save("movie_cartpole.mp4")
         display(display_animation(anim))
 
         if reset:
@@ -75,4 +77,4 @@ class Animation(object):
         """
         This function resets the list of stored image.
         """
-        self.frames=[]
+        self.frames = []
