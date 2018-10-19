@@ -29,6 +29,9 @@ def check_reset_method(func, action, state):
 class BaseEnv(object):
     """Base class of environment.
     The methods `step`, `reset` and `sample` must be overridden.
+    Users can override `start`, `epoch`, `epoch_step`, `close`, `test_start`, `test_epoch_step`, `test_close`.
+    If  `test_start`, `test_epoch_step`, `test_close` are not defined, then they will use the same function as `start`, `epoch_step`, `close`.
+    Note that these functions are only used to execute, thus arguments can not be implemented (excluding `reset`).
 
     Example:
         >>> import numpy as np
@@ -39,12 +42,14 @@ class BaseEnv(object):
         ...         state_shape = (86, 86)
         ...
         ...     def step(self, action):
+        ...         state, reward, terminal = func(action)
         ...         return state, reward, terminal
         ...
         ...     def sample(self):
         ...         return self.step(np.random.randInt(0, 5))[0]
         ...
         ...     def reset(self):
+        ...         initial_state=func.reset()
         ...         return initial_state
         ...
     """
@@ -114,33 +119,44 @@ class BaseEnv(object):
 
     def start(self):
         """ This is optional.
-        This method will be called when training starts.
+        This method will be called when fit function starts.
+        This will execute after `reset`.
         """
         pass
 
     def epoch(self):
         """ This is optional.
-        This method will be called when epoch is reset.
+        This method will be called when epoch is updated.
+        This will execute after `reset`.
+        """
+        pass
+
+    def epoch_step(self):
+        """ This is optional.
+        This method will be called when epoch_step is reset.
+        This will execute after `step`.
         """
         pass
 
     def close(self):
         """ This is optional.
-        This method will be called when train is closed.
+        This method will be called when fit is closed.
         """
         pass
 
     def test_start(self):
         """ This is optional.
         This method will be called when test is starting.
+        This will execute after `reset`.
         """
-        self.starts
+        self.start()
 
-    def test_step(self):
+    def test_epoch_step(self):
         """ This is optional.
-        This method will be called when test_step is processed.
+        This method will be called when epoch is reset.
+        This will execute after `reset`.
         """
-        self.step()
+        self.epoch_step()
 
     def test_close(self):
         """ This is optional.
