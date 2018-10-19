@@ -112,7 +112,7 @@ class BaseEnv(object):
     def terminate(self):
         """This is optional.
         In some cases, users want to terminate learning for certain conditions.
-        By overriding this function, you will able to terminate the learning process
+        By overriding this function, users will able to terminate the learning process
         once a certain condition is met. The return value is False by default.
         """
         return False
