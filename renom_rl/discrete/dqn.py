@@ -156,9 +156,9 @@ class DQN(AgentBase):
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4,
-            action_filter=None, test_action_filter=None, render=False, callback_end_epoch=None):
+            action_filter=None, test_action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
-        Training will be done with epsilon-greedy method.
+        Training will be done with epsilon-greedy method as the base.
 
         You can define following callback functions.
 
@@ -178,17 +178,14 @@ class DQN(AgentBase):
             random_step (int): Number of random step which will be executed before training.
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
-            uency (int): For the learning step, training is done at this cycle
-            min_greedy (int): Minimum greedy value
-            max_greedy (int): Maximum greedy value
-            greedy_step (int): Number of step
-            test_greedy (int): Greedy threshold
-            render (bool): If True is given, BaseEnv.render() method will be called in test time.
+            train_frequency (int): For the learning step, training is done at this cycle
+            action_filter (ActionFilter): Exploartion filter during learning. Default is `EpsilonGreedyFilter`.
+            test_action_filter(ActionFilter): Exploartion filter after 1 epoch of learning. Default is `ConstantFilter(threshold=0.95)`.
 
         Example:
             >>> import renom as rm
             >>> from renom_rl.discrete.dqn import DQN
-            >>> from renom_rl.environ.openai import Breakout
+            >>> from renom_rl.environ.openai import CartPole
             >>>
             >>> q_network = rm.Sequential([
             ...    # Define network here.
@@ -371,9 +368,8 @@ class DQN(AgentBase):
         Test the trained agent.
 
         Args:
-            test_step (int, None): Number of steps for test. If None is given, this method tests just 1 episode.
-            test_greedy (float): Greedy ratio of action.
-            render (bool): If True is given, BaseEnv.render() method will be called.
+            test_step (int, None): Number of steps (not episodes) for test. If None is given, this method tests execute only 1 episode.
+            action_filter (ActionFilter): Exploartion filter during test. Default is `ConstantFilter(threshold=1.0)`.
 
         Returns:
             (int): Sum of rewards.
