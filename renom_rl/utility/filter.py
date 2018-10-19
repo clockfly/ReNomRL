@@ -165,9 +165,9 @@ class ConstantFilter(ActionFilter):
         Args:
             greedy_action(float): action that is outputted from the agent.
             random_action(float): random action variable. Variable used from BaseEnv.sample.
-            step: total accumulated steps (irrelevent to episodes)
-            episode: total accumulated episodes (irrelevent to epoch)
-            epoch: epoch steps
+            step(int): total accumulated steps (irrelevent to episodes)
+            episode(int): total accumulated episodes (irrelevent to epoch)
+            epoch(int): epoch steps
         """
         if np.random.rand() < self.th:
             return greedy_action
