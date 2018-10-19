@@ -86,13 +86,13 @@ class DQN(AgentBase):
             raise Exception("Argument env must be a object of BaseEnv class.")
 
         # Check state and action shape
-        # assert state_shape == self.env.reset().shape, \
-        #     "Expected state shape is {} but accual is {}".format(
-        #         state_shape, self.env.reset().shape)
+        assert state_shape == self.env.reset().shape, \
+            "Expected state shape is {} but acctual is {}".format(
+                state_shape, self.env.reset().shape)
 
         action = self._q_network(np.zeros((1, *state_shape))).as_ndarray()
-        # assert action.shape[1:] == action_shape, \
-        #     "Expected action shape is {} but accual is {}".format(action_shape, action.shape[1:])
+        assert action.shape[1:] == action_shape, \
+            "Expected action shape is {} but acctual is {}".format(action_shape, action.shape[1:])
 
         self._action_shape = action_shape
         self._state_shape = state_shape
@@ -135,6 +135,7 @@ class DQN(AgentBase):
                 yield self._walk_model(v)
 
     def _rec_copy(self, obj1, obj2):
+        """This function copies the batch normalization parameters"""
         for item_keys in obj1.__dict__.keys():
             if isinstance(obj1.__dict__[item_keys], rm.BatchNormalize):
                 obj1.__dict__[item_keys]._mov_mean = obj2.__dict__[item_keys]._mov_mean
@@ -152,11 +153,10 @@ class DQN(AgentBase):
         self._best_q_network.copy_params(self._q_network)
         self._rec_copy(self._best_q_network, self._q_network)
 
-    def epsilon_setting(self, mode="step_0", **kwargs):
-        self.epsilon_update = EpsilonUpdate(mode, **kwargs)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4, action_filter=None, test_action_filter=None, render=False, callback_end_epoch=None):
+            test_step=2000, update_period=10000, train_frequency=4,
+            action_filter=None, test_action_filter=None, render=False, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -207,19 +207,25 @@ class DQN(AgentBase):
 
         """
 
-        # action filter is set
+        # action filter is set, if not exist then make an instance
         if action_filter is None:
             action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
                                           greedy_step=int(0.8 * epoch * epoch_step))
         assert isinstance(action_filter, ActionFilter)
 
+        # test action filter is set, if not exist then make an instance
         if test_action_filter is None:
             test_action_filter = ConstantFilter(threshold=0.95)
         assert isinstance(test_action_filter, ActionFilter)
 
+        #random step phase
         print("Run random {} step for storing experiences".format(random_step))
 
         state = self.env.reset()
+
+        #env start(after reset)
+        self.env.start()
+
         for i in range(1, random_step + 1):
             action = self.env.sample()
             next_state, reward, terminal = self.env.step(action)
@@ -233,9 +239,12 @@ class DQN(AgentBase):
         # History of Learning
         max_reward_in_each_update_period = -np.Inf
 
-        count = 0
-        step_count = 0
-        episode_count = 0
+
+        count = 0 #update period
+        step_count = 0 #steps
+        episode_count = 0 #episodes
+
+        # 1 epoch stores multiple epoch steps thus 1 epoch can hold multiple episodes
         for e in range(1, epoch + 1):
             sum_reward = 0
             train_loss = 0
@@ -245,49 +254,63 @@ class DQN(AgentBase):
             state = self.env.reset()
             loss = 0
 
+            #env epoch
+            self.env.epoch()
+
             for j in range(epoch_step):
+
+                #set action
                 action = action_filter(self.action(state), self.env.sample(),
                                        step=step_count, episode=episode_count, epoch=e)
+                greedy = action_filter.value()
 
+                #pass it to env
                 next_state, reward, terminal = self.env.step(action)
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
+               #env epoch step
+                self.env.epoch_step()
+
                 sum_reward += reward
                 state = next_state
+                if j % train_frequency == 0 and j:
+                    if len(self._buffer) > batch_size:
+                        train_prestate, train_action, train_reward, train_state, train_terminal = \
+                            self._buffer.get_minibatch(batch_size)
 
-                if len(self._buffer) > batch_size:
-                    train_prestate, train_action, train_reward, train_state, train_terminal = \
-                        self._buffer.get_minibatch(batch_size)
+                        #getting q values as target reference
+                        self._q_network.set_models(inference=True)
+                        self._target_q_network.set_models(inference=True)
 
-                    self._q_network.set_models(inference=True)
-                    self._target_q_network.set_models(inference=True)
+                        target = self._q_network(train_prestate).as_ndarray()
 
-                    target = self._q_network(train_prestate).as_ndarray()
+                        target.setflags(write=True)
+                        max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
+                        value = np.amax(self._target_q_network(train_state).as_ndarray(),
+                                        axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
 
-                    target.setflags(write=True)
-                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
-                    value = np.amax(self._target_q_network(train_state).as_ndarray(),
-                                    axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
+                        #getting target value
+                        for i in range(batch_size):
+                            a = train_action[i, 0].astype(np.integer)
+                            target[i, a] = train_reward[i] + value[i]
 
-                    for i in range(batch_size):
-                        a = train_action[i, 0].astype(np.integer)
-                        target[i, a] = train_reward[i] + value[i]
+                        #train
+                        self._q_network.set_models(inference=False)
+                        with self._q_network.train():
+                            z = self._q_network(train_prestate)
+                            ls = self.loss_func(z, target)
+                        ls.grad().update(self._optimizer)
+                        loss = np.sum(ls.as_ndarray())
+                        train_loss += loss
 
-                    self._q_network.set_models(inference=False)
-                    with self._q_network.train():
-                        z = self._q_network(train_prestate)
-                        ls = self.loss_func(z, target)
-                    ls.grad().update(self._optimizer)
-                    loss = np.sum(ls.as_ndarray())
-                    train_loss += loss
+                        if count % update_period == 0 and count:
+                            max_reward_in_each_update_period = -np.Inf
+                            self.update()
+                            count = 0
+                        count += 1
 
-                    if count % update_period == 0 and count:
-                        max_reward_in_each_update_period = -np.Inf
-                        self.update()
-                        count = 0
-                    count += 1
-
+                #terminal reset
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
                         self.update_best_q_network()
@@ -295,7 +318,8 @@ class DQN(AgentBase):
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
-                    episode_count
+                    episode_count +=1
+
                     self.env.reset()
                 msg = "epoch {:04d} greedy{:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
@@ -305,6 +329,7 @@ class DQN(AgentBase):
                 tq.set_description(msg)
                 tq.update(1)
 
+                #if terminate executes, then do execute "continue"
                 if self.env.terminate():
                     print("terminated")
                     break
@@ -320,7 +345,7 @@ class DQN(AgentBase):
             avg_error = train_loss / (j + 1)
             avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
             summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-            summed_test_reward = self.test(test_step, test_greedy, render)
+            summed_test_reward = self.test(test_step,action_filter=test_action_filter)
 
             self._append_history(e, avg_error, avg_train_reward,
                                  summed_train_reward, summed_test_reward)
@@ -338,6 +363,9 @@ class DQN(AgentBase):
             tq.refresh()
             tq.close()
 
+            #env close
+            self.env.close()
+
     def test(self, test_step=None, action_filter=None, **kwargs):
         """
         Test the trained agent.
@@ -350,6 +378,7 @@ class DQN(AgentBase):
         Returns:
             (int): Sum of rewards.
         """
+
         # if filter_obj argument was specified, the change the object
         if action_filter is None:
             # This means full greedy policy.
@@ -361,24 +390,26 @@ class DQN(AgentBase):
 
         if test_step is None:
             while True:
-                action = action_filter(self.action(state), self.env.sample())
+                action = action_filter.test(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
+
                 sum_reward += float(reward)
-                self.env.test_step()
+
+                self.env.test_epoch_step()
 
                 if terminal:
                     break
 
         else:
             for j in range(test_step):
-                action = action_filter(self.action(state), self.env.sample())
+                action = action_filter.test(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
                 sum_reward += float(reward)
 
-                self.env.test_step()
+                self.env.test_epoch_step()
 
                 if terminal:
                     self.env.reset()
