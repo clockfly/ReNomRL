@@ -1,8 +1,10 @@
 import numpy as np
 
 class ActionFilter(object):
-    """
-    This is the parent object of action.
+    """Action Filter
+    This is the object of action filter. Action Filter allows the Angent to explore instead of being deterministic.
+    Objects such as epsilon greedy have this as its parent object. Users will get an error if this was not used as the filter.
+    `__call__``test``value` are required.
     """
 
     def __call__(self, action_greedy, action_random,
@@ -17,8 +19,44 @@ class ActionFilter(object):
 
 
 class EpsilonGreedyFilter(ActionFilter):
-    """
+    """Epsilon Greedy Filter
+    This objects allow you to change the epsilon function. These are implemented in RL framework.
+    By specifying the greedy mode ("step_linear","episode_base" etc.), you can change the epsilon mode.
+    All functions are in the range of min and max.
 
+    Args:
+        mode (string): mode of learning.
+        **kwargs: parameters such as `min`, `max`, `greedy_step`, `episode`, `alpha`, `test_greedy`
+
+    Example:
+        >>> update = EpsilonUpdate(mode="step_linear",initial=min_greedy,min=min_greedy,max=max_greedy,greedy_step=greedy_step)
+        >>> greedy = update.init()
+        >>> greedy = update.push()
+
+    what is `test_greedy`:
+        test
+
+    Mode:
+
+        :mode: step_linear
+        :required variables: `initial`,`min`,`max`,`greedy_step`
+        :function:
+            .. math::
+
+                \epsilon_{t+1}=\epsilon_{t}+\frac{(max-min)}{greedy_step}
+
+        :note: t = step.
+
+        ---------
+
+        :mode: episode_inverse
+        :required variables: `initial`,`min`,`max`,`alpha`
+        :function:
+            .. math::
+
+                \epsilon_{t+1}= 1 - \frac{1}{(1+ episode * alpa)}
+
+        ---------
     """
 
     def __init__(self, **kwargs):
@@ -51,8 +89,11 @@ class EpsilonGreedyFilter(ActionFilter):
                  step=None, episode=None, epoch=None):
         """
         Args:
-            greedy_action(float)
-            random_action(float)
+            greedy_action(float): action that is outputted from the agent.
+            random_action(float): random action variable. Variable used from BaseEnv.sample.
+            step: total accumulated steps (irrelevent to episodes)
+            episode: total accumulated episodes (irrelevent to epoch)
+            epoch: epoch steps
         """
 
         assert step is not None, \
@@ -68,7 +109,12 @@ class EpsilonGreedyFilter(ActionFilter):
 
 
     def test(self,greedy_action, random_action):
-
+        """
+        Args:
+            greedy_action(float): action that is outputted from the agent.
+            random_action(float): random action variable. Variable used from BaseEnv.sample.
+            `test_greedy` argument is required.
+        """
         greedy_ratio = self.test_greedy
         self.greedy=greedy_ratio
 
@@ -79,6 +125,9 @@ class EpsilonGreedyFilter(ActionFilter):
 
 
     def value(self):
+        """
+        Outputs the epsilon value
+        """
         return self.greedy
 
     def _step_linear(self,step, episode, epoch):
@@ -102,7 +151,8 @@ class EpsilonGreedyFilter(ActionFilter):
 
 
 class ConstantFilter(ActionFilter):
-    """
+    """Constant Filter
+    This objects allow you to output the agents action with constant epislon.
     """
 
     def __init__(self, threshold):
@@ -113,8 +163,11 @@ class ConstantFilter(ActionFilter):
                  step=None, episode=None, epoch=None):
         """
         Args:
-            action_greedy(float)
-            action_random(float)
+            greedy_action(float): action that is outputted from the agent.
+            random_action(float): random action variable. Variable used from BaseEnv.sample.
+            step: total accumulated steps (irrelevent to episodes)
+            episode: total accumulated episodes (irrelevent to epoch)
+            epoch: epoch steps
         """
         if np.random.rand() < self.th:
             return greedy_action
@@ -122,6 +175,12 @@ class ConstantFilter(ActionFilter):
             return random_action
 
     def test(self,greedy_action, random_action):
+
+        """
+        Args:
+            greedy_action(float): action that is outputted from the agent.
+            random_action(float): random action variable. Variable used from BaseEnv.sample.
+        """
 
         if np.random.rand() < self.th:
             return greedy_action
