@@ -151,7 +151,8 @@ class DoubleDQN(AgentBase):
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0,
-            max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False, callback_end_epoch=None):
+            action_filter=None,callback_end_epoch=None):
+            # max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False,
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method.
 
@@ -189,20 +190,27 @@ class DoubleDQN(AgentBase):
             ...    # Define network here.
             ... ])
             >>> model = DoubleDQN(Breakout(), q_network)
-            >>> 
+            >>>
             >>> @model.event.end_epoch
             >>> def callback(epoch, ddqn, train_rew, test_rew, avg_loss):
-            ... # This function will be called end of each epoch. 
-            ... 
-            >>> 
+            ... # This function will be called end of each epoch.
+            ...
+            >>>
             >>> model.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
             epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
             ...
 
         """
-        greedy = min_greedy
-        g_step = (max_greedy - min_greedy) / greedy_step
+        # greedy = min_greedy
+        # g_step = (max_greedy - min_greedy) / greedy_step
+
+        # action filter is set, if not exist then make an instance
+        if action_filter is None:
+            action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
+                                          greedy_step=int(0.8 * epoch * epoch_step))
+
+        assert isinstance(action_filter, ActionFilter)
 
         print("Run random {} step for storing experiences".format(random_step))
 
@@ -220,7 +228,10 @@ class DoubleDQN(AgentBase):
         # History of Learning
         max_reward_in_each_update_period = -np.Inf
 
-        count = 0
+        count = 0 #update period
+        step_count = 0 #steps
+        episode_count = 0 #episodes
+
         for e in range(1, epoch + 1):
             sum_reward = 0
             train_loss = 0
@@ -228,19 +239,26 @@ class DoubleDQN(AgentBase):
             train_sum_rewards_in_each_episode = []
             tq = tqdm(range(epoch_step))
             state = self.env.reset()
+            loss=0
+
 
             for j in range(epoch_step):
-                if greedy > np.random.rand():  # and state is not None:
-                    self._q_network.set_models(inference=True)
-                    action = np.argmax(np.atleast_2d(self._q_network(
-                        state[None, ...]).as_ndarray()), axis=1)
-                else:
-                    action = self.env.sample()
+                # if greedy > np.random.rand():  # and state is not None:
+                #     self._q_network.set_models(inference=True)
+                #     action = np.argmax(np.atleast_2d(self._q_network(
+                #         state[None, ...]).as_ndarray()), axis=1)
+                # else:
+                #     action = self.env.sample()
+
+                #set action
+                action = action_filter(self.action(state), self.env.sample(),
+                                       step=step_count, episode=episode_count, epoch=e)
+                greedy = action_filter.value()
 
                 next_state, reward, terminal = self.env.step(action)
 
-                greedy += g_step
-                greedy = np.clip(greedy, min_greedy, max_greedy)
+                # greedy += g_step
+                # greedy = np.clip(greedy, min_greedy, max_greedy)
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
@@ -299,7 +317,7 @@ class DoubleDQN(AgentBase):
             avg_error = train_loss / (j + 1)
             avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
             summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-            summed_test_reward = self.test(test_step, test_greedy, render)
+            summed_test_reward = self.test(test_step,action_filter)
 
             self._append_history(e, avg_error, avg_train_reward,
                                  summed_train_reward, summed_test_reward)
@@ -317,7 +335,7 @@ class DoubleDQN(AgentBase):
             tq.refresh()
             tq.close()
 
-    def test(self, test_step=None, test_greedy=0.95, render=False):
+    def test(self, test_step=None, action_filter=None, **kwargs):
         """
         Test the trained agent.
 
@@ -329,15 +347,19 @@ class DoubleDQN(AgentBase):
         Returns:
             (int): Sum of rewards.
         """
+        # if filter_obj argument was specified, the change the object
+        if action_filter is None:
+            # This means full greedy policy.
+            action_filter = ConstantFilter(threshold=1.0)
+
+        assert isinstace(action_filter,ActionFilter)
+
         sum_reward = 0
         state = self.env.reset()
 
         if test_step is None:
             while True:
-                if test_greedy > np.random.rand():
-                    action = self.action(state)
-                else:
-                    action = self.env.sample()
+                action = action_filter.test(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
@@ -350,10 +372,7 @@ class DoubleDQN(AgentBase):
                     break
         else:
             for j in range(test_step):
-                if test_greedy > np.random.rand():
-                    action = self.action(state)
-                else:
-                    action = self.env.sample()
+                action = action_filter.test(self.action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
