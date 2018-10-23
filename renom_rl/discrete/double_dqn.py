@@ -273,38 +273,38 @@ class DoubleDQN(AgentBase):
 
                 sum_reward += reward
                 state = next_state
+                if j % train_frequency == 0 and j:
+                    if len(self._buffer) > batch_size:
+                        train_prestate, train_action, train_reward, train_state, train_terminal = \
+                            self._buffer.get_minibatch(batch_size)
 
-                if len(self._buffer) > batch_size:
-                    train_prestate, train_action, train_reward, train_state, train_terminal = \
-                        self._buffer.get_minibatch(batch_size)
+                        self._q_network.set_models(inference=True)
+                        self._target_q_network.set_models(inference=True)
 
-                    self._q_network.set_models(inference=True)
-                    self._target_q_network.set_models(inference=True)
+                        target = self._q_network(train_prestate).as_ndarray()
 
-                    target = self._q_network(train_prestate).as_ndarray()
+                        target.setflags(write=True)
+                        max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
+                        value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
+                                                                                  max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
 
-                    target.setflags(write=True)
-                    max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
-                    value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
-                                                                              max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
+                        for i in range(batch_size):
+                            a = train_action[i, 0].astype(np.integer)
+                            target[i, a] = train_reward[i] + value[i]
 
-                    for i in range(batch_size):
-                        a = train_action[i, 0].astype(np.integer)
-                        target[i, a] = train_reward[i] + value[i]
+                        self._q_network.set_models(inference=False)
+                        with self._q_network.train():
+                            z = self._q_network(train_prestate)
+                            ls = self.loss_func(z, target)
+                        ls.grad().update(self._optimizer)
+                        loss = np.sum(ls.as_ndarray())
+                        train_loss += loss
 
-                    self._q_network.set_models(inference=False)
-                    with self._q_network.train():
-                        z = self._q_network(train_prestate)
-                        ls = self.loss_func(z, target)
-                    ls.grad().update(self._optimizer)
-                    loss = np.sum(ls.as_ndarray())
-                    train_loss += loss
-
-                    if count % update_period == 0 and count:
-                        max_reward_in_each_update_period = -np.Inf
-                        self.update()
-                        count = 0
-                    count += 1
+                        if count % update_period == 0 and count:
+                            max_reward_in_each_update_period = -np.Inf
+                            self.update()
+                            count = 0
+                        count += 1
 
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
