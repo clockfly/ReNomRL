@@ -154,7 +154,7 @@ class DoubleDQN(AgentBase):
             action_filter=None,callback_end_epoch=None):
             # max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False,
         """This method executes training of a q-network.
-        Training will be done with epsilon-greedy method.
+        Training will be done with epsilon-greedy method(default).
 
         You can define following callback functions.
 
@@ -175,11 +175,8 @@ class DoubleDQN(AgentBase):
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
             train_frequency (int): For the learning step, training is done at this cycle.
-            min_greedy (int): Minimum greedy value
-            max_greedy (int): Maximum greedy value
-            greedy_step (int): Number of step
-            test_greedy (int): Greedy threshold
-            render (bool): If True is given, BaseEnv.render() method will be called in test time.
+            action_filter (ActionFilter): Exploartion filter during learning. Default is `EpsilonGreedyFilter`.
+
 
         Example:
             >>> import renom as rm
@@ -212,6 +209,7 @@ class DoubleDQN(AgentBase):
 
         assert isinstance(action_filter, ActionFilter)
 
+        #random step phase
         print("Run random {} step for storing experiences".format(random_step))
 
         state = self.env.reset()
@@ -236,6 +234,7 @@ class DoubleDQN(AgentBase):
         step_count = 0 #steps
         episode_count = 0 #episodes
 
+        # 1 epoch stores multiple epoch steps thus 1 epoch can hold multiple episodes
         for e in range(1, epoch + 1):
             sum_reward = 0
             train_loss = 0
@@ -261,6 +260,7 @@ class DoubleDQN(AgentBase):
                                        step=step_count, episode=episode_count, epoch=e)
                 greedy = action_filter.value()
 
+                #pass it to env
                 next_state, reward, terminal = self.env.step(action)
 
                 # greedy += g_step
@@ -278,20 +278,24 @@ class DoubleDQN(AgentBase):
                         train_prestate, train_action, train_reward, train_state, train_terminal = \
                             self._buffer.get_minibatch(batch_size)
 
+                        #getting q values as target reference
                         self._q_network.set_models(inference=True)
                         self._target_q_network.set_models(inference=True)
 
                         target = self._q_network(train_prestate).as_ndarray()
 
+                        #dqn feature here
                         target.setflags(write=True)
                         max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                         value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
                                                                                   max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
 
+                        #getting target value
                         for i in range(batch_size):
                             a = train_action[i, 0].astype(np.integer)
                             target[i, a] = train_reward[i] + value[i]
 
+                        #train
                         self._q_network.set_models(inference=False)
                         with self._q_network.train():
                             z = self._q_network(train_prestate)
@@ -306,6 +310,7 @@ class DoubleDQN(AgentBase):
                             count = 0
                         count += 1
 
+                #terminal reset
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
                         self.update_best_q_network()
@@ -366,9 +371,8 @@ class DoubleDQN(AgentBase):
         Test the trained agent.
 
         Args:
-            test_step (int, None): Number of steps for test. If None is given, this method tests just 1 episode.
-            test_greedy (float): Greedy ratio of action.
-            render (bool): If True is given, BaseEnv.render() method will be called.
+            test_step (int, None): Number of steps (not episodes) for test. If None is given, this method tests execute only 1 episode.
+            action_filter (ActionFilter): Exploartion filter during test. Default is `ConstantFilter(threshold=1.0)`.
 
         Returns:
             (int): Sum of rewards.
@@ -396,6 +400,7 @@ class DoubleDQN(AgentBase):
 
                 if terminal:
                     break
+
         else:
             for j in range(test_step):
                 action = action_filter.test(self.action(state), self.env.sample())
@@ -409,4 +414,5 @@ class DoubleDQN(AgentBase):
                 if terminal:
                     self.env.reset()
 
+        self.env.test_close()
         return sum_reward

@@ -158,7 +158,7 @@ class DQN(AgentBase):
             test_step=2000, update_period=10000, train_frequency=4,
             action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
-        Training will be done with epsilon-greedy method as the base.
+        Training will be done with epsilon-greedy method(default).
 
         You can define following callback functions.
 
