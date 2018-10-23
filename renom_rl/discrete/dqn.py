@@ -179,7 +179,7 @@ class DQN(AgentBase):
             test_step (int): Number of test step.
             update_period (int): Period of updating target network.
             train_frequency (int): For the learning step, training is done at this cycle
-            action_filter (ActionFilter): Exploartion filter during learning. Default is `EpsilonGreedyFilter`.
+            action_filter (ActionFilter): Exploration filter during learning. Default is `EpsilonGreedyFilter`.
 
         Example:
             >>> import renom as rm
