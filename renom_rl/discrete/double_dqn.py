@@ -215,6 +215,10 @@ class DoubleDQN(AgentBase):
         print("Run random {} step for storing experiences".format(random_step))
 
         state = self.env.reset()
+
+        #env start(after reset)
+        self.env.start()
+
         for i in range(1, random_step + 1):
             action = self.env.sample()
             next_state, reward, terminal = self.env.step(action)
@@ -241,6 +245,8 @@ class DoubleDQN(AgentBase):
             state = self.env.reset()
             loss=0
 
+            #env epoch
+            self.env.epoch()
 
             for j in range(epoch_step):
                 # if greedy > np.random.rand():  # and state is not None:
@@ -261,6 +267,9 @@ class DoubleDQN(AgentBase):
                 # greedy = np.clip(greedy, min_greedy, max_greedy)
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
+
+               #env epoch step
+                self.env.epoch_step()
 
                 sum_reward += reward
                 state = next_state
@@ -304,14 +313,28 @@ class DoubleDQN(AgentBase):
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
+                    episode_count +=1
+
                     self.env.reset()
 
                 msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
-
+                step_count += 1
                 tq.set_description(msg)
                 tq.update(1)
+
+                #if terminate executes, then do execute "continue"
+                if self.env.terminate():
+                    print("terminated")
+                    break
+
+            else:
+                continue
+            tq.update(0)
+            tq.refresh()
+            tq.close()
+            break
 
             # Calc
             avg_error = train_loss / (j + 1)
@@ -335,6 +358,9 @@ class DoubleDQN(AgentBase):
             tq.refresh()
             tq.close()
 
+            #env close
+            self.env.close()
+
     def test(self, test_step=None, action_filter=None, **kwargs):
         """
         Test the trained agent.
@@ -355,6 +381,7 @@ class DoubleDQN(AgentBase):
         assert isinstace(action_filter,ActionFilter)
 
         sum_reward = 0
+        self.env.test_start()
         state = self.env.reset()
 
         if test_step is None:
@@ -365,8 +392,7 @@ class DoubleDQN(AgentBase):
 
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_epoch_step()
 
                 if terminal:
                     break
@@ -378,8 +404,7 @@ class DoubleDQN(AgentBase):
 
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_epoch_step()
 
                 if terminal:
                     self.env.reset()
