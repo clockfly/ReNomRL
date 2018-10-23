@@ -156,7 +156,7 @@ class DQN(AgentBase):
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4,
-            action_filter=None, test_action_filter=None, callback_end_epoch=None):
+            action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method as the base.
 
@@ -180,7 +180,6 @@ class DQN(AgentBase):
             update_period (int): Period of updating target network.
             train_frequency (int): For the learning step, training is done at this cycle
             action_filter (ActionFilter): Exploartion filter during learning. Default is `EpsilonGreedyFilter`.
-            test_action_filter(ActionFilter): Exploartion filter after 1 epoch of learning. Default is `ConstantFilter(threshold=0.95)`.
 
         Example:
             >>> import renom as rm
@@ -209,11 +208,6 @@ class DQN(AgentBase):
             action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
                                           greedy_step=int(0.8 * epoch * epoch_step))
         assert isinstance(action_filter, ActionFilter)
-
-        # test action filter is set, if not exist then make an instance
-        if test_action_filter is None:
-            test_action_filter = ConstantFilter(threshold=0.95)
-        assert isinstance(test_action_filter, ActionFilter)
 
         #random step phase
         print("Run random {} step for storing experiences".format(random_step))
@@ -342,7 +336,7 @@ class DQN(AgentBase):
             avg_error = train_loss / (j + 1)
             avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
             summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-            summed_test_reward = self.test(test_step,action_filter=test_action_filter)
+            summed_test_reward = self.test(test_step,action_filter)
 
             self._append_history(e, avg_error, avg_train_reward,
                                  summed_train_reward, summed_test_reward)
