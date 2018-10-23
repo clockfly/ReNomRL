@@ -378,7 +378,7 @@ class DoubleDQN(AgentBase):
             # This means full greedy policy.
             action_filter = ConstantFilter(threshold=1.0)
 
-        assert isinstace(action_filter,ActionFilter)
+        assert isinstance(action_filter,ActionFilter)
 
         sum_reward = 0
         self.env.test_start()
