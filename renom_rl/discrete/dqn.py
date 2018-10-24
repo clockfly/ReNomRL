@@ -205,9 +205,10 @@ class DQN(AgentBase):
 
         # action filter is set, if not exist then make an instance
         if action_filter is None:
-            action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
-                                          greedy_step=int(0.8 * epoch * epoch_step))
-        assert isinstance(action_filter, ActionFilter)
+            action_filter = EpsilonGreedyFilter(initial=0.9, min=0.0, max=0.9,
+                                          epsilon_step=int(0.8 * epoch * epoch_step))
+
+        assert isinstance(action_filter, ActionFilter),"action_filter must be a class of ActionFilter"
 
         #random step phase
         print("Run random {} step for storing experiences".format(random_step))
@@ -312,7 +313,7 @@ class DQN(AgentBase):
                     episode_count +=1
 
                     self.env.reset()
-                msg = "epoch {:04d} greedy{:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
+                msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
 
@@ -342,9 +343,9 @@ class DQN(AgentBase):
                                  summed_train_reward, summed_test_reward)
 
             msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                "avg train reward in episode:{:4.3f} e-greedy:{:4.3f}"
+                "avg train reward in episode:{:4.3f} epsilon :{:4.3f}"
             msg = msg.format(e, avg_error, summed_train_reward,
-                             summed_test_reward, avg_train_reward, greedy)
+                             summed_test_reward, avg_train_reward, epsilon)
 
             self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
                            summed_train_reward, summed_test_reward)
@@ -372,7 +373,7 @@ class DQN(AgentBase):
         # if filter_obj argument was specified, the change the object
         if action_filter is None:
             # This means full greedy policy.
-            action_filter = ConstantFilter(threshold=1.0)
+            action_filter = ConstantFilter(threshold=0.0)
 
         assert isinstance(action_filter,ActionFilter)
 
