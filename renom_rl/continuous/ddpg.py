@@ -10,9 +10,10 @@ from renom.utility.initializer import Uniform, GlorotUniform
 from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 
 from renom_rl import AgentBase
-from renom_rl.noise import OU
+# from renom_rl.noise import OU
 from renom_rl.environ import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
+from renom_rl.utility.filter import ActionNoiseFilter, OUFilter
 
 
 class DDPG(AgentBase):
@@ -139,9 +140,10 @@ class DDPG(AgentBase):
         self._actor.set_models(inference=True)
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()[0]
 
-    def fit(self, epoch=1000, epoch_step=2000, batch_size=64, random_step=5000,
-            test_step=2000, train_frequency=1, min_greedy=0.01, max_greedy=1.0,
-            greedy_step=10000, noise=OU()):
+    def fit(self, epoch=1000, epoch_step=250000, batch_size=64, random_step=5000,
+            test_step=2000, train_frequency=1,action_filter=None,
+            ):
+            # min_greedy=0.01, max_greedy=1.0, greedy_step=10000, noise=OU()):
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
 
@@ -183,7 +185,7 @@ class DDPG(AgentBase):
             ...
             >>> actor = rm.Sequential(...)
             >>> critic = Critic()
-            >>> 
+            >>>
             >>> agent = DDPG(
             ...       Pendulum(),
             ...       actor,
@@ -193,9 +195,9 @@ class DDPG(AgentBase):
             ...   )
             >>> @agent.event.end_epoch
             >>> def callback(epoch, ddpg_model, train_rew, test_rew, avg_loss):
-            ... # This function will be called end of each epoch. 
-            ... 
-            >>> 
+            ... # This function will be called end of each epoch.
+            ...
+            >>>
             >>> agent.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
             epoch 002 avg_loss:0.0006 total reward in epoch: [train:116.000 test:14.0] avg reward in episode:[train:0.284 test:0.163] e-greedy:0.900: 100%|██████████| 10000/10000 [05:53<00:00, 25.70it/s]
@@ -203,45 +205,67 @@ class DDPG(AgentBase):
 
         """
 
-        e_rate = max_greedy
-        e_step = (min_greedy - max_greedy) / greedy_step
+        # e_rate = max_greedy
+        # e_step = (min_greedy - max_greedy) / greedy_step
+        if action_filter is None:
+            action_filter = OUFilter(initial=0.9, min=0.0, max=0.9, step_mode="step_linear",
+                                            greedy_step=int(0.8 * epoch * epoch_step))
+
+        assert isinstance(action_filter, ActionNoiseFilter),"action_filter must be a class of ActionNoiseFilter"
 
         state = self.env.reset()
+
         for _ in range(1, random_step + 1):
-            if isinstance(self.env, BaseEnv):
-                action = self.env.sample()
-                next_state, reward, terminal = self.env.step(action)
-            else:
-                raise Exception("Argument env must be a object of BaseEnv class.")
+            # if isinstance(self.env, BaseEnv):
+            action = self.env.sample()
+            next_state, reward, terminal = self.env.step(action)
+            # else:
+            #     raise Exception("Argument env must be a object of BaseEnv class.")
             self._buffer.store(state, action,
                                np.array(reward), next_state, np.array(terminal))
+            state = next_state
             if terminal:
                 state = self.env.reset()
-            else:
-                state = next_state
+            # else:
+            #     state = next_state
+
+        count = 0 #update period
+        step_count = 0 #steps
+        episode_count = 0 #episodes
 
         for e in range(1, epoch + 1):
-            state = self.env.reset()
-            loss = 0.0
             sum_reward = 0.0
             sum_reward_episode = 0.0
+            nth_episode = 0
             each_episode_reward = []
             tq = tqdm(range(epoch_step))
-            for j in range(epoch_step):
-                action = self.action(state)
-                sampled_noise = noise.sample(action) * e_rate
-                action += sampled_noise
+            state = self.env.reset()
+            loss = 0.0
 
-                if isinstance(self.env, BaseEnv):
-                    next_state, reward, terminal = self.env.step(action)
+            #env epoch
+            self.env.epoch()
+
+            for j in range(epoch_step):
+                # action = self.action(state)
+                # sampled_noise = noise.sample(action) * e_rate
+                # action += sampled_noise
+
+                #set action
+                action = action_filter(self.action(state),
+                                       step=step_count, episode=episode_count, epoch=e)
+                e_rate = action_filter.value()
+
+                # if isinstance(self.env, BaseEnv):
+                next_state, reward, terminal = self.env.step(action)
 
                 self._buffer.store(state, action,
                                    np.array(reward), next_state, np.array(terminal))
+
                 sum_reward += reward
                 sum_reward_episode += reward
                 state = next_state
-                e_rate += e_step
-                e_rate = np.clip(e_rate, min_greedy, max_greedy)
+                # e_rate += e_step
+                # e_rate = np.clip(e_rate, min_greedy, max_greedy)
 
                 if len(self._buffer) > batch_size and j % train_frequency == 0:
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
@@ -278,18 +302,44 @@ class DDPG(AgentBase):
                     self.update()
 
                 sum_reward = float(sum_reward)
-                tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
-                tq.update(1)
+
+
+                # tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
+                # tq.update(1)
 
                 if terminal:
                     each_episode_reward.append(sum_reward_episode)
                     sum_reward_episode = 0.0
+                    state=self.env.reset()
+                    nth_episode += 1
+                    episode_count +=1
+                    # break
+
+                #for test
+                msg = "noise e-greedy:{:5.3f}"
+                msg = msg.format(e_rate)
+
+                step_count += 1
+                tq.set_description(msg)
+                tq.update(1)
+
+                #if terminate executes, then do execute "continue"
+                if self.env.terminate():
+                    print("terminated")
                     break
 
+            else:
+                continue
+            tq.update(0)
+            tq.refresh()
+            tq.close()
+            break
+
+            # Calc
             avg_loss = float(loss) / (j + 1)
             avg_train_reward = np.mean(each_episode_reward)
             train_reward = sum_reward
-            test_reward = self.test(test_step)
+            test_reward = self.test(test_step, action_filter)
 
             self._append_history(e, avg_loss, avg_train_reward,
                                  train_reward, test_reward)
@@ -299,6 +349,9 @@ class DDPG(AgentBase):
             msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
             msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
 
+            # msg = "action{} epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
+            # msg = msg.format(action, e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
+
             self.events.on("end_epoch",
                            e, self, train_reward, test_reward, avg_loss)
 
@@ -306,6 +359,9 @@ class DDPG(AgentBase):
             tq.update(0)
             tq.refresh()
             tq.close()
+
+            #env close
+            self.env.close()
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)
@@ -369,7 +425,7 @@ class DDPG(AgentBase):
             for k in ql.params.keys():
                 tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
-    def test(self, test_step=None, render=False):
+    def test(self, test_step=None, action_filter=None, **kwargs):
         """
         Test the trained agent.
 
@@ -380,30 +436,41 @@ class DDPG(AgentBase):
         Returns:
             (int): Sum of rewards.
         """
+        # if filter_obj argument was specified, the change the object
+        if action_filter is None:
+            # This means full greedy policy.
+            action_filter = OUFilter(test_coef=0)
+
+        assert isinstance(action_filter,ActionNoiseFilter)
+
         sum_reward = 0
+        self.env.test_start()
         state = self.env.reset()
 
         if test_step is None:
             while True:
-                action = self.action(state)
+                action = action_filter.test(self.action(state))
+
                 state, reward, terminal = self.env.step(action)
+
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_epoch_step()
 
                 if terminal:
                     break
         else:
             for j in range(test_step):
-                action = self.action(state)
+                action = action_filter.test(self.action(state))
+
                 state, reward, terminal = self.env.step(action)
+
                 sum_reward += float(reward)
 
-                if render:
-                    self.env.render()
+                self.env.test_epoch_step()
 
                 if terminal:
                     self.env.reset()
 
+        self.env.test_close()
         return sum_reward
