@@ -11,6 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
+from renom_rl.utility.filter import EpsilonGreedyFilter, ConstantFilter, ActionFilter
 
 
 class DoubleDQN(AgentBase):
@@ -152,7 +153,7 @@ class DoubleDQN(AgentBase):
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0,
             action_filter=None,callback_end_epoch=None):
-            # max_greedy=0.9, greedy_step=1000000, test_greedy=0.95, render=False,
+            # max_greedy=0.9, epsilon_step=1000000, test_greedy=0.95, render=False,
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
 
@@ -200,12 +201,12 @@ class DoubleDQN(AgentBase):
 
         """
         # greedy = min_greedy
-        # g_step = (max_greedy - min_greedy) / greedy_step
+        # g_step = (max_greedy - min_greedy) / epsilon_step
 
         # action filter is set, if not exist then make an instance
         if action_filter is None:
-            action_filter = EpsilonGreedy(initial=0.0, min=0.0, max=0.9,
-                                          greedy_step=int(0.8 * epoch * epoch_step))
+            action_filter = EpsilonGreedyFilter(initial=0.9, min=0.0, max=0.9,
+                                          epsilon_step=int(0.8 * epoch * epoch_step))
 
         assert isinstance(action_filter, ActionFilter)
 
@@ -322,8 +323,8 @@ class DoubleDQN(AgentBase):
 
                     self.env.reset()
 
-                msg = "epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
-                    .format(e, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
+                msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
+                    .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
                 step_count += 1
                 tq.set_description(msg)
@@ -380,7 +381,7 @@ class DoubleDQN(AgentBase):
         # if filter_obj argument was specified, the change the object
         if action_filter is None:
             # This means full greedy policy.
-            action_filter = ConstantFilter(threshold=1.0)
+            action_filter = ConstantFilter(threshold=0.0)
 
         assert isinstance(action_filter,ActionFilter)
 
