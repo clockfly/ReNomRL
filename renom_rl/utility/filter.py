@@ -208,6 +208,8 @@ class OUFilter(ActionNoiseFilter):
         return self.func.epsilon
 
 
+
+
 class GPFilter(ActionNoiseFilter):
     """OU Filter
     This class allow is the filter which adds GP(Gaussian Process) noise to the action. These are implemented in RL framework.
@@ -230,7 +232,7 @@ class GPFilter(ActionNoiseFilter):
         **kwargs: parameters such as `coef`,`test_coef`,`theta`,`mu`,`sigma`,`step_mode`
     """
 
-    def __init__(self, **kawrgs):
+    def __init__(self, **kwargs):
 
         kwargs["value"] = 1 if "value" not in kwargs else kwargs["value"]
         kwargs["step_mode"] = "constant" if "step_mode" not in kwargs else kwargs["step_mode"]

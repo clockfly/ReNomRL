@@ -2,7 +2,7 @@ import numpy as np
 
 
 def check_kwargs_exist(kwargs=None,*key):
-    assert all(k in kwargs for k in key), "you have set {} for this step_mode".format(key)
+    assert all(k in kwargs for k in key), "you have to set {} for this step_mode".format(key)
 
 
 
