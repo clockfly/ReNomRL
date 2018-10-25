@@ -123,10 +123,9 @@ class ActionNoiseFilter(object):
 
 
 
-
 class AddNoiseFilter(object):
     """Add Noise Filter
-    This class allows users to decide action with OU, GP noise etc.
+    This class allows users to decide action with OU, GP noise etc. with more freedom.
     The epsilon in this class is the coefficient of the noise.
     By specifying the epsilon arugments with Epsilon object, the epsilon will change (or stay the same).
     floats, int, numpy can also be used when constant is required.
@@ -182,6 +181,47 @@ class AddNoiseFilter(object):
     def value(self):
 
         return self.epsilon
+
+
+class OUFilter(AddNoiseFilter):
+    """OUFilter
+    This class allows users to use OU Filter. epsilon and test_epsilon are coefficient of the noise.
+
+    Args:
+        epsilon(Epsilon,int,float,numpy): Epsilon during learning. Default is E_Constant(1).
+        test_epsilon(Epsilon,int,float,numpy): Epsilon during test. Default is E_Constant(0).
+        mu(int,float): the value of mu in OU.
+        theta(int,float): the value of theta in OU.
+        sigma(int,float): the value of sigma in OU.
+
+    Examples:
+        >>> from renom_rl.utility.filter import OUFilter
+        >>>
+        >>> obj = OUFilter(epsilon=0.1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2)
+    """
+
+    def __init__(self, epsilon = 1, test_epsilon = 0, mu=0, theta=0.15, sigma=0.2):
+        super(OUFilter, self).__init__(epsilon, test_epsilon, OU(mu,theta,sigma))
+
+
+class GPFilter(AddNoiseFilter):
+    """GPFilter
+    This class allows users to use GP Filter. epsilon and test_epsilon are coefficient of the noise.
+
+    Args:
+        epsilon(Epsilon,int,float,numpy): Epsilon during learning. Default is E_Constant(1).
+        test_epsilon(Epsilon,int,float,numpy): Epsilon during test. Default is E_Constant(0).
+        mu(int,float): the value of mu in OU.
+        theta(int,float): the value of theta in OU.
+        sigma(int,float): the value of sigma in OU.
+
+    Examples:
+        >>> from renom_rl.utility.filter import GPFilter
+        >>>
+        >>> obj = GPFilter(epsilon=0.1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2)
+    """
+    def __init__(self, epsilon = 1, test_epsilon = 0, mean=0, std=0.1):
+        super(OUFilter, self).__init__(epsilon, test_epsilon, noise = GP(mean,std)))
 
 
 
