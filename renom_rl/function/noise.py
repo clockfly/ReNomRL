@@ -6,7 +6,15 @@ CONTINUOUS = 0
 DISCRETE = 1
 
 
-class OU(object):
+class Noise(object):
+    def __init__(self):
+        pass
+
+    def sample(self, action):
+        raise NotImplemented
+
+
+class OU(Noise):
     """
     DDPG paper ornstein-uhlenbeck noise parameters are theta=0.15, sigma=0.2
     """
