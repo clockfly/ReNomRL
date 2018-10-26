@@ -6,24 +6,24 @@ import numpy as np
 def check_reframe_epsilon(epsilon,test_epsilon):
     """Check Reframe Epsilon
     This function checks whether the arguments are Epsilon, float, int, or numpy.
-    If float, int, or numpy, then they are processed as E_Constant.
+    If float, int, or numpy, then they are processed as EpsilonC.
     """
 
     assert isinstance(epsilon,(Epsilon, float, int, np)),
                 "epsilon must be an Epsilon object or numerical value (float, int, numpy)"
-    assert isinstance(test_epsilon,(Epsilon, float, int, np)),
-                "test_epsilon must be an Epsilon object or numerical value (float, int, numpy)"
+    assert isinstance(test_epsilon,(EpsilonC, float, int, np)),
+                "test_epsilon must be an EpsilonC object or numerical value (float, int, numpy)"
 
-    epsilon = epsilon if isinstance(epsilon,Epsilon) else E_Constant(epsilon)
+    epsilon = epsilon if isinstance(epsilon,Epsilon) else EpsilonC(epsilon)
 
-    test_epsilon = test_epsilon if isinstance(test_epsilon,Epsilon) else E_Constant(test_epsilon)
+    test_epsilon = test_epsilon if isinstance(test_epsilon,EpsilonC) else EpsilonC(test_epsilon)
 
     return epsilon , test_epsilon
 
 
 def check_noise(noise):
-    """Check Reframe Epsilon
-    This function checks whether argument is noise object.
+    """Check Noise
+    This function checks if the argument is a Noise object or not.
     """
     assert isinstance(noise,Noise),
                 "noise must be a Noise object"
@@ -50,6 +50,8 @@ class ActionFilter(object):
         raise NotImplemented
 
 
+
+
 class EpsilonGreedyFilter(ActionFilter):
     """Epsilon Greedy Filter
     This class allows users to custom and decide action using epsilon greedy filter.
@@ -57,22 +59,27 @@ class EpsilonGreedyFilter(ActionFilter):
     floats, int, numpy can also be used when constant is required.
 
     Args:
-        epsilon(Epsilon,int,float,numpy): Epsilon during training. Default is E_StepLinear(1,0,1,25000).
-        test_epsilon(Epsilon,int,float,numpy): Epsilon during test. Default is E_Constant(0).
+        epsilon(Epsilon,int,float,numpy): Epsilon during training. Default is EpsilonSL(1,0,1,25000).
+        test_epsilon(EpsilonC,int,float,numpy): Epsilon during test. Default is EpsilonC(0).
 
     Examples:
-        >>> from renom_rl.utility.filter import EpsilonGreedyFilter
-        >>> from renom_rl.function.epsilon import E_EpisodeInverse
+        >>> from renom_rl.utility.filter import EpsilonGreedyFilter, EpsilonEI, EpsilonC
+        >>>
         >>>
         >>> a = EpsilonGreedyFilter(0.1,0.1)
         >>> b = EpsilonGreedyFilter(
-        ...         epsilon=E_EpisodeInverse(max=1.0,min=0,alpha=0.5),
-        ...         test_epsilon=E_EpisodeInverse(max=1.0,min=0,alpha=0.5)
+        ...         epsilon=EpsilonEI(max=1.0,min=0,alpha=0.5),
+        ...         test_epsilon=EpsilonC(0.1),
         ...         )
     """
 
-    def __init__(self, epsilon=E_StepLinear(), test_epsilon=E_Constant()):
+    def __init__(self, epsilon=None, test_epsilon=None):
 
+        #epsilon default
+        epsilon = epsilon if epsilon is not None else EpsilonSL()
+        test_epsilon = test_epsilon if test_epsilon is not None else EpsilonC()
+
+        #checking and changing datatype
         epsilon, test_epsilon = check_reframe_epsilon(epsilon,test_epsilon)
 
         self.func = epsilon
@@ -101,9 +108,10 @@ class EpsilonGreedyFilter(ActionFilter):
         return self.func.epsilon
 
 
-class StepFilter(EpsilonGreedyFilter):
-    """Step Filter
-    This class allows users to use Step Filter. Linear function is used, with step as variable, to decrease epsilon.
+class EpsilonSLFilter(EpsilonGreedyFilter):
+    """EpsilonSLFilter(Epsilon Step Linear Filter)
+    This class allows users to use Epsilon Greedy with step linear change.
+    Linear function is used, with step as variable, to decrease epsilon.
     The epsilon calculation is as follows:
 
     :math:
@@ -120,19 +128,22 @@ class StepFilter(EpsilonGreedyFilter):
         test_epsilon(float): epsilon value during test. Default is 0.
 
     Examples:
-        >>> from renom_rl.utility.filter import StepFilter
+        >>> from renom_rl.utility.filter import EpsilonSLFilter
         >>>
-        >>> obj = StepFilter(min=0,max=1,initial=0.5,test_filter=0)
+        >>> obj = EpsilonSLFilter(min=0,max=1,initial=0.5,test_filter=0)
     """
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     epsilon_step = 25000 ,test_epsilon=0):
 
-        super(StepFilter,self).__init__(E_StepLinear(initial,min,max,epsilon_step),test_epsilon)
+        epsilon = EpsilonSL(initial,min,max,epsilon_step)
+
+        super(EpsilonSLFilter,self).__init__(epsilon,test_epsilon)
 
 
-class InverseFilter(EpsilonGreedyFilter):
-    """Inverse Filter
-    This class allows users to use Episode Inverse Filter. Inverse proportion function is used, with episode as variable, to decrease epsilon.
+class EpsilonEIFilter(EpsilonGreedyFilter):
+    """EpsilonEIFilter(Epsilon Episode Inverse Filter)
+    This class allows users to use Epsilon Greedy with Epsilon episode inverse change.
+    Inverse proportion function is used, with episode as variable, to decrease epsilon.
     The epsilon calculation is as follows:
 
     :math:
@@ -148,17 +159,19 @@ class InverseFilter(EpsilonGreedyFilter):
         test_epsilon(float): epsilon value during test. Default is 0.
 
     Examples:
-        >>> from renom_rl.utility.filter import InverseFilter
+        >>> from renom_rl.utility.filter import EpsilonEIFilter
         >>>
-        >>> obj = InverseFilter(min=0,max=1,initial=0.5, alpha=1, test_filter=0)
+        >>> obj = EpsilonEIFilter(min=0,max=1,initial=0.5, alpha=1, test_filter=0)
     """
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     alpha = 1, test_epsilon = 0):
 
-        super(InverseFilter,self).__init__(E_EpisodeInverse(initial,min,max,alpha),test_epsilon)
+        epsilon = EpsilonEI(initial,min,max,alpha)
+
+        super(EpsilonEIFilter,self).__init__(epsilon,test_epsilon)
 
 
-class ConstantFilter(EpsilonGreedyFilter):
+class EpsilonCFilter(EpsilonGreedyFilter):
     """Constant Filter
     This class allows users to use Constant Filter. Constant epsilon is used.
 
@@ -168,14 +181,14 @@ class ConstantFilter(EpsilonGreedyFilter):
         test_epsilon(float): epsilon value during test. Default is 0.
 
     Examples:
-        >>> from renom_rl.utility.filter import InverseFilter
+        >>> from renom_rl.utility.filter import EpsilonCFilter
         >>>
-        >>> obj = InverseFilter(min=0,max=1,initial=0.5, alpha=1, test_filter=0)
+        >>> obj = EpsilonCFilter(epsilon=0.1, test_filter=0)
     """
 
     def __init__(self, epsilon=0.1, test_epsilon = 0):
 
-        super(ConstantFilter,self).__init__(epsilon, test_epsilon)
+        super(EpsilonCFilter,self).__init__(epsilon, test_epsilon)
 
 
 
@@ -211,23 +224,27 @@ class AddNoiseFilter(ActionNoiseFilter):
     floats, int, numpy can also be used when constant is required.
 
     Args:
-        epsilon(Epsilon,int,float,numpy): Epsilon during training. Default is E_StepLinear(1,0,1,25000).
-        test_epsilon(Epsilon,int,float,numpy): Epsilon during test. Default is E_Constant(0).
-        noise(Noise): Noise Type. Default is OU.
+        epsilon(Epsilon,int,float,numpy): Epsilon during training. Default is EpsilonSL(1,0,1,25000).
+        test_epsilon(EpsilonC,int,float,numpy): Epsilon during test. Default is EpsilonC(0).
+        noise(Noise): Noise Type. Default is OU().
 
     Examples:
         >>> from renom_rl.utility.filter import AddNoiseFilter
-        >>> from renom_rl.function.epsilon import E_EpisodeInverse
+        >>> from renom_rl.function.epsilon import EpsilonEI, EpsilonC, OU
         >>>
         >>> a = AddNoiseFilter(0.1,0.1,GP())
         >>> b = EpsilonGreedyFilter(
-        ...         epsilon = E_EpisodeInverse(max=1.0,min=0,alpha=0.5),
-        ...         test_epsilon = E_EpisodeInverse(max=1.0,min=0,alpha=0.5),
-        ...         noise = OU()
+        ...         epsilon = EpsilonEI(max=1.0,min=0,alpha=0.5),
+        ...         test_epsilon = EpsilonC(epsilon=0.1),
+        ...         noise = OU(mu=0.2)
         ...         )
     """
 
-    def __init__(self, epsilon = E_StepLinear(), test_epsilon = E_Constant(), noise = OU()):
+    def __init__(self, epsilon = None, test_epsilon = None, noise = None):
+
+        epsilon = epsilon if epsilon is not None else EpsilonSL()
+        test_epsilon = test_epsilon if test_epsilon is not None else EpsilonC()
+        noise = noise if noise is not None else OU()
 
         epsilon, test_epsilon = check_reframe_epsilon(epsilon,test_epsilon)
         noise = check_noise(noise)
@@ -281,7 +298,10 @@ class OUFilter(AddNoiseFilter):
     """
 
     def __init__(self, epsilon = 1, test_epsilon = 0, mu=0, theta=0.15, sigma=0.2):
-        super(OUFilter, self).__init__(epsilon, test_epsilon, OU(mu,theta,sigma))
+
+        noise = OU(mu,theta,sigma)
+
+        super(OUFilter, self).__init__(epsilon, test_epsilon, noise)
 
 
 class GPFilter(AddNoiseFilter):
@@ -300,12 +320,22 @@ class GPFilter(AddNoiseFilter):
         >>> obj = GPFilter(epsilon=0.1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2)
     """
     def __init__(self, epsilon = 1, test_epsilon = 0, mean=0, std=0.1):
-        super(OUFilter, self).__init__(epsilon, test_epsilon, noise = GP(mean,std)))
+
+        noise = GP(mean,std)
+
+        super(OUFilter, self).__init__(epsilon, test_epsilon, noise))
+
+
 
 
 
 
 class Epsilon(object):
+    """Epsilon
+    Base Class of Epsilon. You can use this object to modify the epsilon change.
+    This class uses `__call__(step,episode,epoch)` to update epsilon variable.
+    There is also `_clip` function which is used to clip the epsilon between min max value.
+    """
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0):
         self.max = max
         self.min = min
@@ -326,7 +356,23 @@ class Epsilon(object):
 
 class EpsilonSL(Epsilon):
     """EpsilonSL (Epsilon Step Linear)
+    Linear function is used, with step as variable, to decrease epsilon.
+    The epsilon calculation is as follows:
+
+    :math:
+
+        \epsilon_{t+1}=\epsilon_{0}-\frac{init-min}{epsilon_step} * episode
+
+
+    Args:
+
+        init(float): initial value. Default is 1.
+        min(float): minimum value. Default is 0.
+        max(float): maximum value. Default is 1.
+        epsilon_step(float): inverse constant of the linear term. Default is 25000.
+
     """
+
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     epsilon_step = 25000 ):
 
@@ -343,7 +389,22 @@ class EpsilonSL(Epsilon):
 
 class EpsilonEI(Epsilon):
     """EpsilonEI (Epsilon Episode Inverse)
+    Inverse proportion function is used, with episode as variable, to decrease epsilon.
+    The epsilon calculation is as follows:
+
+    :math:
+
+        \epsilon_{t+1}=\epsilon_{min}+\frac{init-min}{1+episode * alpha}
+
+    Args:
+
+        init(float): initial value. Default is 1.
+        min(float): minimum value. Default is 0.
+        max(float): maximum value. Default is 1.
+        alpha(float): the coefficient of episode. Default is 1.
+
     """
+
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     alpha = 1 ):
 
@@ -358,6 +419,7 @@ class EpsilonEI(Epsilon):
 
 class EpsilonC(Epsilon):
     """EpsilonC (Epsilon Constant)
+    This class allows users to use Constant Filter. Constant epsilon is used.
     """
     def __init__(self,epsilon=0.0):
         self.epsilon=epsilon
@@ -377,7 +439,7 @@ class Noise(object):
 
 
 class OU(Noise):
-    """
+    """OU (Ornstein-Uhlenbeck)
     DDPG paper ornstein-uhlenbeck noise parameters are theta=0.15, sigma=0.2
     """
 
@@ -394,7 +456,9 @@ class OU(Noise):
 
 
 class GP(object):
-
+    """GP (Gaussian Noise)
+    Gaussian Noise.
+    """
     def __init__(self, mean=0, std=0.1):
         self.noise_type = CONTINUOUS
         self._mean = mean
