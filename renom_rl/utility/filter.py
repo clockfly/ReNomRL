@@ -1,6 +1,6 @@
 import numpy as np
-from renom_rl.function.epsilon import Epsilon, E_StepLinear, E_Constant
-from renom_rl.function.noise import OU,GP
+# from renom_rl.function.epsilon import Epsilon, E_StepLinear, E_Constant
+# from renom_rl.function.noise import OU,GP
 
 
 def check_reframe_epsilon(epsilon,test_epsilon):
@@ -304,114 +304,103 @@ class GPFilter(AddNoiseFilter):
 
 
 
-    # """OU Filter
-    # This class allow is the filter which adds GP(Gaussian Process) noise to the action. These are implemented in RL framework.
-    # This is done by the following equation:
-    #
-    # .. math::
-    #
-    #     \epsilon_{t+1}=action+\mathcal{N}_{GP}
-    #
-    #
-    # The Default parameters are:
-    #     step_mode = "constant"
-    #     coef = 1
-    #     test_coef = 0
-    #     mean=0
-    #     std=0.1
-    # you can specify the step_mode ("step_linear","episode_base" etc.) Check the `EpsilonUpdate` class for more details.
-    #
-    # Args:
-    #     **kwargs: parameters such as `coef`,`test_coef`,`theta`,`mu`,`sigma`,`step_mode`
-    # """
-    #
-    #
-    #
-    # """OU Filter
-    # This class allow is the filter which adds OU(ornstein-uhlenbeck) noise to the action. These are implemented in RL framework.
-    # This is done by the following equation:
-    #
-    # .. math::
-    #
-    #     \epsilon_{t+1}=action+\mathcal{N}_{OU}
-    #
-    # The Default parameters are:
-    #     step_mode = "constant"
-    #     coef = 1
-    #     test_coef = 0
-    #     mu = 0
-    #     theta = 0.15
-    #     sigma = 0.2
-    # you can specify the step_mode.("step_linear","episode_base" etc.)
-    # Check the `EpsilonUpdate` class for more details.
-    #
-    # Args:
-    #     **kwargs: parameters such as `coef`,`test_coef`,`theta`,`mu`,`sigma`,`step_mode`
-    # """
+
+class Epsilon(object):
+    def __init__(self, initial = 1.0, min = 0.0, max = 1.0):
+        self.max = max
+        self.min = min
+        self.initial = initial
+        self.epsilon = min
 
 
-        # """
-        # Args:
-        #     greedy_action(float): action that is outputted from the agent.
-        #     random_action(float): random action variable. Variable used from BaseEnv.sample.
-        #     `test_greedy` default is 1. Set `test_greedy` argument when creating an instance.
-        # """
+    def __call__(self,step,episode,epoch):
+        pass
+
+    def _clip(self,greedy):
+        """
+        clipping function
+        """
+        greedy = np.clip(greedy, self.min, self.max)
+        return greedy
+
+
+class EpsilonSL(Epsilon):
+    """EpsilonSL (Epsilon Step Linear)
+    """
+    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
+                    epsilon_step = 25000 ):
+
+        super(StepLinear,self).__init__(initial,min,max)
+
+        self.test_epsilon = test_epsilon
+        self.epsilon_step =  epsilon_step
+        self.step_size = (max-min)/epsilon_step
+
+    def __call__(self,step,episode,epoch):
+        self.epsilon = self._clip(self.initial-self.step_size*step)
+        return self.epsilon
+
+
+class EpsilonEI(Epsilon):
+    """EpsilonEI (Epsilon Episode Inverse)
+    """
+    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
+                    alpha = 1 ):
+
+        super(StepLinear,self).__init__(initial,min,max)
+
+        self.alpha = alpha
+
+    def __call__(self,step,episode,epoch):
+        self.epsilon = self._clip(self.min+(self.initial-self.min)/(1+episode*self.alpha))
+        return self.epsilon
+
+
+class EpsilonC(Epsilon):
+    """EpsilonC (Epsilon Constant)
+    """
+    def __init__(self,epsilon=0.0):
+        self.epsilon=epsilon
+
+    def call(self,step, episode, epoch):
+        return np.clip(self.epsilon,0,1)
+
+class Noise(object):
+    def __init__(self):
+        pass
+
+    def sample(self, action):
+        raise NotImplemented
 
 
 
 
-# def check_kwargs_exist(kwargs=None,*key):
-#     assert all(k in kwargs for k in key), "you have set {} for this step_mode".format(key)
-#
-# def get_keys(kwargs=None,*keys):
-#     res= {}
-#     for k in keys:
-#       if k in kwargs:
-#         res[i]=kwargs[i]
-#     return res
-#
+
+class OU(Noise):
+    """
+    DDPG paper ornstein-uhlenbeck noise parameters are theta=0.15, sigma=0.2
+    """
+
+    def __init__(self, mu=0, theta=0.15, sigma=0.2):
+        self.noise_type = CONTINUOUS
+        self.mu = mu
+        self.theta = theta
+        self.sigma = sigma
+
+    def sample(self, action):
+        shape = getattr(self.mu, 'shape', [1, ])
+        return self.theta * (self.mu - action) + self.sigma \
+            * np.random.randn(*shape)
 
 
+class GP(object):
 
+    def __init__(self, mean=0, std=0.1):
+        self.noise_type = CONTINUOUS
+        self._mean = mean
+        self._std = std
 
-#
-# class ConstantFilter(ActionFilter):
-#     """Constant Filter
-#     This class allow you to output the agents action with constant epislon.
-#     """
-#
-#     def __init__(self, threshold):
-#         self.th = threshold
-#         self.value = threshold
-#
-#     def __call__(self, greedy_action, random_action,
-#                  step=None, episode=None, epoch=None):
-#         """
-#         Args:
-#             greedy_action(float): action that is outputted from the agent.
-#             random_action(float): random action variable. Variable used from BaseEnv.sample.
-#             step(int): total accumulated steps (irrelevent to episodes)
-#             episode(int): total accumulated episodes (irrelevent to epoch)
-#             epoch(int): epoch steps
-#         """
-#         if np.random.rand() > self.th:
-#             return greedy_action
-#         else:
-#             return random_action
-#
-#     def test(self,greedy_action, random_action):
-#
-#         """
-#         Args:
-#             greedy_action(float): action that is outputted from the agent.
-#             random_action(float): random action variable. Variable used from BaseEnv.sample.
-#         """
-#
-#         if np.random.rand() > self.th:
-#             return greedy_action
-#         else:
-#             return random_action
-#
-#
-#     def value(self):
-#         return self.th
+    def sample(self, action):
+    # def samplse(self, action):
+        shape = getattr(action, 'shape', [1, ])
+        return self._mean + self._std * np.random.randn(*shape)
