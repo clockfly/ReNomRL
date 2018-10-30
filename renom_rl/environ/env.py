@@ -28,10 +28,10 @@ def check_reset_method(func, action, state):
 
 class BaseEnv(object):
     """Base class of environment.
-    The methods `step`, `reset` and `sample` must be overridden.
-    Users can override `start`, `epoch`, `epoch_step`, `close`, `test_start`, `test_epoch_step`, `test_close`.
-    If  `test_start`, `test_epoch_step`, `test_close` are not defined, then they will use the same function as `start`, `epoch_step`, `close`.
-    Note that these functions are only used to execute, thus arguments can not be implemented (excluding `reset`).
+    The methods ``step``, ``reset`` and ``sample`` must be overridden.
+    Users can override ``start``, ``epoch``, ``epoch_step``, ``close``, ``test_start``, ``test_epoch_step``, ``test_close``.
+    If  ``test_start``, ``test_epoch_step``, ``test_close`` are not defined, then they will use the same function as ``start``, ``epoch_step``, ``close``.
+    Note that these functions are only used to execute, thus arguments can not be implemented (excluding ``reset``).
 
     Example:
         >>> import numpy as np
@@ -78,8 +78,8 @@ class BaseEnv(object):
 
     def step(self, action):
         """This method must be overridden.
-        This method must accept single action and return `next state`,
-        `reward` and `terminal`.
+        This method must accept single action and return next state,
+        reward and terminal.
         When overriding this method, don't forget to return above data.
 
         Returns:
@@ -127,14 +127,14 @@ class BaseEnv(object):
     def epoch(self):
         """ This is optional.
         This method will be called when epoch is updated.
-        This will execute after `reset`.
+        This will execute after ``reset``.
         """
         pass
 
     def epoch_step(self):
         """ This is optional.
         This method will be called when epoch_step is reset.
-        This will execute after `step`.
+        This will execute after ``step``.
         """
         pass
 
@@ -147,14 +147,14 @@ class BaseEnv(object):
     def test_start(self):
         """ This is optional.
         This method will be called when test is starting.
-        This will execute after `reset`.
+        This will execute after ``reset``.
         """
         self.start()
 
     def test_epoch_step(self):
         """ This is optional.
         This method will be called when epoch is reset.
-        This will execute after `reset`.
+        This will execute after ``reset``.
         """
         self.epoch_step()
 

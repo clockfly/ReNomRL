@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.utility.filter import EpsilonGreedyFilter, ConstantFilter, ActionFilter
+from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter
 
 
 class DoubleDQN(AgentBase):
@@ -204,9 +204,7 @@ class DoubleDQN(AgentBase):
         # g_step = (max_greedy - min_greedy) / epsilon_step
 
         # action filter is set, if not exist then make an instance
-        if action_filter is None:
-            action_filter = EpsilonGreedyFilter(initial=0.9, min=0.0, max=0.9,
-                                          epsilon_step=int(0.8 * epoch * epoch_step))
+        action_filter = action_filter if action_filter is not None else EpsilonSLFilter(epsilon_step=int(0.8 * epoch * epoch_step))
 
         assert isinstance(action_filter, ActionFilter)
 
@@ -379,9 +377,7 @@ class DoubleDQN(AgentBase):
             (int): Sum of rewards.
         """
         # if filter_obj argument was specified, the change the object
-        if action_filter is None:
-            # This means full greedy policy.
-            action_filter = ConstantFilter(threshold=0.0)
+        action_filter = action_filter if action_filter is not None else EpsilonCFilter()
 
         assert isinstance(action_filter,ActionFilter)
 

@@ -13,7 +13,7 @@ from renom_rl import AgentBase
 # from renom_rl.noise import OU
 from renom_rl.environ import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
-from renom_rl.utility.filter import ActionNoiseFilter, OUFilter
+from renom_rl.utility.filter import EpsilonSL, ActionNoiseFilter, OUFilter, NoNoiseFilter
 
 
 class DDPG(AgentBase):
@@ -207,9 +207,8 @@ class DDPG(AgentBase):
 
         # e_rate = max_greedy
         # e_step = (min_greedy - max_greedy) / greedy_step
-        if action_filter is None:
-            action_filter = OUFilter(initial=0.9, min=0.0, max=0.9, step_mode="step_linear",
-                                            greedy_step=int(0.8 * epoch * epoch_step))
+        _e=EpsilonSL(epsilon_step=int(0.8 * epoch * epoch_step))
+        action_filter = action_filter if action_filter is not None else OUFilter(epsilon=_e)
 
         assert isinstance(action_filter, ActionNoiseFilter),"action_filter must be a class of ActionNoiseFilter"
 
@@ -425,7 +424,7 @@ class DDPG(AgentBase):
             for k in ql.params.keys():
                 tql.params[k] = ql.params[k] * self.tau + tql.params[k] * (1 - self.tau)
 
-    def test(self, test_step=None, action_filter=None, **kwargs):
+    def test(self, test_step=None, action_filter=None):
         """
         Test the trained agent.
 
@@ -437,9 +436,7 @@ class DDPG(AgentBase):
             (int): Sum of rewards.
         """
         # if filter_obj argument was specified, the change the object
-        if action_filter is None:
-            # This means full greedy policy.
-            action_filter = OUFilter(test_coef=0)
+        action_filter = action_filter if action_filter is not None else NoNoiseFilter()
 
         assert isinstance(action_filter,ActionNoiseFilter)
 

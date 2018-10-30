@@ -12,6 +12,12 @@ class Animation(object):
     this module, so that we can reanimate the performance without
     re-testing.
 
+    Args:
+        dpi(int): dots per inch. resolution.
+        ratio(int): reduces scale.
+        interval(int): play rate[ms]
+
+
     Example:
         >>> from renom_rl.utility.animation import Animation
         >>> import random
@@ -33,10 +39,11 @@ class Animation(object):
         ...
     """
 
-    def __init__(self, dpi=72.0, ratio=72.0):
+    def __init__(self, dpi=72.0, ratio=72.0, interval=50):
         self.frames = []
         self.dpi = dpi
         self.ratio = ratio
+        self.interval = interval
 
     def __len__(self):
         return len(self.frames)
@@ -44,15 +51,20 @@ class Animation(object):
     def store(self, frame):
         """
         This function stores the image (render) data to a lists.
-        append image with the same size.
         """
         self.frames.append(frame)
 
-    def run(self, reset=False):
+    def run(self, reset=False, name="default", save=True):
         """
         This function creates the animation. The animation frame size is based on the first element of the stored image.
         Users can use the reset option in order to reset the stored image. Note that only the stored image will reset
-        but the animation will be kept. If you redo this function with reset=True, you will get an error.
+        but the animation will be kept. If users redo this function with ``reset = True``, users will get an error.
+
+        Args:
+            reset(boolean): resets at the end of animation.
+            name(string): filename. No extensions are allowed.
+            save(boolean): saves as mp4 file when ``True``.
+
         """
         assert len(self) > 0, "No length"
         frame_r = self.frames
@@ -66,6 +78,10 @@ class Animation(object):
             image.set_data(frame_r[i])
 
         anim = animation.FuncAnimation(plt.gcf(), animate, frames=len(frame_r), interval=50)
+
+        #saves animation
+        if save==True:
+            anim.save(name+".mp4")
 
         # anim.save("movie_cartpole.mp4")
         display(display_animation(anim))
