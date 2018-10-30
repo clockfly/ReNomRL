@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ReNomsRL version 0.0
+ReNomsRL version 0.2
 ===================================
 
 .. toctree::

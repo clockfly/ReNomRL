@@ -1,8 +1,8 @@
 How to Use
-==========
+============================
 
 Overview
------------------
+------------------------------------------------
 
 When using neural networks in reinforcement learning, neural network is used as an agent with multiple signals as input and action as output. However, due to the difference in problems users are facing( such as what information the agent acquires from the environment, or what types of actions are required ) we should not only define the agent structure, but also the environment as well.
 
@@ -13,12 +13,12 @@ ReNom RL has multiple built-in algorithm, such as DQN, A3C etc. When implementin
 3. Implementation of Reinforcement Learning
 
 1-Environment Preparation
------------------
+------------------------------------------------
 
 In order to use quickly apply the environment, fitting the environment structure according to BaseEnv module is required. In this section, we will introduce 2 ways of preparing the environment: using pre-prepared environment and implementing environment from scratch.
 
 Using Pre-prepared Environment
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We prepared environment models that uses Open AI. For example, if the user wants to use breakout model for its test, we could call the environment as shown below.
 
@@ -28,7 +28,7 @@ We prepared environment models that uses Open AI. For example, if the user wants
     env = Breakout()
 
 Implementing Environment from Scratch
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When creating an original environment, the object must be inherited, overwriting the variables and the function as mentioned below:
 
@@ -112,7 +112,7 @@ For example, when creating an original environment called CustomEnv(), the imple
 
 
 2-Model Preparation
------------------
+------------------------------------------------
 
 In this section, we use ReNom DL to build a model. Define the model as shown below when using a standard neural network.
 
@@ -130,7 +130,7 @@ In this section, we use ReNom DL to build a model. Define the model as shown bel
                                rm.Dense(custom_env.action_shape)])
 
 3-Implementation of Reinforcement Learning
------------------
+---------------------------------------------------------------------
 
 After preparing the environment and the model, we now implement using a certain algorithm. The script below describes the algorithm for DQN.
 

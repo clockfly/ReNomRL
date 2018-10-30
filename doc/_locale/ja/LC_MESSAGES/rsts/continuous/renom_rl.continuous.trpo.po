@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-03 13:50+0900\n"
+"POT-Creation-Date: 2018-10-26 16:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: ../../rsts/continuous/renom_rl.continuous.trpo.rst:2
-msgid "renom_rl.continuous.trpo"
-msgstr ""
+#~ msgid "renom_rl.continuous.trpo"
+#~ msgstr ""
 
-#: of renom_rl.continuous.trpo.TRPO:1
-msgid "Bases: :class:`object`"
-msgstr ""
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
 
-#: of renom_rl.continuous.trpo.TRPO:1
-msgid "TRPO(Trust Region Policy Optimization) reinforcement learning class."
-msgstr ""
+#~ msgid "TRPO(Trust Region Policy Optimization) reinforcement learning class."
+#~ msgstr ""
 
-#: of renom_rl.continuous.trpo.TRPO:3
-msgid ""
-"John Schulman, Sergey Levine, Philipp Moritz, Michael I. Jordan, Pieter "
-"Abbeel Trust Region Policy Optimization https://arxiv.org/abs/1502.05477"
-msgstr ""
+#~ msgid ""
+#~ "John Schulman, Sergey Levine, Philipp "
+#~ "Moritz, Michael I. Jordan, Pieter Abbeel"
+#~ " Trust Region Policy Optimization "
+#~ "https://arxiv.org/abs/1502.05477"
+#~ msgstr ""
 

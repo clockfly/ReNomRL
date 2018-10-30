@@ -5,12 +5,19 @@
 ### Requirements
 
 - Linux / Ubuntu
--	Python 2.7 3.6
--	ReNom DL 2.6.1
+- Python 2.7 3.6
+- ReNom DL 2.6.1
 - numpy 1.14.5
 - tqdm 4.26.0
--	Gym 0.10.5
--	Homebrew (For OSX)
+- Gym 0.10.5
+- Homebrew (For OSX)
+
+### Requirements For Animation
+
+- JSAnimation
+- pyglet 1.2.4
+- ipython 6.2.1
+- matplotlib 2.2.3
 
 ### Install
 

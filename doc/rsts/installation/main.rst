@@ -40,3 +40,10 @@ URL : https://github.com/openai/gym#installation
 - tqdm 4.26.0
 -	Gym 0.10.5
 -	Homebrew (For OSX)
+
+**Requirements For Animation**
+
+- JSAnimation
+- pyglet 1.2.4
+- ipython 6.2.1
+- matplotlib 2.2.3

@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, grid
+# Copyright (C) 2018, grid
 # This file is distributed under the same license as the ReNomRL package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ReNomRL 0.1\n"
+"Project-Id-Version: ReNomRL 0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-26 16:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#~ msgid "renom_rl.continuous.a3c_old"
-#~ msgstr ""
+#: ../../rsts/utility/renom_rl.utility.event_handler.rst:2
+msgid "renom_rl.utility.event_handler"
+msgstr ""
 

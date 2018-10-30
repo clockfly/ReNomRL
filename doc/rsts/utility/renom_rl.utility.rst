@@ -1,18 +1,34 @@
-renom\_rl.utility
+renom_rl.utility
 ==================
 
-renom\_rl.utility.event\_handler
----------------------------------
+Utilities (such as EpsilonGreedyFilter etc.) for the ReNomRL Modules are located in this section.
+There are modules that require these utilities. There are also modules which users can use to modify algorithms, such as how epsilon increases during training.
 
-.. automodule:: renom_rl.utility.event_handler
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Animation
+--------------------------------------------------------------
 
-renom\_rl.utility.replaybuffer
---------------------------------
+This is allows users to create animation. Mainly developed for jupyter notebook.
 
-.. automodule:: renom_rl.utility.replaybuffer
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
+   animation
+   
+Action Filter
+--------------------------------------------------------------
+
+Action filters are used to add noise or choose random actions. In the ``renom_rl.utility.filter``, there are various modules to design action filter. 
+Action Filters are used for random action decision in algorithms such as DQN, DDQN etc.
+Action Noise Filters are used for random action noises in algorithms such as DDPG etc.
+Epsilon are used to change epsilon value during epsilon greedy decision etc.
+Noise are used to generate noise.
+
+.. toctree:: 
+	actionfilter
+	actionnoisefilter
+	epsilon
+	noise
+
+
+
+
+..
+   renom_rl.utility.filter
