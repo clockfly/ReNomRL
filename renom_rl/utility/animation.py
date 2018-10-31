@@ -54,7 +54,7 @@ class Animation(object):
         """
         self.frames.append(frame)
 
-    def run(self, reset=False, name="default", save=True):
+    def run(self, reset=False):
         """
         This function creates the animation. The animation frame size is based on the first element of the stored image.
         Users can use the reset option in order to reset the stored image. Note that only the stored image will reset
@@ -62,8 +62,6 @@ class Animation(object):
 
         Args:
             reset(boolean): resets at the end of animation.
-            name(string): filename. No extensions are allowed.
-            save(boolean): saves as mp4 file when ``True``.
 
         """
         assert len(self) > 0, "No length"
@@ -79,9 +77,9 @@ class Animation(object):
 
         anim = animation.FuncAnimation(plt.gcf(), animate, frames=len(frame_r), interval=50)
 
-        #saves animation
-        if save==True:
-            anim.save(name+".mp4")
+        # #saves animation
+        # if save==True:
+        #     anim.save(name+".mp4")
 
         # anim.save("movie_cartpole.mp4")
         display(display_animation(anim))
