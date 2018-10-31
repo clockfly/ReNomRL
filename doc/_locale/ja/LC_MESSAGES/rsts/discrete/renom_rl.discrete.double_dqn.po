@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-26 16:59+0900\n"
+"POT-Creation-Date: 2018-10-31 10:24+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,181 @@ msgstr ""
 
 #: ../../rsts/discrete/renom_rl.discrete.double_dqn.rst:2
 msgid "renom_rl.discrete.double_dqn"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:1
+msgid "Bases: :class:`renom_rl.AgentBase`"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:1
+msgid ""
+"Double DQN class This class provides a reinforcement learning agent "
+"including training method."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:4
+msgid "Environment. This must be a child class of BaseEnv."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:6
+msgid "Q-Network."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:8
+msgid "Loss function for train q-network. Default is ClippedMeanSquaredError()."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:10
+msgid "Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95)."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:11
+msgid "Discount rate."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:13
+msgid "The size of replay buffer."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:18
+#: renom_rl.discrete.double_dqn.DoubleDQN.fit:35
+msgid "Example"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:36
+msgid "References"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:37
+msgid "Hado van Hasselt, Arthur Guez, David Silver"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:38
+msgid "**Deep Reinforcement Learning with Double Q-learning**"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN:39
+msgid "https://arxiv.org/abs/1509.06461"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.initialize:1
+msgid ""
+"Target q-network is initialized with same neural network weights of "
+"q-network."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.action:1
+msgid "This method returns an action according to the given state."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.action:3
+msgid "A state of an environment."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.action:7
+msgid "Action."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.update:1
+msgid "This function updates target network."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.update_best_q_network:1
+msgid "This function updates best network in each epoch."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:1
+msgid ""
+"This method executes training of a q-network. Training will be done with "
+"epsilon-greedy method(default)."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:4
+msgid "You can define following callback functions."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:6
+msgid "- end_epoch"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:7
+msgid "Args:"
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:8
+msgid "epoch (int): The number of current epoch."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:9
+msgid "model (DQN): Object of DQN which is on training."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:10
+msgid ""
+"summed_train_reward_in_current_epoch (float): Sum of train rewards earned"
+" in current epoch."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:11
+msgid "summed_test_reward_in_current_epoch (float): Sum of test rewards."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:12
+msgid ""
+"average_train_loss_in_current_epoch (float): Average train loss in "
+"current epoch."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:15
+msgid "Number of epoch for training."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:17
+msgid "Number of step of one epoch."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:19
+msgid "Batch size."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:21
+msgid "Number of random step which will be executed before training."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:23
+msgid "Number of test step."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:25
+msgid "Period of updating target network."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:27
+msgid "For the learning step, training is done at this cycle."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.fit:29
+msgid "Exploration filter during learning. Default is `EpsilonGreedyFilter`."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.test:1
+msgid "Test the trained agent."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.test:3
+msgid ""
+"Number of steps (not episodes) for test. If None is given, this method "
+"tests execute only 1 episode."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.test:5
+msgid ""
+"Exploartion filter during test. Default is "
+"`ConstantFilter(threshold=1.0)`."
+msgstr ""
+
+#: of renom_rl.discrete.double_dqn.DoubleDQN.test:9
+msgid "Sum of rewards."
 msgstr ""
 
 #~ msgid "Parameters"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 22:43+0900\n"
+"POT-Creation-Date: 2018-10-31 10:24+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,5 +19,12 @@ msgstr ""
 
 #: ../../rsts/environ/renom_rl.environ.rst:2
 msgid "renom_rl.environ"
+msgstr ""
+
+#: ../../rsts/environ/renom_rl.environ.rst:4
+msgid ""
+"Here are the modules to create environment class. Users can create their "
+"own environment by using ``renom_rl.environ.env`` or use an already built"
+" environment ``renom_rl.environ.openai``."
 msgstr ""
 

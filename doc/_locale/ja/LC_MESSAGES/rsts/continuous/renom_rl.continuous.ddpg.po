@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-26 16:59+0900\n"
+"POT-Creation-Date: 2018-10-31 10:24+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,218 @@ msgstr ""
 
 #: ../../rsts/continuous/renom_rl.continuous.ddpg.rst:2
 msgid "renom_rl.continuous.ddpg"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:1
+msgid "Bases: :class:`renom_rl.AgentBase`"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:1
+msgid "DDPG class"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:3
+msgid ""
+"This class provides a reinforcement learning agent including training and"
+" testing methods. This class only accepts 'Environment' as a object of "
+"'BaseEnv' class."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:6
+msgid "An instance of Environment to be learned."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:8
+msgid "Actor-Network."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:10
+msgid "Critic-Network. Basically this is a Q(s,a) function Network."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:12
+msgid "Loss function for critic network. Default is MeanSquaredError()"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:13
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.0001)"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:14
+msgid "Optimizer object for training actor network. Default is Adam(lr=0.001)"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:15
+msgid "Discount rate."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:17
+msgid ""
+"target_networks update parameter. If this is 0, weight parameters will be"
+" copied."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:19
+msgid "The size of replay buffer."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:24 renom_rl.continuous.ddpg.DDPG.fit:36
+msgid "Example"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:60
+msgid "Reference:"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Continuous control with deep reinforcement learning"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "https://arxiv.org/abs/1509.02971"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.action:1
+msgid ""
+"This method returns an action according to the given state. :param state:"
+" A state of an environment."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.action:6
+msgid "Action."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:1
+msgid ""
+"This method executes training of an actor-network. Here, target actor & "
+"critic network weights are updated after every actor & critic update "
+"using self.tau"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:4
+msgid "- end_epoch"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:5
+msgid "Args:"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:6
+msgid "epoch (int): The number of current epoch."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:7
+msgid "model (DDPG): Object of DDPG which is on training."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:8
+msgid ""
+"summed_train_reward_in_current_epoch (float): Sum of train rewards earned"
+" in current epoch."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:9
+msgid "summed_test_reward_in_current_epoch (float): Sum of test rewards."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:10
+msgid ""
+"average_train_loss_in_current_epoch (float): Average train loss in "
+"current epoch."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:13
+msgid "Training number of epochs."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:15
+msgid "Number of step of one epoch."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:17
+msgid "Batch size."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:19
+msgid "Number of random step which will be executed before training."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:21
+msgid "Number of test step."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:23
+msgid "For the learning step, training is done at this cycle."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:25
+msgid "Minimum greedy value."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:27
+msgid "Maximum greedy value."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:29
+msgid "Number of step."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:31
+msgid "Ornstein-uhlenbeck noise or gaussian noise."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.value_function:1
+msgid "Value of predict network Q_predict(s,a)"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.target_value_function:3
+#: renom_rl.continuous.ddpg.DDPG.value_function:3
+msgid "input state"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.target_value_function:6
+#: renom_rl.continuous.ddpg.DDPG.value_function:6
+msgid "Q(s,a) value"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.target_value_function:1
+msgid "Value of target network Q_target(s,a)."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.initalize:1
+msgid ""
+"Target actor and critic networks are initialized with same neural network"
+" weights as actor & critic network"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.update:1
+msgid "Updare target networks"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:1
+msgid "Test the trained agent."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:3
+msgid ""
+"Number of steps for test. If None is given, this method tests just 1 "
+"episode."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:5
+msgid "If True is given, BaseEnv.render() method will be called."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.test:9
+msgid "Sum of rewards."
 msgstr ""
 
 #~ msgid "Parameters"
