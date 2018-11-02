@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the ReNomRL package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-31 10:24+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2018-10-31 15:06+0900\n"
+"PO-Revision-Date: 2018-11-02 14:20+0900\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"X-Generator: Poedit 2.2\n"
 
 #: ../../rsts/utility/animation.rst:2
 msgid "renom_rl.utility.animation"
@@ -31,18 +33,21 @@ msgid ""
 "Because render can only play the render peroformance once, we prepared "
 "this module, so that we can reanimate the performance without re-testing."
 msgstr ""
+"このクラスはopen AIのimageを保存するオブジェクトを持ちます. レンダーは一"
+"度に一回しか行動を再生出来ませんが、このモジュールを使えば、再びテストす"
+"る事なく行動を再び再生出来ます."
 
 #: of renom_rl.utility.animation.Animation:8
 msgid "dots per inch. resolution."
-msgstr ""
+msgstr "インチあたりのドット数. 解像度."
 
 #: of renom_rl.utility.animation.Animation:10
 msgid "reduces scale."
-msgstr ""
+msgstr "縮尺."
 
 #: of renom_rl.utility.animation.Animation:12
 msgid "play rate[ms]"
-msgstr ""
+msgstr "再生割合[ms]"
 
 #: of renom_rl.utility.animation.Animation:18
 msgid "Example"
@@ -50,30 +55,26 @@ msgstr ""
 
 #: of renom_rl.utility.animation.Animation.store:1
 msgid "This function stores the image (render) data to a lists."
-msgstr ""
+msgstr "この関数はimage(render)をリストで保存します."
 
 #: of renom_rl.utility.animation.Animation.run:1
 msgid ""
-"This function creates the animation. The animation frame size is based on"
-" the first element of the stored image. Users can use the reset option in"
-" order to reset the stored image. Note that only the stored image will "
+"This function creates the animation. The animation frame size is based "
+"on the first element of the stored image. Users can use the reset option "
+"in order to reset the stored image. Note that only the stored image will "
 "reset but the animation will be kept. If users redo this function with "
 "``reset = True``, users will get an error."
 msgstr ""
+"この関数はアニメーションを作成します. アニメーションのフレームサイズは保"
+"存されたimageの最初の要素に基づきます. リセットオプションで保存したimage"
+"をリセットすることも出来ます. その場合、保存されたimageはリセットされます"
+"が、アニメーションはそのままになります. ユーザーが``reset = True`` で再び"
+"この関数を実行した場合、エラーが返ります."
 
 #: of renom_rl.utility.animation.Animation.run:5
 msgid "resets at the end of animation."
-msgstr ""
-
-#: of renom_rl.utility.animation.Animation.run:7
-msgid "filename. No extensions are allowed."
-msgstr ""
-
-#: of renom_rl.utility.animation.Animation.run:9
-msgid "saves as mp4 file when ``True``."
-msgstr ""
+msgstr "アニメーションの終わりにリセットします."
 
 #: of renom_rl.utility.animation.Animation.reset:1
 msgid "This function resets the list of stored image."
-msgstr ""
-
+msgstr "この関数は保存されたimageのリストをリセットします."
