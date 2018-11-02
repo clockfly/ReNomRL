@@ -98,9 +98,9 @@ class DQN(AgentBase):
         self._state_shape = state_shape
         self._buffer = ReplayBuffer([1, ], self._state_shape, buffer_size)
         self.events = EventHandler()
-        self.initialize()
+        self._initialize()
 
-    def initialize(self):
+    def _initialize(self):
         '''Target q-network is initialized with same neural network weights of q-network.'''
         # Reset weight.
         for layer in self._q_network.iter_models():
@@ -115,15 +115,8 @@ class DQN(AgentBase):
         self._target_q_network(np.random.randn(1, *self._state_shape))
         self._q_network.copy_params(self._target_q_network)
 
-    def action(self, state):
+    def _action(self, state):
         """This method returns an action according to the given state.
-
-        Args:
-            state (ndarray): A state of an environment.
-
-        Returns:
-            (int, ndarray): Action.
-
         """
         self._q_network.set_models(inference=True)
         return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
@@ -143,12 +136,12 @@ class DQN(AgentBase):
             elif isinstance(obj1.__dict__[item_keys], rm.Model):
                 self._rec_copy(obj1.__dict__[item_keys], obj2.__dict__[item_keys])
 
-    def update(self):
+    def _update(self):
         """This function updates target network."""
         self._target_q_network.copy_params(self._best_q_network)
         self._rec_copy(self._target_q_network, self._best_q_network)
 
-    def update_best_q_network(self):
+    def _update_best_q_network(self):
         """This function updates best network in each target update period."""
         self._best_q_network.copy_params(self._q_network)
         self._rec_copy(self._best_q_network, self._q_network)
@@ -250,7 +243,7 @@ class DQN(AgentBase):
             for j in range(epoch_step):
 
                 #set action
-                action = action_filter(self.action(state), self.env.sample(),
+                action = action_filter(self._action(state), self.env.sample(),
                                        step=step_count, episode=episode_count, epoch=e)
                 greedy = action_filter.value()
 
@@ -296,14 +289,14 @@ class DQN(AgentBase):
 
                         if count % update_period == 0 and count:
                             max_reward_in_each_update_period = -np.Inf
-                            self.update()
+                            self._update()
                             count = 0
                         count += 1
 
                 #terminal reset
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
-                        self.update_best_q_network()
+                        self._update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
@@ -384,7 +377,7 @@ class DQN(AgentBase):
 
         if test_step is None:
             while True:
-                action = action_filter.test(self.action(state), self.env.sample())
+                action = action_filter.test(self._action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
@@ -397,7 +390,7 @@ class DQN(AgentBase):
 
         else:
             for j in range(test_step):
-                action = action_filter.test(self.action(state), self.env.sample())
+                action = action_filter.test(self._action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 

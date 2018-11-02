@@ -47,9 +47,6 @@ class Pendulum(BaseEnv):
         state, reward, terminal = self.env.step(action)[:3]
         return state.reshape(3), reward, terminal
 
-    # def render(self):
-    #     """"""
-    #     self.env.render()
 
 
 class Breakout(BaseEnv):

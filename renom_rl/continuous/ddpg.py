@@ -127,7 +127,7 @@ class DDPG(AgentBase):
         self.state_size = state_shape
         self._buffer = ReplayBuffer(self.action_size, self.state_size, buffer_size)
         self.events = EventHandler()
-        self.initalize()
+        self._initialize()
 
     def action(self, state):
         """This method returns an action according to the given state.
@@ -259,7 +259,7 @@ class DDPG(AgentBase):
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
                         self._buffer.get_minibatch(batch_size)
 
-                    qmax = self.target_value_function(train_state).as_ndarray()
+                    qmax = self._target_value_function(train_state).as_ndarray()
 
                     target_q = []
                     for k in range(batch_size):
@@ -278,8 +278,8 @@ class DDPG(AgentBase):
 
                     self._actor.set_models(inference=False)
                     with self._actor.train(), self._critic.train():
-                        actor_loss = self.value_function(train_prestate) / len(train_prestate)
-                    target_actor_loss = self.target_value_function(
+                        actor_loss = self._value_function(train_prestate) / len(train_prestate)
+                    target_actor_loss = self._target_value_function(
                         train_prestate) / len(train_prestate)
 
                     critic_loss.grad().update(self._critic_optimizer)
@@ -287,7 +287,7 @@ class DDPG(AgentBase):
                         actor_loss.grad(-1 * np.ones_like(actor_loss)).update(self._actor_optimizer)
 
                     loss += critic_loss.as_ndarray()
-                    self.update()
+                    self._update()
 
                 sum_reward = float(sum_reward)
 
@@ -355,7 +355,7 @@ class DDPG(AgentBase):
         #env close
         self.env.close()
 
-    def value_function(self, state):
+    def _value_function(self, state):
         '''Value of predict network Q_predict(s,a)
 
         Args:
@@ -368,7 +368,7 @@ class DDPG(AgentBase):
         value = self._critic(state, action)
         return value
 
-    def target_value_function(self, state):
+    def _target_value_function(self, state):
         '''Value of target network Q_target(s,a).
 
         Args:
@@ -381,7 +381,7 @@ class DDPG(AgentBase):
         value = self._target_critic(state, action)
         return value
 
-    def initalize(self):
+    def _initialize(self):
         '''Target actor and critic networks are initialized with same neural network weights as actor & critic network'''
         for layer in list(self._walk_model(self._target_critic)) + list(self._walk_model(self._target_actor)):
             if hasattr(layer, "params") and False:
@@ -403,7 +403,7 @@ class DDPG(AgentBase):
             if isinstance(v, rm.Model) and v != self:
                 yield from self._walk_model(v)
 
-    def update(self):
+    def _update(self):
         '''Updare target networks'''
         for ql, tql in zip(self._walk_model(self._actor), self._walk_model(self._target_actor)):
             if not hasattr(ql, 'params'):
