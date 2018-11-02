@@ -169,6 +169,3 @@ Additional ignored files
 /.project
 /.pydevproject
 /doc/_build
-
-# All ".DS_Store"
-.DS_Store
