@@ -129,7 +129,7 @@ class DDPG(AgentBase):
         self.events = EventHandler()
         self._initialize()
 
-    def action(self, state):
+    def _action(self, state):
         """This method returns an action according to the given state.
         Args:
             state (ndarray): A state of an environment.
@@ -241,7 +241,7 @@ class DDPG(AgentBase):
             for j in range(epoch_step):
 
                 #set action
-                action = action_filter(self.action(state),
+                action = action_filter(self._action(state),
                                        step=step_count, episode=episode_count, epoch=e)
                 e_rate = action_filter.value()
 
@@ -439,7 +439,7 @@ class DDPG(AgentBase):
 
         if test_step is None:
             while True:
-                action = action_filter.test(self.action(state))
+                action = action_filter.test(self._action(state))
 
                 state, reward, terminal = self.env.step(action)
 
@@ -451,7 +451,7 @@ class DDPG(AgentBase):
                     break
         else:
             for j in range(test_step):
-                action = action_filter.test(self.action(state))
+                action = action_filter.test(self._action(state))
 
                 state, reward, terminal = self.env.step(action)
 
