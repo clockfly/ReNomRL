@@ -225,6 +225,8 @@ class ActionNoiseFilter(object):
     def value(self):
         raise NotImplemented
 
+    def sample(self):
+        raise NotImplemented
 
 
 
@@ -271,6 +273,8 @@ class AddNoiseFilter(ActionNoiseFilter):
 
         self.epsilon = self.func.epsilon
 
+        self.noise_value=0
+
 
     def __call__(self, action,
                  step=None, episode=None, epoch=None):
@@ -278,20 +282,26 @@ class AddNoiseFilter(ActionNoiseFilter):
         epsilon = self.func(step, episode, epoch)
 
         self.epsilon = epsilon
+        self.noise_value = self.noise.sample(action) * epsilon
 
-        return action + self.noise.sample(action) * epsilon
+        return action + self.noise_value
 
     def test(self,action):
 
         epsilon = self.test_func()
 
         self.epsilon = epsilon
+        self.noise_value = self.noise.sample(action) * epsilon
 
-        return action + self.noise.sample(action) * epsilon
+        return action + self.noise_value
 
     def value(self):
 
         return self.epsilon
+
+    def sample(self):
+
+        return self.noise_value
 
 
 class OUFilter(AddNoiseFilter):
@@ -414,9 +424,8 @@ class EpsilonSL(Epsilon):
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     epsilon_step = 25000 ):
 
-        super(StepLinear,self).__init__(initial,min,max)
+        super(EpsilonSL,self).__init__(initial,min,max)
 
-        self.test_epsilon = test_epsilon
         self.epsilon_step =  epsilon_step
         self.step_size = (max-min)/epsilon_step
 
@@ -450,7 +459,7 @@ class EpsilonEI(Epsilon):
     def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
                     alpha = 1 ):
 
-        super(StepLinear,self).__init__(initial,min,max)
+        super(EpsilonEI,self).__init__(initial,min,max)
 
         self.alpha = alpha
 
@@ -468,7 +477,8 @@ class EpsilonC(Epsilon):
     def __init__(self,epsilon=0.0):
         self.epsilon=epsilon
 
-    def call(self,step, episode, epoch):
+    def __call__(self,step=0, episode=0, epoch=0):
+
         return np.clip(self.epsilon,0,1)
 
 class Noise(object):
@@ -490,7 +500,6 @@ class OU(Noise):
     """
 
     def __init__(self, mu=0, theta=0.15, sigma=0.2):
-        self.noise_type = CONTINUOUS
         self.mu = mu
         self.theta = theta
         self.sigma = sigma
@@ -501,14 +510,13 @@ class OU(Noise):
             * np.random.randn(*shape)
 
 
-class GP(object):
+class GP(Noise):
     """
     **GP (Gaussian Noise)**
 
     Gaussian Noise.
     """
     def __init__(self, mean=0, std=0.1):
-        self.noise_type = CONTINUOUS
         self._mean = mean
         self._std = std
 

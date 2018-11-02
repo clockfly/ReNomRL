@@ -47,9 +47,9 @@ class Pendulum(BaseEnv):
         state, reward, terminal = self.env.step(action)[:3]
         return state.reshape(3), reward, terminal
 
-    def render(self):
-        """"""
-        self.env.render()
+    # def render(self):
+    #     """"""
+    #     self.env.render()
 
 
 class Breakout(BaseEnv):
@@ -92,9 +92,9 @@ class Breakout(BaseEnv):
         """"""
         return self.env.action_space.sample()
 
-    def render(self):
-        """"""
-        self.env.render()
+    # def render(self):
+    #     """"""
+    #     self.env.render()
 
     def _preprocess(self, state):
         resized_image = Image.fromarray(state).resize((84, 110)).convert('L')
@@ -129,3 +129,80 @@ class Breakout(BaseEnv):
             self.previous_frames += [state]
         state = np.stack(self.previous_frames)
         return state, np.array(np.sum(reward_list) > 0), terminal
+
+
+class CartPole01(BaseEnv):
+
+    """A wrapper environment of OpenAI gym "CartPole-v0".
+    When 200 step is stepped without error, then reward is +1, else -1.
+    Training loop brakes when reward +1 is recieved 10 times.
+
+    Example:
+        >>> import renom as rm
+        >>> from renom_rl.discrete.dqn import DQN
+        >>> from renom_rl.environ.openai import CartPole01
+        >>> env = CartPole01()
+        >>> model = rm.Sequential([
+        ...     rm.Dense(10),
+        ...     rm.Dense(2),
+        ... ])
+        ...
+        >>> agent = DQN(env, model)
+        >>> agent.fit()
+    """
+
+    def __init__(self):
+        self.action_shape = (2,)
+        self.state_shape = (4,)
+
+        self.env = gym.make('CartPole-v0')
+        self.step_continue=0
+        self.successful_episode=0
+        self.test_mode=False
+        self.reward=0
+
+
+
+    def reset(self):
+        return self.env.reset()
+
+
+    def sample(self):
+        rand=self.env.action_space.sample()
+        return rand
+
+    def step(self, action):
+        state,_,terminal,_=self.env.step(int(action))
+
+        self.step_continue+=1
+        reward=0
+
+        if terminal:
+            if self.step_continue >= 200:
+                reward=1
+                if self.test_mode==False:
+                    print(self.successful_episode)
+                    self.successful_episode+=1
+            else:
+                reward=-1
+            self.step_continue=0
+
+        self.reward=reward
+
+        return state, reward, terminal
+
+    def terminate(self):
+            if self.successful_episode >= 10:
+                self.successful_episode=0
+                return True
+            else:
+                return False
+
+    def test_start(self):
+        self.test_mode=True
+
+
+    def test_close(self):
+        self.env.close()
+        self.env.viewer=None
+        self.test_mode=False

@@ -151,9 +151,9 @@ class DoubleDQN(AgentBase):
         self._rec_copy(self._best_q_network, self._q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4, min_greedy=0.0,
+            test_step=2000, update_period=10000, train_frequency=4,
             action_filter=None,callback_end_epoch=None):
-            # max_greedy=0.9, epsilon_step=1000000, test_greedy=0.95, render=False,
+
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
 
@@ -200,10 +200,7 @@ class DoubleDQN(AgentBase):
             ...
 
         """
-        # greedy = min_greedy
-        # g_step = (max_greedy - min_greedy) / epsilon_step
 
-        # action filter is set, if not exist then make an instance
         action_filter = action_filter if action_filter is not None else EpsilonSLFilter(epsilon_step=int(0.8 * epoch * epoch_step))
 
         assert isinstance(action_filter, ActionFilter)
@@ -262,8 +259,6 @@ class DoubleDQN(AgentBase):
                 #pass it to env
                 next_state, reward, terminal = self.env.step(action)
 
-                # greedy += g_step
-                # greedy = np.clip(greedy, min_greedy, max_greedy)
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
@@ -321,6 +316,7 @@ class DoubleDQN(AgentBase):
 
                     self.env.reset()
 
+                #message print
                 msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
@@ -328,42 +324,47 @@ class DoubleDQN(AgentBase):
                 tq.set_description(msg)
                 tq.update(1)
 
+                #event handler
+                self.events.on("step", e,reward,self,step_count,episode_count,greedy)
+
                 #if terminate executes, then do execute "continue"
                 if self.env.terminate():
                     print("terminated")
                     break
 
             else:
+                # Calc
+                avg_error = train_loss / (j + 1)
+                avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
+                summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
+                summed_test_reward = self.test(test_step,action_filter)
+
+                self._append_history(e, avg_error, avg_train_reward,
+                                     summed_train_reward, summed_test_reward)
+
+                msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
+                    "avg train reward in episode:{:4.3f} e-greedy:{:4.3f}"
+                msg = msg.format(e, avg_error, summed_train_reward,
+                                 summed_test_reward, avg_train_reward, greedy)
+
+                print("pass")
+                self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
+                               summed_train_reward, summed_test_reward,greedy)
+
+                tq.set_description(msg)
+                tq.update(0)
+                tq.refresh()
+                tq.close()
                 continue
+
+
             tq.update(0)
             tq.refresh()
             tq.close()
             break
 
-            # Calc
-            avg_error = train_loss / (j + 1)
-            avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
-            summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-            summed_test_reward = self.test(test_step,action_filter)
-
-            self._append_history(e, avg_error, avg_train_reward,
-                                 summed_train_reward, summed_test_reward)
-
-            msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                "avg train reward in episode:{:4.3f} e-greedy:{:4.3f}"
-            msg = msg.format(e, avg_error, summed_train_reward,
-                             summed_test_reward, avg_train_reward, greedy)
-
-            self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
-                           summed_train_reward, summed_test_reward)
-
-            tq.set_description(msg)
-            tq.update(0)
-            tq.refresh()
-            tq.close()
-
-            #env close
-            self.env.close()
+        #env close
+        self.env.close()
 
     def test(self, test_step=None, action_filter=None, **kwargs):
         """

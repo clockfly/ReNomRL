@@ -141,9 +141,9 @@ class DDPG(AgentBase):
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()[0]
 
     def fit(self, epoch=1000, epoch_step=250000, batch_size=64, random_step=5000,
-            test_step=2000, train_frequency=1,action_filter=None,
+            test_step=2000, train_frequency=1, action_filter=None,
             ):
-            # min_greedy=0.01, max_greedy=1.0, greedy_step=10000, noise=OU()):
+
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
 
@@ -163,10 +163,7 @@ class DDPG(AgentBase):
             random_step (int): Number of random step which will be executed before training.
             test_step (int): Number of test step.
             train_frequency (int): For the learning step, training is done at this cycle.
-            min_greedy (int): Minimum greedy value.
-            max_greedy (int): Maximum greedy value.
-            greedy_step (int): Number of step.
-            noise (OU, GP): Ornstein-uhlenbeck noise or gaussian noise.
+            action_filter (ActionFilter): Exploration filter during learning. Default is ``OUFilter``.
 
         Example:
             >>> import renom as rm
@@ -205,8 +202,7 @@ class DDPG(AgentBase):
 
         """
 
-        # e_rate = max_greedy
-        # e_step = (min_greedy - max_greedy) / greedy_step
+
         _e=EpsilonSL(epsilon_step=int(0.8 * epoch * epoch_step))
         action_filter = action_filter if action_filter is not None else OUFilter(epsilon=_e)
 
@@ -225,8 +221,6 @@ class DDPG(AgentBase):
             state = next_state
             if terminal:
                 state = self.env.reset()
-            # else:
-            #     state = next_state
 
         count = 0 #update period
         step_count = 0 #steps
@@ -245,9 +239,6 @@ class DDPG(AgentBase):
             self.env.epoch()
 
             for j in range(epoch_step):
-                # action = self.action(state)
-                # sampled_noise = noise.sample(action) * e_rate
-                # action += sampled_noise
 
                 #set action
                 action = action_filter(self.action(state),
@@ -263,8 +254,6 @@ class DDPG(AgentBase):
                 sum_reward += reward
                 sum_reward_episode += reward
                 state = next_state
-                # e_rate += e_step
-                # e_rate = np.clip(e_rate, min_greedy, max_greedy)
 
                 if len(self._buffer) > batch_size and j % train_frequency == 0:
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
@@ -303,8 +292,8 @@ class DDPG(AgentBase):
                 sum_reward = float(sum_reward)
 
 
-                # tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
-                # tq.update(1)
+                tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
+                tq.update(1)
 
                 if terminal:
                     each_episode_reward.append(sum_reward_episode)
@@ -315,12 +304,15 @@ class DDPG(AgentBase):
                     # break
 
                 #for test
-                msg = "noise e-greedy:{:5.3f}"
-                msg = msg.format(e_rate)
+                # msg = "noise e-greedy:{:5.3f}"
+                # msg = msg.format(e_rate)
+                # tq.set_description(msg)
+                # tq.update(1)
 
                 step_count += 1
-                tq.set_description(msg)
-                tq.update(1)
+
+                #event handler
+                self.events.on("step", e,reward,self,step_count,episode_count,e_rate,action,action_filter.sample())
 
                 #if terminate executes, then do execute "continue"
                 if self.env.terminate():
@@ -328,39 +320,40 @@ class DDPG(AgentBase):
                     break
 
             else:
+                # Calc
+                avg_loss = float(loss) / (j + 1)
+                avg_train_reward = np.mean(each_episode_reward)
+                train_reward = sum_reward
+                test_reward = self.test(test_step, action_filter)
+
+                self._append_history(e, avg_loss, avg_train_reward,
+                                     train_reward, test_reward)
+
+                tq.set_description("Running test for {} step".format(test_step))
+                tq.update(0)
+                msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-rate:{:5.3f}"
+                msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
+
+                # msg = "action{} epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
+                # msg = msg.format(action, e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
+
+                self.events.on("end_epoch",
+                               e, self, train_reward, test_reward, avg_loss)
+
+                tq.set_description(msg)
+                tq.update(0)
+                tq.refresh()
+                tq.close()
                 continue
+
+
             tq.update(0)
             tq.refresh()
             tq.close()
             break
 
-            # Calc
-            avg_loss = float(loss) / (j + 1)
-            avg_train_reward = np.mean(each_episode_reward)
-            train_reward = sum_reward
-            test_reward = self.test(test_step, action_filter)
-
-            self._append_history(e, avg_loss, avg_train_reward,
-                                 train_reward, test_reward)
-
-            tq.set_description("Running test for {} step".format(test_step))
-            tq.update(0)
-            msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
-            msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
-
-            # msg = "action{} epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
-            # msg = msg.format(action, e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
-
-            self.events.on("end_epoch",
-                           e, self, train_reward, test_reward, avg_loss)
-
-            tq.set_description(msg)
-            tq.update(0)
-            tq.refresh()
-            tq.close()
-
-            #env close
-            self.env.close()
+        #env close
+        self.env.close()
 
     def value_function(self, state):
         '''Value of predict network Q_predict(s,a)

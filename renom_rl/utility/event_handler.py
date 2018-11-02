@@ -10,7 +10,7 @@ class EventHandler(object):
     def __getattr__(self, name):
         def deco(f):
             self._events[name] = f
-            return f
+            # return f
         return deco
 
     def __setattr__(self, name, f):

@@ -319,42 +319,47 @@ class DQN(AgentBase):
                 tq.set_description(msg)
                 tq.update(1)
 
+                #event handler
+                self.events.on("step", e,reward,self,step_count,episode_count,greedy)
+
                 #if terminate executes, then do execute "continue"
                 if self.env.terminate():
                     print("terminated")
                     break
 
             else:
+                # Calc
+                avg_error = train_loss / (j + 1)
+                avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
+                summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
+                summed_test_reward = self.test(test_step,action_filter)
+
+                self._append_history(e, avg_error, avg_train_reward,
+                                     summed_train_reward, summed_test_reward)
+
+                msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
+                    "avg train reward in episode:{:4.3f} epsilon :{:4.3f}"
+                msg = msg.format(e, avg_error, summed_train_reward,
+                                 summed_test_reward, avg_train_reward, greedy)
+
+                self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
+                               summed_train_reward, summed_test_reward)
+
+                tq.set_description(msg)
+                tq.update(0)
+                tq.refresh()
+                tq.close()
                 continue
+
+
             tq.update(0)
             tq.refresh()
             tq.close()
             break
 
-            # Calc
-            avg_error = train_loss / (j + 1)
-            avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
-            summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-            summed_test_reward = self.test(test_step,action_filter)
 
-            self._append_history(e, avg_error, avg_train_reward,
-                                 summed_train_reward, summed_test_reward)
-
-            msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                "avg train reward in episode:{:4.3f} epsilon :{:4.3f}"
-            msg = msg.format(e, avg_error, summed_train_reward,
-                             summed_test_reward, avg_train_reward, epsilon)
-
-            self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
-                           summed_train_reward, summed_test_reward)
-
-            tq.set_description(msg)
-            tq.update(0)
-            tq.refresh()
-            tq.close()
-
-            #env close
-            self.env.close()
+        #env close
+        self.env.close()
 
     def test(self, test_step=None, action_filter=None, **kwargs):
         """
