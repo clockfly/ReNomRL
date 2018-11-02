@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 14:47+0900\n"
+"POT-Creation-Date: 2018-11-02 11:37+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: of renom_rl.environ.openai.Pendulum:1
 msgid "A wrapper environment of OpenAI gym \"Pendulum-v0\"."
-msgstr "OpenAI gym 'Pendulum-v0' モジュールのラッパークラス."
+msgstr ""
 
 #: of renom_rl.environ.openai.Pendulum:3
 msgid "-**OpenAI Gym**"
@@ -39,4 +39,20 @@ msgstr ""
 
 #: of renom_rl.environ.openai.Breakout:1
 msgid "A wrapper environment of OpenAI gym \"Breakout-v0\"."
-msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラス."
+msgstr ""
+
+#~ msgid "A wrapper environment of OpenAI gym \"Pendulum-v0\"."
+#~ msgstr "OpenAI gym 'Pendulum-v0' モジュールのラッパークラス."
+
+#~ msgid "-**OpenAI Gym**"
+#~ msgstr ""
+
+#~ msgid "https://github.com/openai/gym"
+#~ msgstr ""
+
+#~ msgid "Example"
+#~ msgstr ""
+
+#~ msgid "A wrapper environment of OpenAI gym \"Breakout-v0\"."
+#~ msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラス."
+
