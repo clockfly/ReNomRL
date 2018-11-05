@@ -5,24 +5,24 @@ import numpy as np
 
 def check_step_method(func, action, state):
     args = inspect.getargspec(func)[0]
-    assert len(args) > 1, "Please define argument `action`. Actual argument is {}.".format(args[1:])
+    assert len(args) > 1, "Please define argument ``action``. Actual argument is {}.".format(args[1:])
     ret = func(action)
-    assert ret and len(ret) == 3, "Please define return values `state`, `reward` and `terminal`."
+    assert ret and len(ret) == 3, "Please define return values ``state``, ``reward`` and ``terminal``."
     assert hasattr(ret[0], "shape") and ret[0].shape == state.shape, \
-        "Please set the shape of the return value `state` same as `self.state_shape`. Expect {}, actual is {}.".format(
+        "Please set the shape of the return value ``state`` same as ``self.state_shape``. Expect {}, actual is {}.".format(
             state.shape, ret[0].shape)
 
 
 def check_sample_method(func, action, state):
     ret = func()
-    assert ret is not None, "Please define return value `random_action`."
+    assert ret is not None, "Please define return value ``random_action``."
 
 
 def check_reset_method(func, action, state):
     ret = func()
-    assert ret is not None, "Please define return value `initial_state`."
+    assert ret is not None, "Please define return value ``initial_state``."
     assert hasattr(ret[0], "shape") and ret.shape == state.shape, \
-        "Please set the shape of the return value `initial_state` same as `self.state_shape`. Expect {}, actual is {}.".format(
+        "Please set the shape of the return value ``initial_state`` same as ``self.state_shape``. Expect {}, actual is {}.".format(
             state.shape, ret.shape)
 
 
@@ -89,7 +89,7 @@ class BaseEnv(object):
             |
 
         """
-        raise NotImplementedError("Please override `step` method.")
+        raise NotImplementedError("Please override ``step`` method.")
 
     def sample(self):
         """This method must be overridden.
@@ -98,7 +98,7 @@ class BaseEnv(object):
         Returns:
             (int, ndarray): Sampled action. Its shape must be same as BaseEnv.action_shape.
         """
-        raise NotImplementedError("Please override `sample` method.")
+        raise NotImplementedError("Please override ``sample`` method.")
 
     def reset(self):
         """This method must be overridden.
@@ -106,7 +106,7 @@ class BaseEnv(object):
         Returns:
             (int, ndarray): Initial state. Its shape must be same as BaseEnv.state_shape.
         """
-        raise NotImplementedError("Please override `reset` method.")
+        raise NotImplementedError("Please override ``reset`` method.")
 
     # change def()
     def terminate(self):
@@ -120,7 +120,7 @@ class BaseEnv(object):
     def start(self):
         """ This is optional.
         This method will be called when fit function starts.
-        This will execute after `reset`.
+        This will execute after ``reset``.
         """
         pass
 
@@ -133,7 +133,7 @@ class BaseEnv(object):
 
     def epoch_step(self):
         """ This is optional.
-        This method will be called when epoch_step is reset.
+        This method will be called every step.
         This will execute after ``step``.
         """
         pass
@@ -153,8 +153,8 @@ class BaseEnv(object):
 
     def test_epoch_step(self):
         """ This is optional.
-        This method will be called when epoch is reset.
-        This will execute after ``reset``.
+        This method will be called every step.
+        This will execute after ``step``.
         """
         self.epoch_step()
 

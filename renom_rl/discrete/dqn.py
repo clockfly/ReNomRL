@@ -19,10 +19,10 @@ class DQN(AgentBase):
     This class provides a reinforcement learning agent including training method.
 
     Args:
-        env (BaseEnv): Environment. This must be a child class of BaseEnv.
-        q_network (Model): Q-Network.
-        loss_func (function): Loss function for train q-network. Default is ClippedMeanSquaredError().
-        optimizer: Optimizer for train q-network. Default is Rmsprop(lr=0.00025, g=0.95).
+        env (BaseEnv): Environment. This must be a child class of ``BaseEnv``.
+        q_network (Model): Agent. Q-Network.
+        loss_func (function): Loss function for train q-network. Default is ``ClippedMeanSquaredError()``.
+        optimizer: Optimizer for train q-network. Default is ``Rmsprop(lr=0.00025, g=0.95)``.
         gamma (float): Discount rate.
         buffer_size (float, int): The size of replay buffer.
 
@@ -152,17 +152,6 @@ class DQN(AgentBase):
             action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
-
-        You can define following callback functions.
-
-        | - end_epoch
-        |     Args:
-        |         epoch (int): The number of current epoch.
-        |         model (DQN): Object of DQN which is on training.
-        |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
-        |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
-        |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
-        |
 
         Args:
             epoch (int): Number of epoch for training.
@@ -363,7 +352,7 @@ class DQN(AgentBase):
             action_filter (ActionFilter): Exploartion filter during test. Default is `ConstantFilter(threshold=1.0)`.
 
         Returns:
-            (int): Sum of rewards.
+            Sum of rewards.
         """
 
         # if filter_obj argument was specified, the change the object

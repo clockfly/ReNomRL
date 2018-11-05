@@ -19,16 +19,15 @@ from renom_rl.utility.filter import EpsilonSL, ActionNoiseFilter, OUFilter, NoNo
 class DDPG(AgentBase):
     """DDPG class
 
-    This class provides a reinforcement learning agent including training and testing methods.
-    This class only accepts 'Environment' as a object of 'BaseEnv' class.
+    This class provides a reinforcement learning for DDPG.
 
     Args:
-        env (BaseEnv): An instance of Environment to be learned.
+        env (BaseEnv): Environment. This must be a child class of ``BaseEnv``.
         actor_network (Model): Actor-Network.
-        critic_network (Model): Critic-Network. Basically this is a Q(s,a) function Network.
-        loss_func: Loss function for critic network. Default is MeanSquaredError()
-        actor_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.0001)
-        critic_optimizer : Optimizer object for training actor network. Default is Adam(lr=0.001)
+        critic_network (Model): Critic-Network. This is a Q(s,a) Network. Requires state and action input.
+        loss_func: Loss function for critic network. Default is ``MeanSquaredError()``
+        actor_optimizer : Optimizer object for training actor network. Default is ``Adam(lr=0.0001)``
+        critic_optimizer : Optimizer object for training actor network. Default is ``Adam(lr=0.001)``
         gamma (float): Discount rate.
         tau (float): target_networks update parameter. If this is 0, weight parameters will be copied.
         buffer_size (float, int): The size of replay buffer.
@@ -146,15 +145,6 @@ class DDPG(AgentBase):
 
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
-
-        | - end_epoch
-        |     Args:
-        |         epoch (int): The number of current epoch.
-        |         model (DDPG): Object of DDPG which is on training.
-        |         summed_train_reward_in_current_epoch (float): Sum of train rewards earned in current epoch.
-        |         summed_test_reward_in_current_epoch (float): Sum of test rewards.
-        |         average_train_loss_in_current_epoch (float): Average train loss in current epoch.
-        |
 
         Args:
             epoch (int): Training number of epochs.
@@ -423,10 +413,10 @@ class DDPG(AgentBase):
 
         Args:
             test_step (int, None): Number of steps for test. If None is given, this method tests just 1 episode.
-            render (bool): If True is given, BaseEnv.render() method will be called.
+            action_filter (ActionFilter): Exploration filter during learning. Default is ``ConstantFilter(threshold=1.0)``.
 
         Returns:
-            (int): Sum of rewards.
+            Sum of rewards.
         """
         # if filter_obj argument was specified, the change the object
         action_filter = action_filter if action_filter is not None else NoNoiseFilter()
