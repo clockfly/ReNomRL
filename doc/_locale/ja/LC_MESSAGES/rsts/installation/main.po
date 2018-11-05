@@ -24,7 +24,7 @@ msgstr ""
 
 #: ../../rsts/installation/main.rst:4
 msgid "ReNom RL can be downloaded from the URL below."
-msgstr "ReNom RL は以下のURL からダウンロード可能です。"
+msgstr "ReNom RL は以下のURL からダウンロード可能です. "
 
 #: ../../rsts/installation/main.rst:6
 msgid "URL: https://github.com/ReNom-dev-team/ReNomRL.git"
@@ -34,7 +34,7 @@ msgstr ""
 msgid ""
 "OpenAI’s Gym are frequently used in tutorials, problem solving, etc. We "
 "recommend you download it."
-msgstr "また Open AIのgym を利用する場面が多くあります。ダウンロードすることを推奨します。"
+msgstr "また Open AIのgym を利用する場面が多くあります. ダウンロードすることを推奨します. "
 
 #: ../../rsts/installation/main.rst:17
 msgid "URL : https://github.com/openai/gym#installation"

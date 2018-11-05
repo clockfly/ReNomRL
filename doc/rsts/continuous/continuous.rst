@@ -5,6 +5,6 @@ Here, we provide RL for continuous action space. Users can use already built alg
 
 .. toctree::
 
-   renom_rl.continuous.ddpg
+   ddpg
 
 

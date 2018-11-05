@@ -7,7 +7,7 @@ ReNomsRL version 0.2
 ===================================
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
     rsts/introduction
     rsts/how_to_use

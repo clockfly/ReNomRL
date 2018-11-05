@@ -5,5 +5,5 @@ Here are the modules to create environment class. Users can create their own env
 
 .. toctree::
 
-   renom_rl.environ.env
-   renom_rl.environ.openai
+   env
+   openai

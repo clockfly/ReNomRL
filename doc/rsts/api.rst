@@ -8,10 +8,9 @@ This page the API renferece for ReNomRL. The following index is structured based
 .. toctree::
     :maxdepth: 1
     
-    continuous/renom_rl.continuous
-    discrete/renom_rl.discrete
-    environ/renom_rl.environ
-    utility/renom_rl.utility
+    continuous/continuous
+    discrete/discrete
+    environ/environ
+    utility/utility
 
-..
-    utility/renom_rl.utility
+

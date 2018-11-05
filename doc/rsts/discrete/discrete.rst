@@ -5,6 +5,6 @@ Here, we provide RL for discrete action space.  Users can use already built algo
 
 .. toctree::
 
-   renom_rl.discrete.dqn
-   renom_rl.discrete.double_dqn
+   dqn
+   double_dqn
 
