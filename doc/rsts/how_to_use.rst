@@ -42,71 +42,41 @@ For example, when creating an original environment called CustomEnv(), the imple
 
 .. code-block:: python
 
-    import gym
-    from renom_rl.environ import BaseEnv
+  class CustomEnv(BaseEnv):
 
-    env = gym.make('BreakoutNoFrameskip-v4')
+      def __init__(self, env):
+          self.action_shape = (2,)
+          self.state_shape = (4,)
 
-    class CustomEnv(BaseEnv):
+          self.env=env
+          self.step_continue=0
+          self.reward=0
 
-        def __init__(self, env):
-            self.env = env
-            self.action_shape = 4
-            self.state_shape = (4, 84, 84)
-            self.previous_frames = []
-            self._reset_flag = True
-            self._last_live = 5
-            super(CustomEnv, self).__init__()
 
-        def reset(self):
-            if self._reset_flag:
-                self._reset_flag = False
-                self.env.reset()
-            n_step = np.random.randint(4, 32+1)
-            for _ in range(n_step):
-                state, _, _ = self.step(self.env.action_space.sample())
-            return state
 
-        def sample(self):
-            return self.env.action_space.sample()
+      def reset(self):
+          return self.env.reset()
 
-        def render(self):
-            self.env.render()
 
-        def _preprocess(self, state):
-            resized_image = Image.fromarray(state).resize((84, 110)).convert('L')
-            image_array = np.asarray(resized_image)/255.
-            final_image = image_array[26:110]
-            # Confirm that the image is processed correctly.
-            # Image.fromarray(np.clip(final_image.reshape(84, 84)*255, 0, 255).astype(np.uint8)).save("test.png")
-            return final_image
+      def sample(self):
+          rand=env.action_space.sample()
+          return rand
 
-        def step(self, action):
-            state_list = []
-            reward_list = []
-            terminal = False
-            for _ in range(4):
-                # Use last frame. Other frames will be skipped.
-                s, r, t, info = self.env.step(action)
-                state = self._preprocess(s)
-                reward_list.append(r)
-                if self._last_live > info["ale.lives"]:
-                    t = True
-                    self._last_live = info["ale.lives"]
-                    if self._last_live > 0:
-                        self._reset_flag = False
-                    else:
-                        self._last_live = 5
-                        self._reset_flag = True
-                if t:
-                    terminal = True
+      def step(self, action):
+          state,_,terminal,_=env.step(int(action))
 
-            if len(self.previous_frames) > 3:
-                self.previous_frames = self.previous_frames[1:] + [state]
-            else:
-                self.previous_frames += [state]
-            state = np.stack(self.previous_frames)
-            return state, np.array(np.sum(reward_list) > 0), terminal
+          self.step_continue+=1
+          reward=0
+
+          if terminal:
+              if self.step_continue >= 200:
+                  reward=1
+              else:
+                  reward=-1
+
+          self.reward=reward
+
+          return state, reward, terminal
 
     new_env=CustomEnv()
 
@@ -118,16 +88,12 @@ In this section, we use ReNom DL to build a model. Define the model as shown bel
 
 .. code-block:: python
 
-    q_network = rm.Sequential([rm.Conv2d(32, filter=8, stride=4),
-                               rm.Relu(),
-                               rm.Conv2d(64, filter=4, stride=2),
-                               rm.Relu(),
-                               rm.Conv2d(64, filter=3, stride=1),
-                               rm.Relu(),
-                               rm.Flatten(),
-                               rm.Dense(512),
-                               rm.Relu(),
-                               rm.Dense(custom_env.action_shape)])
+  import renom as rm
+  q_network = rm.Sequential([rm.Dense(30, ignore_bias=True),
+                             rm.Relu(),
+                             rm.Dense(30, ignore_bias=True),
+                             rm.Relu(),
+                             rm.Dense(2, ignore_bias=True)])
 
 3-Implementation of Reinforcement Learning
 ---------------------------------------------------------------------
@@ -136,7 +102,6 @@ After preparing the environment and the model, we now implement using a certain 
 
 .. code-block:: python
 
-    import renom as rm
     from renom_rl.discrete.dqn import DQN
 
     model = DQN(custom_env, q_network)

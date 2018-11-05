@@ -23,7 +23,7 @@ msgstr ""
 
 #: of renom_rl.environ.openai.Pendulum:1
 msgid "A wrapper environment of OpenAI gym \"Pendulum-v0\"."
-msgstr "OpenAI gym 'Pendulum-v0' モジュールのラッパークラス."
+msgstr "OpenAI gym 'Pendulum-v0' モジュールのラッパークラスです."
 
 #: of renom_rl.environ.openai.Pendulum:3
 msgid "-**OpenAI Gym**"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: of renom_rl.environ.openai.Breakout:1
 msgid "A wrapper environment of OpenAI gym \"Breakout-v0\"."
-msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラス."
+msgstr "OpenAI gym 'Breakout-v0' モジュールのラッパークラスです."
 
 #: of renom_rl.environ.openai.CartPole01:1
 msgid ""
@@ -48,6 +48,6 @@ msgid ""
 "stepped without error, then reward is +1, else -1. Training loop brakes "
 "when reward +1 is recieved 10 times."
 msgstr ""
-"OpenAI gym ‘CartPole-v0’ モジュールのラッパークラス. 200 step 以上倒立でき"
-"たら, 報酬を+1, 報酬を-1 とする. Training loop は報酬 +1 を10回入手したとき"
-"に break する."
+"OpenAI gym ‘CartPole-v0’ モジュールのラッパークラスです. 200 step 以上倒立でき"
+"たら, 報酬を+1, 報酬を-1 とします. Training loop は報酬 +1 を10回入手したとき"
+"に break します."
