@@ -1,4 +1,4 @@
-# ReNomIMG Document
+# ReNomRL Document
 
 ### Requirements
 - sphinx

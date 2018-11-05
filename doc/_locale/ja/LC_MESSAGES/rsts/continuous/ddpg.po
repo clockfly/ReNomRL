@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-03 16:09+0900\n"
+"PO-Revision-Date: 2018-11-05 09:33+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+"Language: ja\n"
+"X-Generator: Poedit 2.1.1\n"
+
+#: ../../rsts/continuous/renom_rl.continuous.ddpg.rst:2
+msgid "renom_rl.continuous.ddpg"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:1
+msgid "Bases: :class:`renom_rl.AgentBase`"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:1
+msgid "DDPG class"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:3
+msgid "This class provides a reinforcement learning for DDPG."
+msgstr "DDPG は学習アルゴリズムを含んだモデルです. "
+
+#: of renom_rl.continuous.ddpg.DDPG:5
+msgid "Environment. This must be a child class of ``BaseEnv``."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:7
+msgid "Actor-Network."
+msgstr "エージェント. アクターネットワーク. "
+
+#: of renom_rl.continuous.ddpg.DDPG:9
+msgid "Critic-Network. This is a Q(s,a) Network. Requires state and action input."
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:11
+msgid "Loss function for critic network. Default is ``MeanSquaredError()``"
+msgstr "損失関数. デフォルトは ``MeanSquaredError()`` "
+
+#: of renom_rl.continuous.ddpg.DDPG:12
+msgid "Optimizer object for training actor network. Default is ``Adam(lr=0.0001)``"
+msgstr "アクターネットワークのOptimizer. デフォルトは ``Adam(lr=0.0001)``"
+
+#: of renom_rl.continuous.ddpg.DDPG:13
+msgid "Optimizer object for training actor network. Default is ``Adam(lr=0.001)``"
+msgstr "クリティックネットワークのOptimizer. デフォルトは ``Adam(lr=0.0001)``"
+
+#: of renom_rl.continuous.ddpg.DDPG:14
+msgid "Discount rate."
+msgstr "割引率"
+
+#: of renom_rl.continuous.ddpg.DDPG:16
+msgid "target_networks update parameter. If this is 0, weight parameters will be copied."
+msgstr "ターゲットネットワークの更新割合. ０の時は, エージェントとアクターネットワークの重みがそのままの状態で, コピーされる. "
+
+#: of renom_rl.continuous.ddpg.DDPG:18
+msgid "The size of replay buffer."
+msgstr "replay buffer のサイズ"
+
+#: of renom_rl.continuous.ddpg.DDPG:23 renom_rl.continuous.ddpg.DDPG.fit:21
+msgid "Example"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG:59
+msgid "Reference:"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "Continuous control with deep reinforcement learning"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG
+msgid "https://arxiv.org/abs/1509.02971"
+msgstr ""
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:1
+msgid "This method executes training of an actor-network. Here, target actor & critic network weights are updated after every actor & critic update using self.tau"
+msgstr "このメソッドは エージェント の学習を開始します. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:4
+msgid "Training number of epochs."
+msgstr "学習のためのエポック数. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:6
+msgid "Number of step of one epoch."
+msgstr "１エポックにおけるステップ数. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:8
+msgid "Batch size."
+msgstr "バッチサイズ. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:10
+msgid "Number of random step which will be executed before training."
+msgstr "乱数による行動選択. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:12
+msgid "Number of test step."
+msgstr "テストステップ数. ０の場合は, テストが終了するまで実行する. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:14
+msgid "For the learning step, training is done at this cycle."
+msgstr "学習を実行する頻度. "
+
+#: of renom_rl.continuous.ddpg.DDPG.fit:16
+msgid "Exploration filter during learning. Default is ``OUFilter``."
+msgstr "探索を実現する行動フィルタ. デフォルトは　``OUFilter``. "
+
+#: of renom_rl.continuous.ddpg.DDPG.test:1
+msgid "Test the trained agent."
+msgstr "エージェントのテストを実行します. "
+
+#: of renom_rl.continuous.ddpg.DDPG.test:3
+msgid "Number of steps for test. If None is given, this method tests just 1 episode."
+msgstr "エージェントが実行するテストステップ数. ０の場合は, テストが終了するまで実行する. "
+
+#: of renom_rl.continuous.ddpg.DDPG.test:5
+msgid "Exploration filter during learning. Default is ``ConstantFilter(threshold=1.0)``."
+msgstr "探索を実現する行動フィルタ. デフォルトは ``OUFilter``. "
+
+#: of renom_rl.continuous.ddpg.DDPG.test:9
+msgid "Sum of rewards."
+msgstr "報酬の合計値. "
+
+#~ msgid "Parameters"
+#~ msgstr ""
+
+#~ msgid "Returns"
+#~ msgstr ""
+
+#~ msgid "Return type"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`renom_rl.AgentBase`"
+#~ msgstr ""
+
+#~ msgid "DDPG class"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This class provides a reinforcement "
+#~ "learning agent including training and "
+#~ "testing methods. This class only accepts"
+#~ " 'Environment' as a object of "
+#~ "'BaseEnv' class."
+#~ msgstr "DDPG クラスは学習アルゴリズムを含んだモデルです. "
+
+#~ msgid "An instance of Environment to be learned."
+#~ msgstr "Evironmentです. BaseEnv を親クラスに持ちます. "
+
+#~ msgid "Actor-Network."
+#~ msgstr ""
+
+#~ msgid "Critic-Network. Basically this is a Q(s,a) function Network."
+#~ msgstr "クリティックネットワーク. "
+
+#~ msgid "Loss function for critic network. Default is MeanSquaredError()"
+#~ msgstr "Critic-Networkを学習させるための誤差関数. デフォルトでは, MeanSquaredError()."
+
+#~ msgid "Optimizer object for training actor network. Default is Adam(lr=0.0001)"
+#~ msgstr "Actor-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.0001)."
+
+#~ msgid "Optimizer object for training actor network. Default is Adam(lr=0.001)"
+#~ msgstr "Critic-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.001)."
+
+#~ msgid "Discount rate."
+#~ msgstr "割引率."
+
+#~ msgid ""
+#~ "target_networks update parameter. If this "
+#~ "is 0, weight parameters will be "
+#~ "copied."
+#~ msgstr ""
+#~ "Target Networkの重みパラメータを更新するモメンタム係数. target_weight <-"
+#~ " (1 - tau)*target_weight + tau*weight"
+
+#~ msgid "The size of replay buffer."
+#~ msgstr "Experience replay bufferのサイズ."
+
+#~ msgid "Example"
+#~ msgstr ""
+
+#~ msgid "Reference:"
+#~ msgstr ""
+
+#~ msgid "Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,"
+#~ msgstr ""
+
+#~ msgid "Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, Daan Wierstra,"
+#~ msgstr ""
+
+#~ msgid "Continuous control with deep reinforcement learning"
+#~ msgstr ""
+
+#~ msgid "https://arxiv.org/abs/1509.02971"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This method returns an action according"
+#~ " to the given state. :param state:"
+#~ " A state of an environment."
+#~ msgstr ""
+
+#~ msgid "Action."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This method executes training of an "
+#~ "actor-network. Here, target actor & "
+#~ "critic network weights are updated after"
+#~ " every actor & critic update using"
+#~ " self.tau"
+#~ msgstr "定数tauに基づいて, Target Networkを更新する."
+
+#~ msgid "- end_epoch"
+#~ msgstr ""
+
+#~ msgid "Args:"
+#~ msgstr ""
+
+#~ msgid "epoch (int): The number of current epoch."
+#~ msgstr ""
+
+#~ msgid "model (DDPG): Object of DDPG which is on training."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "summed_train_reward_in_current_epoch (float): Sum of"
+#~ " train rewards earned in current "
+#~ "epoch."
+#~ msgstr ""
+
+#~ msgid "summed_test_reward_in_current_epoch (float): Sum of test rewards."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "average_train_loss_in_current_epoch (float): Average "
+#~ "train loss in current epoch."
+#~ msgstr ""
+
+#~ msgid "Training number of epochs."
+#~ msgstr "学習を行うepoch数."
+
+#~ msgid "Number of step of one epoch."
+#~ msgstr "それぞれのepochで実行するstep数."
+
+#~ msgid "Batch size."
+#~ msgstr "バッチサイズ."
+
+#~ msgid "Number of random step which will be executed before training."
+#~ msgstr "学習前に, ランダムに経験を獲得するstep数."
+
+#~ msgid "Number of test step."
+#~ msgstr "Test時に実行するstep数."
+
+#~ msgid "For the learning step, training is done at this cycle."
+#~ msgstr "Networkを学習する頻度."
+
+#~ msgid "Minimum greedy value."
+#~ msgstr ""
+
+#~ msgid "Maximum greedy value."
+#~ msgstr ""
+
+#~ msgid "Number of step."
+#~ msgstr ""
+
+#~ msgid "Ornstein-uhlenbeck noise or gaussian noise."
+#~ msgstr ""
+
+#~ msgid "Value of predict network Q_predict(s,a)"
+#~ msgstr ""
+
+#~ msgid "input state"
+#~ msgstr ""
+
+#~ msgid "Q(s,a) value"
+#~ msgstr ""
+
+#~ msgid "Value of target network Q_target(s,a)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Target actor and critic networks are "
+#~ "initialized with same neural network "
+#~ "weights as actor & critic network"
+#~ msgstr ""
+
+#~ msgid "Updare target networks"
+#~ msgstr ""
+
+#~ msgid "Test the trained agent."
+#~ msgstr "エージェントをテストを実行するメソッド."
+
+#~ msgid ""
+#~ "Number of steps for test. If None"
+#~ " is given, this method tests just "
+#~ "1 episode."
+#~ msgstr "Test時に実行するstep数. Noneが与えられた場合, 1episode分のTestが実行される."
+
+#~ msgid "If True is given, BaseEnv.render() method will be called."
+#~ msgstr "エージェントが実行するテストステップ数. ０の場合は, テストが終了するまで実行する. "
+
+#~ msgid "Sum of rewards."
+#~ msgstr "獲得報酬の総和"

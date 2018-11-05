@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-31 10:24+0900\n"
-"PO-Revision-Date: 2018-11-02 14:42+0900\n"
+"PO-Revision-Date: 2018-11-02 14:45+0900\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,18 +19,12 @@ msgstr ""
 "Language: ja\n"
 "X-Generator: Poedit 2.2\n"
 
-#: ../../rsts/api.rst:2
-msgid "API"
+#: ../../rsts/discrete/renom_rl.discrete.rst:2
+msgid "renom_rl.discrete"
 msgstr ""
 
-#: ../../rsts/api.rst:4
+#: ../../rsts/discrete/renom_rl.discrete.rst:4
 msgid ""
-"This page the API renferece for ReNomRL. The following index is "
-"structured based on the ReNomRL API."
-msgstr ""
-"ReNomRLのAPIのリファレンスです. 以下のindexはReNomRL APIに基づい"
-"ています."
-
-#: ../../rsts/api.rst:6
-msgid "**Table of Index**"
-msgstr ""
+"Here, we provide RL for discrete action space.  Users can use already "
+"built algorithms to train their agent."
+msgstr "離散確率空間のための強化学習モジュール一覧です."

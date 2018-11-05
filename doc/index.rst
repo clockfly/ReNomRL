@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ReNomRL version 0.0
+ReNomsRL version 0.2
 ===================================
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
     rsts/introduction
     rsts/how_to_use

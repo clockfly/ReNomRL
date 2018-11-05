@@ -1,0 +1,136 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-10-31 10:24+0900\n"
+"PO-Revision-Date: 2018-11-03 16:14+0900\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.1.1\n"
+"Language: ja\n"
+
+#: ../../rsts/utility/actionfilter.rst:2
+msgid "renom_rl.utility.filter (1): Action Filter Series"
+msgstr ""
+
+#: of renom_rl.utility.filter.ActionFilter:1
+msgid "**Action Filter**"
+msgstr ""
+
+#: of renom_rl.utility.filter.ActionFilter:3
+msgid ""
+"This is the class of action filter. Action Filter allows the Agent to explore "
+"instead of being deterministic in discrete space. Class such as epsilon greedy "
+"have this as its parent object. Users will get an error if this was not used "
+"as the filter. ``__call__``, ``test``, ``value`` functions are required."
+msgstr ""
+"アクションフィルタのクラス. アクションフィルタはエージェントに離散空間で決定的"
+"になる代わりに探索をさせます. ϵ -greedy法のようなクラスはこれを親オブジェクトと"
+"して持っています. これがフィルタとして使われなかった場合, エラーが起きます. "
+"``__call__``, ``test``, ``value`` 関数が必要です."
+
+#: of renom_rl.utility.filter.EpsilonGreedyFilter:1
+msgid "**Epsilon Greedy Filter**"
+msgstr ""
+
+#: of renom_rl.utility.filter.EpsilonGreedyFilter:3
+msgid ""
+"This class allows users to custom and decide action using epsilon greedy "
+"filter. By specifying the epsilon arugments with Epsilon class, the epsilon "
+"will change (or stay the same). Floats can also be used when constant is "
+"required."
+msgstr ""
+"ϵ -greedy法を用いて行動をカスタムしたり決定するためのクラス. Epsilonクラスの引"
+"数epsilonを特定することで, epsilonは変わります(あるいは同じ値にとどまる). 定数"
+"が必要なときは小数が使われます."
+
+#: of renom_rl.utility.filter.EpsilonGreedyFilter:7
+msgid "Epsilon during training. Default is ``EpsilonSL(1,0,1,25000)``."
+msgstr "トレーニング中のepsilon. デフォルトは ``EpsilonSL(1,0,1,25000)``."
+
+#: of renom_rl.utility.filter.EpsilonGreedyFilter:9
+msgid "Epsilon during test. Default is ``EpsilonC(0)``."
+msgstr "テスト中のepsilon. デフォルトは ``EpsilonC(0)``."
+
+#: of renom_rl.utility.filter.EpsilonCFilter:12
+#: renom_rl.utility.filter.EpsilonEIFilter:26
+#: renom_rl.utility.filter.EpsilonGreedyFilter:14
+#: renom_rl.utility.filter.EpsilonSLFilter:26
+msgid "Examples"
+msgstr ""
+
+#: of renom_rl.utility.filter.EpsilonSLFilter:1
+msgid "**Epsilon Step Linear Filter**"
+msgstr ""
+
+#: of renom_rl.utility.filter.EpsilonSLFilter:3
+msgid ""
+"This class allows users to use Epsilon Greedy with step linear change. Linear "
+"function is used, with step as variable, to decrease epsilon. The epsilon "
+"calculation is as follows:"
+msgstr ""
+"線形に変化するϵ-greedy法を使うためのクラス. ステップを変数として, epsilonを減少"
+"させるために線形関数が使われます. epsilonの計算は以下:"
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:13
+#: renom_rl.utility.filter.EpsilonSLFilter:13
+msgid "initial value."
+msgstr "初期値."
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:15
+#: renom_rl.utility.filter.EpsilonSLFilter:15
+msgid "minimum value."
+msgstr "最小値."
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:17
+#: renom_rl.utility.filter.EpsilonSLFilter:17
+msgid "maximum value."
+msgstr "最大値."
+
+#: of renom_rl.utility.filter.EpsilonSLFilter:19
+msgid "inverse constant of the linear term."
+msgstr "線形項の逆定数."
+
+#: of renom_rl.utility.filter.EpsilonCFilter:7
+#: renom_rl.utility.filter.EpsilonEIFilter:21
+#: renom_rl.utility.filter.EpsilonSLFilter:21
+msgid "epsilon value during test."
+msgstr "テスト中のepsilon値."
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:1
+msgid "**Epsilon Episode Inverse Filter**"
+msgstr ""
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:3
+msgid ""
+"This class allows users to use Epsilon Greedy with Epsilon episode inverse "
+"change. Inverse proportion function is used, with episode as variable, to "
+"decrease epsilon. The epsilon calculation is as follows:"
+msgstr ""
+"episodeでEpsilonが逆に変化するϵ -greedy法を用いるためのクラス. episodeを変数と"
+"して, epsilonを減少させるために, 反比例の関数が使われます. epsilonの計算は以下:"
+
+#: of renom_rl.utility.filter.EpsilonEIFilter:19
+msgid "the coefficient of episode."
+msgstr "episodeの係数."
+
+#: of renom_rl.utility.filter.EpsilonCFilter:1
+msgid "**Constant Filter**"
+msgstr ""
+
+#: of renom_rl.utility.filter.EpsilonCFilter:3
+msgid "This class allows users to use Constant Filter. Constant epsilon is used."
+msgstr "定数Filterを使うためのクラス. 固定されたepsilonが使われます."
+
+#: of renom_rl.utility.filter.EpsilonCFilter:5
+msgid "epsilon value during training."
+msgstr "トレーニング中のepsilon."

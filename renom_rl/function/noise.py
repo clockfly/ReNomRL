@@ -6,9 +6,17 @@ CONTINUOUS = 0
 DISCRETE = 1
 
 
-class OU(object):
-    """ 
-    DDPG paper ornstein-uhlenbeck noise parameters are theta=0.15, sigma=0.2 
+class Noise(object):
+    def __init__(self):
+        pass
+
+    def sample(self, action):
+        raise NotImplemented
+
+
+class OU(Noise):
+    """
+    DDPG paper ornstein-uhlenbeck noise parameters are theta=0.15, sigma=0.2
     """
 
     def __init__(self, mu=0, theta=0.15, sigma=0.2):
@@ -30,6 +38,7 @@ class GP(object):
         self._mean = mean
         self._std = std
 
-    def samplse(self, action):
+    def sample(self, action):
+    # def samplse(self, action):
         shape = getattr(action, 'shape', [1, ])
         return self._mean + self._std * np.random.randn(*shape)
