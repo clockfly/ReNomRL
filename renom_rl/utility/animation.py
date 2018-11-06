@@ -12,6 +12,13 @@ class Animation(object):
     this module, so that we can reanimate the performance without
     re-testing.
 
+    :Requirements:
+        - JSAnimation
+        - pyglet 1.2.4
+        - ipython 6.2.1
+        - matplotlib 2.2.3
+
+
     Args:
         dpi(int): dots per inch. resolution.
         ratio(int): reduces scale.

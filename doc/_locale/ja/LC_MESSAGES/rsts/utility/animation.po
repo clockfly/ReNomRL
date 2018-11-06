@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-31 15:06+0900\n"
+"POT-Creation-Date: 2018-11-06 09:25+0900\n"
 "PO-Revision-Date: 2018-11-03 16:11+0900\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Last-Translator: \n"
-"Language-Team: \n"
 "Language: ja\n"
-"X-Generator: Poedit 2.1.1\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
 
 #: ../../rsts/utility/animation.rst:2
 msgid "renom_rl.utility.animation"
@@ -33,23 +32,38 @@ msgid ""
 "Because render can only play the render peroformance once, we prepared "
 "this module, so that we can reanimate the performance without re-testing."
 msgstr ""
-"このクラスはopen AIのimageを保存するオブジェクトを持ちます. レンダーは一"
-"度に一回しか行動を再生出来ませんが, このモジュールを使えば, 再びテストす"
-"る事なく行動を再び再生出来ます."
+"このクラスはopen AIのimageを保存するオブジェクトを持ちます. レンダーは一度に一回しか行動を再生出来ませんが, "
+"このモジュールを使えば, 再びテストする事なく行動を再び再生出来ます."
 
-#: of renom_rl.utility.animation.Animation:8
+#: of renom_rl.utility.animation.Animation:9
+msgid "JSAnimation"
+msgstr ""
+
+#: of renom_rl.utility.animation.Animation:10
+msgid "pyglet 1.2.4"
+msgstr ""
+
+#: of renom_rl.utility.animation.Animation:11
+msgid "ipython 6.2.1"
+msgstr ""
+
+#: of renom_rl.utility.animation.Animation:12
+msgid "matplotlib 2.2.3"
+msgstr ""
+
+#: of renom_rl.utility.animation.Animation:15
 msgid "dots per inch. resolution."
 msgstr "インチあたりのドット数. 解像度."
 
-#: of renom_rl.utility.animation.Animation:10
+#: of renom_rl.utility.animation.Animation:17
 msgid "reduces scale."
 msgstr "縮尺."
 
-#: of renom_rl.utility.animation.Animation:12
+#: of renom_rl.utility.animation.Animation:19
 msgid "play rate[ms]"
 msgstr "再生割合[ms]"
 
-#: of renom_rl.utility.animation.Animation:18
+#: of renom_rl.utility.animation.Animation:25
 msgid "Example"
 msgstr ""
 
@@ -59,17 +73,15 @@ msgstr "この関数はimage(render)をリストで保存します."
 
 #: of renom_rl.utility.animation.Animation.run:1
 msgid ""
-"This function creates the animation. The animation frame size is based "
-"on the first element of the stored image. Users can use the reset option "
-"in order to reset the stored image. Note that only the stored image will "
+"This function creates the animation. The animation frame size is based on"
+" the first element of the stored image. Users can use the reset option in"
+" order to reset the stored image. Note that only the stored image will "
 "reset but the animation will be kept. If users redo this function with "
 "``reset = True``, users will get an error."
 msgstr ""
-"この関数はアニメーションを作成します. アニメーションのフレームサイズは保"
-"存されたimageの最初の要素に基づきます. リセットオプションで保存したimage"
-"をリセットすることも出来ます. その場合, 保存されたimageはリセットされます"
-"が, アニメーションはそのままになります. ユーザーが ``reset = True`` で再"
-"びこの関数を実行した場合, エラーが返ります."
+"この関数はアニメーションを作成します. アニメーションのフレームサイズは保存されたimageの最初の要素に基づきます. "
+"リセットオプションで保存したimageをリセットすることも出来ます. その場合, 保存されたimageはリセットされますが, "
+"アニメーションはそのままになります. ユーザーが ``reset = True`` で再びこの関数を実行した場合, エラーが返ります."
 
 #: of renom_rl.utility.animation.Animation.run:5
 msgid "resets at the end of animation."
@@ -78,3 +90,4 @@ msgstr "アニメーションの終わりにリセットします."
 #: of renom_rl.utility.animation.Animation.reset:1
 msgid "This function resets the list of stored image."
 msgstr "この関数は保存されたimageのリストをリセットします."
+
