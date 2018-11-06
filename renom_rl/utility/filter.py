@@ -1,32 +1,32 @@
 import numpy as np
 
-def check_reframe_epsilon(epsilon,test_epsilon):
+
+def check_reframe_epsilon(epsilon, test_epsilon):
     """Check Reframe Epsilon
     This function checks whether the arguments are Epsilon, float.
     If float, int, or numpy, then they are processed as EpsilonC.
     """
 
-    assert isinstance(epsilon,(Epsilon, float, int, np)),\
-                "epsilon must be an Epsilon object or numerical value (float, int, numpy)"
-    assert isinstance(test_epsilon,(EpsilonC, float, int, np)),\
-                "test_epsilon must be an EpsilonC object or numerical value (float, int, numpy)"
+    assert isinstance(epsilon, (Epsilon, float, int, np)),\
+        "epsilon must be an Epsilon object or numerical value (float, int, numpy)"
+    assert isinstance(test_epsilon, (EpsilonC, float, int, np)),\
+        "test_epsilon must be an EpsilonC object or numerical value (float, int, numpy)"
 
-    epsilon = epsilon if isinstance(epsilon,Epsilon) else EpsilonC(epsilon)
+    epsilon = epsilon if isinstance(epsilon, Epsilon) else EpsilonC(epsilon)
 
-    test_epsilon = test_epsilon if isinstance(test_epsilon,EpsilonC) else EpsilonC(test_epsilon)
+    test_epsilon = test_epsilon if isinstance(test_epsilon, EpsilonC) else EpsilonC(test_epsilon)
 
-    return epsilon , test_epsilon
+    return epsilon, test_epsilon
 
 
 def check_noise(noise):
     """Check Noise
     This function checks if the argument is a Noise object or not.
     """
-    assert isinstance(noise,Noise),\
-                "noise must be a Noise object"
+    assert isinstance(noise, Noise),\
+        "noise must be a Noise object"
 
     return noise
-
 
 
 class ActionFilter(object):
@@ -47,8 +47,6 @@ class ActionFilter(object):
 
     def value(self):
         raise NotImplemented
-
-
 
 
 class EpsilonGreedyFilter(ActionFilter):
@@ -76,12 +74,12 @@ class EpsilonGreedyFilter(ActionFilter):
 
     def __init__(self, epsilon=None, test_epsilon=None):
 
-        #epsilon default
+        # epsilon default
         epsilon = epsilon if epsilon is not None else EpsilonSL()
         test_epsilon = test_epsilon if test_epsilon is not None else EpsilonC()
 
-        #checking and changing datatype
-        epsilon, test_epsilon = check_reframe_epsilon(epsilon,test_epsilon)
+        # checking and changing datatype
+        epsilon, test_epsilon = check_reframe_epsilon(epsilon, test_epsilon)
 
         self.func = epsilon
         self.test_func = test_epsilon
@@ -90,12 +88,11 @@ class EpsilonGreedyFilter(ActionFilter):
     def __call__(self, greedy_action, random_action,
                  step=None, episode=None, epoch=None):
 
-        greedy_ratio =self.func(step,episode,epoch)
+        greedy_ratio = self.func(step, episode, epoch)
 
         self.epsilon = greedy_ratio
 
         return greedy_action if np.random.rand() > greedy_ratio else random_action
-
 
     def test(self, greedy_action, random_action):
 
@@ -136,12 +133,13 @@ class EpsilonSLFilter(EpsilonGreedyFilter):
         >>>
         >>> obj = EpsilonSLFilter(min=0,max=1,initial=0.5,test_filter=0)
     """
-    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
-                    epsilon_step = 25000 ,test_epsilon=0):
 
-        epsilon = EpsilonSL(initial,min,max,epsilon_step)
+    def __init__(self, initial=1.0, min=0.0, max=1.0,
+                 epsilon_step=25000, test_epsilon=0):
 
-        super(EpsilonSLFilter,self).__init__(epsilon,test_epsilon)
+        epsilon = EpsilonSL(initial, min, max, epsilon_step)
+
+        super(EpsilonSLFilter, self).__init__(epsilon, test_epsilon)
 
 
 class EpsilonEIFilter(EpsilonGreedyFilter):
@@ -171,12 +169,13 @@ class EpsilonEIFilter(EpsilonGreedyFilter):
         >>>
         >>> obj = EpsilonEIFilter(min=0,max=1,initial=0.5, alpha=1, test_filter=0)
     """
-    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
-                    alpha = 1, test_epsilon = 0):
 
-        epsilon = EpsilonEI(initial,min,max,alpha)
+    def __init__(self, initial=1.0, min=0.0, max=1.0,
+                 alpha=1, test_epsilon=0):
 
-        super(EpsilonEIFilter,self).__init__(epsilon,test_epsilon)
+        epsilon = EpsilonEI(initial, min, max, alpha)
+
+        super(EpsilonEIFilter, self).__init__(epsilon, test_epsilon)
 
 
 class EpsilonCFilter(EpsilonGreedyFilter):
@@ -196,15 +195,9 @@ class EpsilonCFilter(EpsilonGreedyFilter):
         >>> obj = EpsilonCFilter(epsilon=0.1, test_filter=0)
     """
 
-    def __init__(self, epsilon=0.1, test_epsilon = 0):
+    def __init__(self, epsilon=0.1, test_epsilon=0):
 
-        super(EpsilonCFilter,self).__init__(epsilon, test_epsilon)
-
-
-
-
-
-
+        super(EpsilonCFilter, self).__init__(epsilon, test_epsilon)
 
 
 class ActionNoiseFilter(object):
@@ -227,7 +220,6 @@ class ActionNoiseFilter(object):
 
     def sample(self):
         raise NotImplemented
-
 
 
 class AddNoiseFilter(ActionNoiseFilter):
@@ -256,13 +248,13 @@ class AddNoiseFilter(ActionNoiseFilter):
         ...         )
     """
 
-    def __init__(self, epsilon = None, test_epsilon = None, noise = None):
+    def __init__(self, epsilon=None, test_epsilon=None, noise=None):
 
         epsilon = epsilon if epsilon is not None else EpsilonC()
         test_epsilon = test_epsilon if test_epsilon is not None else EpsilonC()
         noise = noise if noise is not None else OU()
 
-        epsilon, test_epsilon = check_reframe_epsilon(epsilon,test_epsilon)
+        epsilon, test_epsilon = check_reframe_epsilon(epsilon, test_epsilon)
         noise = check_noise(noise)
 
         self.func = epsilon
@@ -273,8 +265,7 @@ class AddNoiseFilter(ActionNoiseFilter):
 
         self.epsilon = self.func.epsilon
 
-        self.noise_value=0
-
+        self.noise_value = 0
 
     def __call__(self, action,
                  step=None, episode=None, epoch=None):
@@ -286,7 +277,7 @@ class AddNoiseFilter(ActionNoiseFilter):
 
         return action + self.noise_value
 
-    def test(self,action):
+    def test(self, action):
 
         epsilon = self.test_func()
 
@@ -323,9 +314,9 @@ class OUFilter(AddNoiseFilter):
         >>> obj = OUFilter(epsilon=0.1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2)
     """
 
-    def __init__(self, epsilon = 1, test_epsilon = 0, mu=0, theta=0.15, sigma=0.2):
+    def __init__(self, epsilon=1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2):
 
-        noise = OU(mu,theta,sigma)
+        noise = OU(mu, theta, sigma)
 
         super(OUFilter, self).__init__(epsilon, test_epsilon, noise)
 
@@ -347,11 +338,13 @@ class GPFilter(AddNoiseFilter):
         >>>
         >>> obj = GPFilter(epsilon=0.1, test_epsilon=0, mu=0, theta=0.15, sigma=0.2)
     """
-    def __init__(self, epsilon = 1, test_epsilon = 0, mean=0, std=0.1):
 
-        noise = GP(mean,std)
+    def __init__(self, epsilon=1, test_epsilon=0, mean=0, std=0.1):
+
+        noise = GP(mean, std)
 
         super(GPFilter, self).__init__(epsilon, test_epsilon, noise)
+
 
 class NoNoiseFilter(AddNoiseFilter):
     """
@@ -364,12 +357,10 @@ class NoNoiseFilter(AddNoiseFilter):
         >>>
         >>> obj = NoNoiseFilter()
     """
+
     def __init__(self):
 
         super(NoNoiseFilter, self).__init__(0, 0)
-
-
-
 
 
 class Epsilon(object):
@@ -381,17 +372,17 @@ class Epsilon(object):
     This class uses ``__call__`` to update epsilon variable.
     There is also ``_clip`` function which is used to clip the epsilon between min max value.
     """
-    def __init__(self, initial = 1.0, min = 0.0, max = 1.0):
+
+    def __init__(self, initial=1.0, min=0.0, max=1.0):
         self.max = max
         self.min = min
         self.initial = initial
         self.epsilon = min
 
-
-    def __call__(self,step,episode,epoch):
+    def __call__(self, step, episode, epoch):
         pass
 
-    def _clip(self,greedy):
+    def _clip(self, greedy):
         """
         clipping function
         """
@@ -421,15 +412,15 @@ class EpsilonSL(Epsilon):
 
     """
 
-    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
-                    epsilon_step = 25000 ):
+    def __init__(self, initial=1.0, min=0.0, max=1.0,
+                 epsilon_step=25000):
 
-        super(EpsilonSL,self).__init__(initial,min,max)
+        super(EpsilonSL, self).__init__(initial, min, max)
 
-        self.epsilon_step =  epsilon_step
+        self.epsilon_step = epsilon_step
         self.step_size = (max-min)/epsilon_step
 
-    def __call__(self,step,episode,epoch):
+    def __call__(self, step, episode, epoch):
         self.epsilon = self._clip(self.initial-self.step_size*step)
         return self.epsilon
 
@@ -456,14 +447,14 @@ class EpsilonEI(Epsilon):
 
     """
 
-    def __init__(self, initial = 1.0, min = 0.0, max = 1.0,
-                    alpha = 1 ):
+    def __init__(self, initial=1.0, min=0.0, max=1.0,
+                 alpha=1):
 
-        super(EpsilonEI,self).__init__(initial,min,max)
+        super(EpsilonEI, self).__init__(initial, min, max)
 
         self.alpha = alpha
 
-    def __call__(self,step,episode,epoch):
+    def __call__(self, step, episode, epoch):
         self.epsilon = self._clip(self.min+(self.initial-self.min)/(1+episode*self.alpha))
         return self.epsilon
 
@@ -474,12 +465,14 @@ class EpsilonC(Epsilon):
 
     This class allows users to use Constant Filter. Constant epsilon is used.
     """
-    def __init__(self,epsilon=0.0):
-        self.epsilon=epsilon
 
-    def __call__(self,step=0, episode=0, epoch=0):
+    def __init__(self, epsilon=0.0):
+        self.epsilon = epsilon
 
-        return np.clip(self.epsilon,0,1)
+    def __call__(self, step=0, episode=0, epoch=0):
+
+        return np.clip(self.epsilon, 0, 1)
+
 
 class Noise(object):
     def __init__(self):
@@ -487,9 +480,6 @@ class Noise(object):
 
     def sample(self, action):
         raise NotImplemented
-
-
-
 
 
 class OU(Noise):
@@ -516,11 +506,12 @@ class GP(Noise):
 
     Gaussian Noise.
     """
+
     def __init__(self, mean=0, std=0.1):
         self._mean = mean
         self._std = std
 
     def sample(self, action):
-    # def samplse(self, action):
+        # def samplse(self, action):
         shape = getattr(action, 'shape', [1, ])
         return self._mean + self._std * np.random.randn(*shape)

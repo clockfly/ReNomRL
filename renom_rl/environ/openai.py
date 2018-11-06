@@ -48,7 +48,6 @@ class Pendulum(BaseEnv):
         return state.reshape(3), reward, terminal
 
 
-
 class Breakout(BaseEnv):
     """A wrapper environment of OpenAI gym "Breakout-v0".
 
@@ -153,53 +152,49 @@ class CartPole01(BaseEnv):
         self.state_shape = (4,)
 
         self.env = gym.make('CartPole-v0')
-        self.step_continue=0
-        self.successful_episode=0
-        self.test_mode=False
-        self.reward=0
-
-
+        self.step_continue = 0
+        self.successful_episode = 0
+        self.test_mode = False
+        self.reward = 0
 
     def reset(self):
         return self.env.reset()
 
-
     def sample(self):
-        rand=self.env.action_space.sample()
+        rand = self.env.action_space.sample()
         return rand
 
     def step(self, action):
-        state,_,terminal,_=self.env.step(int(action))
+        state, _, terminal, _ = self.env.step(int(action))
 
-        self.step_continue+=1
-        reward=0
+        self.step_continue += 1
+        reward = 0
 
         if terminal:
             if self.step_continue >= 200:
-                reward=1
-                if self.test_mode==False:
+                reward = 1
+                if self.test_mode == False:
                     print(self.successful_episode)
-                    self.successful_episode+=1
+                    self.successful_episode += 1
             else:
-                reward=-1
-            self.step_continue=0
+                reward = -1
+            self.step_continue = 0
 
-        self.reward=reward
+        self.reward = reward
 
         return state, reward, terminal
 
     def terminate(self):
-            if self.successful_episode >= 10:
-                self.successful_episode=0
-                return True
-            else:
-                return False
+        if self.successful_episode >= 10:
+            self.successful_episode = 0
+            return True
+        else:
+            return False
 
     def test_start(self):
-        self.test_mode=True
-
+        self.test_mode = True
 
     def test_close(self):
         self.env.close()
-        self.env.viewer=None
-        self.test_mode=False
+        self.env.viewer = None
+        self.test_mode = False

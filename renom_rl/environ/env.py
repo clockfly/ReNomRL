@@ -5,9 +5,11 @@ import numpy as np
 
 def check_step_method(func, action, state):
     args = inspect.getargspec(func)[0]
-    assert len(args) > 1, "Please define argument ``action``. Actual argument is {}.".format(args[1:])
+    assert len(args) > 1, "Please define argument ``action``. Actual argument is {}.".format(
+        args[1:])
     ret = func(action)
-    assert ret and len(ret) == 3, "Please define return values ``state``, ``reward`` and ``terminal``."
+    assert ret and len(
+        ret) == 3, "Please define return values ``state``, ``reward`` and ``terminal``."
     assert hasattr(ret[0], "shape") and ret[0].shape == state.shape, \
         "Please set the shape of the return value ``state`` same as ``self.state_shape``. Expect {}, actual is {}.".format(
             state.shape, ret[0].shape)
