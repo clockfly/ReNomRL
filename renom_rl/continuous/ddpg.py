@@ -142,7 +142,6 @@ class DDPG(AgentBase):
     def fit(self, epoch=1000, epoch_step=250000, batch_size=64, random_step=5000,
             test_step=2000, train_frequency=1, action_filter=None,
             ):
-
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
 
@@ -192,11 +191,11 @@ class DDPG(AgentBase):
 
         """
 
-
-        _e=EpsilonSL(epsilon_step=int(0.8 * epoch * epoch_step))
+        _e = EpsilonSL(epsilon_step=int(0.8 * epoch * epoch_step))
         action_filter = action_filter if action_filter is not None else OUFilter(epsilon=_e)
 
-        assert isinstance(action_filter, ActionNoiseFilter),"action_filter must be a class of ActionNoiseFilter"
+        assert isinstance(
+            action_filter, ActionNoiseFilter), "action_filter must be a class of ActionNoiseFilter"
 
         state = self.env.reset()
 
@@ -212,9 +211,9 @@ class DDPG(AgentBase):
             if terminal:
                 state = self.env.reset()
 
-        count = 0 #update period
-        step_count = 0 #steps
-        episode_count = 0 #episodes
+        count = 0  # update period
+        step_count = 0  # steps
+        episode_count = 0  # episodes
 
         for e in range(1, epoch + 1):
             sum_reward = 0.0
@@ -225,12 +224,12 @@ class DDPG(AgentBase):
             state = self.env.reset()
             loss = 0.0
 
-            #env epoch
+            # env epoch
             self.env.epoch()
 
             for j in range(epoch_step):
 
-                #set action
+                # set action
                 action = action_filter(self._action(state),
                                        step=step_count, episode=episode_count, epoch=e)
                 e_rate = action_filter.value()
@@ -281,19 +280,18 @@ class DDPG(AgentBase):
 
                 sum_reward = float(sum_reward)
 
-
                 tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
                 tq.update(1)
 
                 if terminal:
                     each_episode_reward.append(sum_reward_episode)
                     sum_reward_episode = 0.0
-                    state=self.env.reset()
+                    state = self.env.reset()
                     nth_episode += 1
-                    episode_count +=1
+                    episode_count += 1
                     # break
 
-                #for test
+                # for test
                 # msg = "noise e-greedy:{:5.3f}"
                 # msg = msg.format(e_rate)
                 # tq.set_description(msg)
@@ -301,10 +299,11 @@ class DDPG(AgentBase):
 
                 step_count += 1
 
-                #event handler
-                self.events.on("step", e,reward,self,step_count,episode_count,e_rate,action,action_filter.sample())
+                # event handler
+                self.events.on("step", e, reward, self, step_count, episode_count,
+                               e_rate, action, action_filter.sample())
 
-                #if terminate executes, then do execute "continue"
+                # if terminate executes, then do execute "continue"
                 if self.env.terminate():
                     print("terminated")
                     break
@@ -336,13 +335,12 @@ class DDPG(AgentBase):
                 tq.close()
                 continue
 
-
             tq.update(0)
             tq.refresh()
             tq.close()
             break
 
-        #env close
+        # env close
         self.env.close()
 
     def _value_function(self, state):
@@ -421,7 +419,7 @@ class DDPG(AgentBase):
         # if filter_obj argument was specified, the change the object
         action_filter = action_filter if action_filter is not None else NoNoiseFilter()
 
-        assert isinstance(action_filter,ActionNoiseFilter)
+        assert isinstance(action_filter, ActionNoiseFilter)
 
         sum_reward = 0
         self.env.test_start()
