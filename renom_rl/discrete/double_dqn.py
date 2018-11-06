@@ -152,8 +152,7 @@ class DoubleDQN(AgentBase):
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=2000, update_period=10000, train_frequency=4,
-            action_filter=None,callback_end_epoch=None):
-
+            action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
 
@@ -190,16 +189,17 @@ class DoubleDQN(AgentBase):
 
         """
 
-        action_filter = action_filter if action_filter is not None else EpsilonSLFilter(epsilon_step=int(0.8 * epoch * epoch_step))
+        action_filter = action_filter if action_filter is not None else EpsilonSLFilter(
+            epsilon_step=int(0.8 * epoch * epoch_step))
 
         assert isinstance(action_filter, ActionFilter)
 
-        #random step phase
+        # random step phase
         print("Run random {} step for storing experiences".format(random_step))
 
         state = self.env.reset()
 
-        #env start(after reset)
+        # env start(after reset)
         self.env.start()
 
         for i in range(1, random_step + 1):
@@ -215,9 +215,9 @@ class DoubleDQN(AgentBase):
         # History of Learning
         max_reward_in_each_update_period = -np.Inf
 
-        count = 0 #update period
-        step_count = 0 #steps
-        episode_count = 0 #episodes
+        count = 0  # update period
+        step_count = 0  # steps
+        episode_count = 0  # episodes
 
         # 1 epoch stores multiple epoch steps thus 1 epoch can hold multiple episodes
         for e in range(1, epoch + 1):
@@ -227,9 +227,9 @@ class DoubleDQN(AgentBase):
             train_sum_rewards_in_each_episode = []
             tq = tqdm(range(epoch_step))
             state = self.env.reset()
-            loss=0
+            loss = 0
 
-            #env epoch
+            # env epoch
             self.env.epoch()
 
             for j in range(epoch_step):
@@ -240,18 +240,18 @@ class DoubleDQN(AgentBase):
                 # else:
                 #     action = self.env.sample()
 
-                #set action
+                # set action
                 action = action_filter(self._action(state), self.env.sample(),
                                        step=step_count, episode=episode_count, epoch=e)
                 greedy = action_filter.value()
 
-                #pass it to env
+                # pass it to env
                 next_state, reward, terminal = self.env.step(action)
 
                 self._buffer.store(state, np.array(action),
                                    np.array(reward), next_state, np.array(terminal))
 
-               #env epoch step
+               # env epoch step
                 self.env.epoch_step()
 
                 sum_reward += reward
@@ -261,24 +261,24 @@ class DoubleDQN(AgentBase):
                         train_prestate, train_action, train_reward, train_state, train_terminal = \
                             self._buffer.get_minibatch(batch_size)
 
-                        #getting q values as target reference
+                        # getting q values as target reference
                         self._q_network.set_models(inference=True)
                         self._target_q_network.set_models(inference=True)
 
                         target = self._q_network(train_prestate).as_ndarray()
 
-                        #dqn feature here
+                        # dqn feature here
                         target.setflags(write=True)
                         max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                         value = self._target_q_network(train_state).as_ndarray()[(range(len(train_state)),
                                                                                   max_q_action)][:, None] * self._gamma * (~train_terminal[:, None])
 
-                        #getting target value
+                        # getting target value
                         for i in range(batch_size):
                             a = train_action[i, 0].astype(np.integer)
                             target[i, a] = train_reward[i] + value[i]
 
-                        #train
+                        # train
                         self._q_network.set_models(inference=False)
                         with self._q_network.train():
                             z = self._q_network(train_prestate)
@@ -293,7 +293,7 @@ class DoubleDQN(AgentBase):
                             count = 0
                         count += 1
 
-                #terminal reset
+                # terminal reset
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
                         self._update_best_q_network()
@@ -301,11 +301,11 @@ class DoubleDQN(AgentBase):
                     train_sum_rewards_in_each_episode.append(sum_reward)
                     sum_reward = 0
                     nth_episode += 1
-                    episode_count +=1
+                    episode_count += 1
 
                     self.env.reset()
 
-                #message print
+                # message print
                 msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
@@ -313,10 +313,10 @@ class DoubleDQN(AgentBase):
                 tq.set_description(msg)
                 tq.update(1)
 
-                #event handler
-                self.events.on("step", e,reward,self,step_count,episode_count,greedy)
+                # event handler
+                self.events.on("step", e, reward, self, step_count, episode_count, greedy)
 
-                #if terminate executes, then do execute "continue"
+                # if terminate executes, then do execute "continue"
                 if self.env.terminate():
                     print("terminated")
                     break
@@ -326,7 +326,7 @@ class DoubleDQN(AgentBase):
                 avg_error = train_loss / (j + 1)
                 avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
                 summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
-                summed_test_reward = self.test(test_step,action_filter)
+                summed_test_reward = self.test(test_step, action_filter)
 
                 self._append_history(e, avg_error, avg_train_reward,
                                      summed_train_reward, summed_test_reward)
@@ -338,7 +338,7 @@ class DoubleDQN(AgentBase):
 
                 print("pass")
                 self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
-                               summed_train_reward, summed_test_reward,greedy)
+                               summed_train_reward, summed_test_reward, greedy)
 
                 tq.set_description(msg)
                 tq.update(0)
@@ -346,13 +346,12 @@ class DoubleDQN(AgentBase):
                 tq.close()
                 continue
 
-
             tq.update(0)
             tq.refresh()
             tq.close()
             break
 
-        #env close
+        # env close
         self.env.close()
 
     def test(self, test_step=None, action_filter=None, **kwargs):
@@ -369,7 +368,7 @@ class DoubleDQN(AgentBase):
         # if filter_obj argument was specified, the change the object
         action_filter = action_filter if action_filter is not None else EpsilonCFilter()
 
-        assert isinstance(action_filter,ActionFilter)
+        assert isinstance(action_filter, ActionFilter)
 
         sum_reward = 0
         self.env.test_start()
