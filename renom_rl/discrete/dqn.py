@@ -147,7 +147,7 @@ class DQN(AgentBase):
         self._rec_copy(self._best_q_network, self._q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4,
+            test_step=None, update_period=10000, train_frequency=4,
             action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
@@ -291,8 +291,8 @@ class DQN(AgentBase):
                     sum_reward = 0
                     nth_episode += 1
                     episode_count += 1
-
                     self.env.reset()
+
                 msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
                     .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
                             train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
