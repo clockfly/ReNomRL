@@ -151,7 +151,7 @@ class DoubleDQN(AgentBase):
         self._rec_copy(self._best_q_network, self._q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4,
+            test_step=None, update_period=10000, train_frequency=4,
             action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
