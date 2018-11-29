@@ -23,9 +23,7 @@ class CartPole(BaseEnv):
             >>> env = CartPole()
             Env Space :  (4,)
             Action Space :  (2,)
-            >>> q_network = rm.Sequential([rm.Dense(10),
-            ... rm.Relu(),
-            ... rm.Dense(10),
+            >>> q_network = rm.Sequential([rm.Dense(32),
             ... rm.Relu(),
             ... rm.Dense(env.action_shape[0])
             ... ])
@@ -41,6 +39,8 @@ class CartPole(BaseEnv):
         print("Env Space : ", self.state_shape)
         print("Action Space : ", self.action_shape)
 
+        self.num_step = 0
+
         self.animation = Animation()
         self.test_mode = False
     
@@ -51,12 +51,15 @@ class CartPole(BaseEnv):
         return self.env.action_space.sample()
     
     def step(self, action):
-        state, reward, terminal, _ = self.env.step(int(action))
+        state, _, terminal, _ = self.env.step(int(action))
+        self.num_step += 1
+
+        reward = 0
         
-        if self.test_mode==True:
-            image = self.env.render(mode='rgb_array')
-            self.animation.store(image)
-        
+        if terminal:
+            reward = 1 if self.num_step >= 195 else -1
+            self.num_step = 0
+
         return state, reward, terminal
 
     def test_start(self):
