@@ -144,9 +144,13 @@ class Breakout_ram(BaseEnv):
             >>> env = Breakout_ram()
             Env Space :  (128,)
             Action Space :  (4,)
-            >>> q_network = rm.Sequential([rm.Dense(30),
+            >>> q_network = rm.Sequential([rm.Dense(200),
             ... rm.Relu(),
-            ... rm.Dense(30),
+            ... rm.Dense(200),
+            ... rm.Relu(),
+            ... rm.Dense(100),
+            ... rm.Relu(),
+            ... rm.Dense(50),
             ... rm.Relu(),
             ... rm.Dense(env.action_shape[0])
             ... ])
@@ -224,9 +228,14 @@ class Breakout(BaseEnv):
             Env space :  (210, 160, 3)
             Preprocessed Env space :  (1, 84, 84)
             Action space :  (4,)
-            >>> q_network = rm.Sequential([rm.Dense(30),
+            >>> q_network = rm.Sequential([rm.Conv2d(32, filter=8, stride=4),
             ... rm.Relu(),
-            ... rm.Dense(30),
+            ... rm.Conv2d(64, filter=4, stride=2),
+            ... rm.Relu(),
+            ... rm.Conv2d(64, filter=3, stride=1),
+            ... rm.Relu(),
+            ... rm.Flatten(),
+            ... rm.Dense(512),
             ... rm.Relu(),
             ... rm.Dense(env.action_shape[0])
             ... ])
