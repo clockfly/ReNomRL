@@ -322,7 +322,7 @@ class A2C(object):
                 self.events.on("step", e, j, step)
 
                 if any([self.envs[_t].terminate() for _t in range(threads)]):
-                    print("terminate")
+                    print("terminated")
                     break
 
             else:

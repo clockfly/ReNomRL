@@ -347,7 +347,6 @@ class DoubleDQN(AgentBase):
                 msg = msg.format(e, avg_error, summed_train_reward,
                                  summed_test_reward, avg_train_reward, greedy)
 
-                print("pass")
                 self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
                                summed_train_reward, summed_test_reward, greedy)
 
