@@ -76,8 +76,8 @@ class A2C(object):
 
         self.envs = [copy.deepcopy(env) for i in range(num_worker)]
         self.test_env = env
-        self.loss_func = loss_func if not None else rm.MeanSquaredError()
-        self._optimizer = optimizer if not None else rm.Rmsprop(0.001, g=0.99, epsilon=1e-10)
+        self.loss_func = loss_func if loss_func is not None else rm.MeanSquaredError()
+        self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(0.001, g=0.99, epsilon=1e-10)
         self.value_coef = value_coef
         self.entropy_coef = entropy_coef
         self.gamma = gamma
@@ -165,7 +165,7 @@ class A2C(object):
         gamma = self.gamma
         gradient_clipping = self.gradient_clipping
         value_coef = self.value_coef
-        entrpoy_coef = self.entropy_coef
+        entropy_coef = self.entropy_coef
 
         # env start(after reset)
         [self.envs[_t].start() for _t in range(threads)]
