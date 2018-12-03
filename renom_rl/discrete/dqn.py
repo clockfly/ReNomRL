@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter,MaxNodeChooser
+from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
 
 
 class DQN(AgentBase):
@@ -81,7 +81,6 @@ class DQN(AgentBase):
 
         self.node_selector = MaxNodeChooser() if node_selector is None else node_selector
         self.test_node_selector = MaxNodeChooser() if test_node_selector is None else test_node_selector
-
 
         # Check Env class type.
         if isinstance(env, BaseEnv):

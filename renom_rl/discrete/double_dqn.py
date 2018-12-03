@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter,MaxNodeChooser
+from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
 
 
 class DoubleDQN(AgentBase):
@@ -53,7 +53,7 @@ class DoubleDQN(AgentBase):
 
     def __init__(self, env, q_network, loss_func=None,
                  optimizer=None, gamma=0.99, buffer_size=1e6,
-                 node_selector=None, test_node_selector=None ):
+                 node_selector=None, test_node_selector=None):
         super(DoubleDQN, self).__init__()
 
         if loss_func is None:

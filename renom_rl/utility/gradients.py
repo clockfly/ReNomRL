@@ -1,14 +1,14 @@
 import numpy as np
 
+
 class GradientClipping(object):
     """
     This class is for users who have ReNom ver.2.6.2 or under.
     """
 
-    def __init__(self,threshold=0.5,norm=2):
-        self.threshold=threshold
-        self.norm=norm
-
+    def __init__(self, threshold=0.5, norm=2):
+        self.threshold = threshold
+        self.norm = norm
 
     def __call__(self, gradient=None):
         """
@@ -38,8 +38,8 @@ class GradientClipping(object):
 
         """
 
-        threshold=self.threshold
-        norm=self.norm
+        threshold = self.threshold
+        norm = self.norm
 
         assert gradient is not None, "insert the gradient of model (model.grad())"
 
@@ -57,7 +57,7 @@ class GradientClipping(object):
             for i in variables:
                 arr = variables[i]**norm
                 total_norm += arr.sum()
-            total_norm = total_norm **(1/total_norm)
+            total_norm = total_norm ** (1/total_norm)
 
         # process gradient
         if threshold < total_norm:

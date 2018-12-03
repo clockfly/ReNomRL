@@ -65,10 +65,9 @@ class A2C(object):
 
     """
 
-
     def __init__(self, env, network, loss_func=None, optimizer=None,
-                gamma=0.99, num_worker=8, advantage=5, value_coef=0.5, entropy_coef=0.01,
-                node_selector=None, test_node_selector=None, gradient_clipping=None):
+                 gamma=0.99, num_worker=8, advantage=5, value_coef=0.5, entropy_coef=0.01,
+                 node_selector=None, test_node_selector=None, gradient_clipping=None):
         super(A2C, self).__init__()
 
         self._network = network
@@ -87,7 +86,6 @@ class A2C(object):
         self.node_selector = ProbNodeChooser() if node_selector is None else node_selector
         self.test_node_selector = MaxNodeChooser() if test_node_selector is None else test_node_selector
         self.gradient_clipping = gradient_clipping
-
 
         action_shape = env.action_shape
         state_shape = env.state_shape
@@ -110,15 +108,15 @@ class A2C(object):
 
         out_res = self._network(np.zeros((1, *state_shape)))
 
-        assert len(out_res) == 2 , "( action , value ) are required as returned variables, but the structure is not in that state"
+        assert len(
+            out_res) == 2, "( action , value ) are required as returned variables, but the structure is not in that state"
 
         assert out_res[0].shape[1:] == action_shape, \
-            "Expected action shape is {} but acctual is {}".format(action_shape, out_res[0].shape[1:])
+            "Expected action shape is {} but acctual is {}".format(
+                action_shape, out_res[0].shape[1:])
 
         assert out_res[1].shape[1:] == (1,), \
             "Expected value shape is {} but acctual is {}".format((1,), out_res[1].shape[1:])
-
-
 
     def _initialize(self):
         '''Target q-network is initialized with same neural network weights of q-network.'''
@@ -127,31 +125,28 @@ class A2C(object):
             if hasattr(layer, "params"):
                 layer.params = {}
 
-
-
     def _action(self, state):
         self._network.set_models(inference=True)
-        acts , _ =self._network(state)
+        acts, _ = self._network(state)
         return self.node_selector(acts)
 
-    def _test_action(self,state):
+    def _test_action(self, state):
         self._network.set_models(inference=True)
-        acts , _ = self._network(state)
+        acts, _ = self._network(state)
         return self.test_node_selector(acts)
 
-    def _value(self,x):
+    def _value(self, x):
         self._network.set_models(inference=True)
-        _ , v = self._network(x)
+        _, v = self._network(x)
         return v.as_ndarray()
 
-    def _calc_forward(self,x):
+    def _calc_forward(self, x):
         act, val = self._network(x)
-        e = - rm.sum(act*rm.log(act+1e-5),axis=1)
-        entropy = e.reshape((-1,1))
+        e = - rm.sum(act*rm.log(act+1e-5), axis=1)
+        entropy = e.reshape((-1, 1))
         return act, val, entropy
 
-
-    def fit(self, epoch=1, epoch_step=250000, test_step = None):
+    def fit(self, epoch=1, epoch_step=250000, test_step=None):
         """
         This method executes training of actor critic.
         Test will be runned after each epoch is done.
@@ -161,7 +156,6 @@ class A2C(object):
             epoch_step (int): Number of step of one epoch.
             test_step (int): Number steps during test.
         """
-
 
         # creating local variables
         envs = self.envs
@@ -173,46 +167,47 @@ class A2C(object):
         value_coef = self.value_coef
         entrpoy_coef = self.entropy_coef
 
-
         # env start(after reset)
         [self.envs[_t].start() for _t in range(threads)]
 
         # logging
-        step_count=0
+        step_count = 0
         episode_counts = np.zeros((threads,))
-        sum_rewards=np.zeros((threads,))
-        avg_rewards=np.zeros((threads,))
+        sum_rewards = np.zeros((threads,))
+        avg_rewards = np.zeros((threads,))
 
-        for e in range(1,epoch + 1):
+        for e in range(1, epoch + 1):
 
             # r,a,r,t,s+1
-            states=np.zeros((advantage, threads, *test_env.state_shape))
-            actions=np.zeros((advantage, threads, 1))
-            rewards=np.zeros((advantage, threads, 1))
-            dones=np.zeros((advantage, threads, 1))
-            states_next=np.zeros((advantage, threads, *test_env.state_shape))
+            states = np.zeros((advantage, threads, *test_env.state_shape))
+            actions = np.zeros((advantage, threads, 1))
+            rewards = np.zeros((advantage, threads, 1))
+            dones = np.zeros((advantage, threads, 1))
+            states_next = np.zeros((advantage, threads, *test_env.state_shape))
 
             # value, value next, target value function
-            values=np.zeros((advantage, threads, 1))
-            target_rewards=np.zeros((advantage, threads, 1))
+            values = np.zeros((advantage, threads, 1))
+            target_rewards = np.zeros((advantage, threads, 1))
 
             # logging
-            total_rewards=[]
-            for _ in range(threads): total_rewards.append([])
-            total_loss_nd=0
-            total_loss_nd_in_epoch=0
-            total_rewards_per_thread=[]
-            total_rewards_total=0
-            total_rewards_avg=0
+            total_rewards = []
+            for _ in range(threads):
+                total_rewards.append([])
+            total_loss_nd = 0
+            total_loss_nd_in_epoch = 0
+            total_rewards_per_thread = []
+            total_rewards_total = 0
+            total_rewards_avg = 0
 
-            #initiallize
-            states[0]=np.array([envs[i].reset() for i in range(threads)]).reshape((-1,*test_env.state_shape))
+            # initiallize
+            states[0] = np.array([envs[i].reset() for i in range(threads)]
+                                 ).reshape((-1, *test_env.state_shape))
 
-            #action size
-            a_ , _ = self._network(states[0])
+            # action size
+            a_, _ = self._network(states[0])
             a_len = len(a_[0].as_ndarray())
 
-            loss=0
+            loss = 0
 
             max_step = epoch_step / advantage
 
@@ -221,32 +216,32 @@ class A2C(object):
             # env epoch
             [self.envs[_t].epoch() for _t in range(threads)]
 
-
             for j in range(int(max_step)):
 
-                #for each step
+                # for each step
                 for step in range(advantage):
 
-                    #calculate action value
-                    actions[step]=self._action(states[step])
+                    # calculate action value
+                    actions[step] = self._action(states[step])
 
-                    #for each thread
+                    # for each thread
                     for thr in range(threads):
 
-                        #next state,reward,done
-                        states_next[step][thr] , rewards[step][thr] , dones[step][thr]  = envs[thr].step(int(actions[step][thr]))
+                        # next state,reward,done
+                        states_next[step][thr], rewards[step][thr], dones[step][thr] = envs[thr].step(
+                            int(actions[step][thr]))
 
                         # summing rewards
                         sum_rewards[thr] += rewards[step][thr]
 
-                        #if done, then reset, set next state is initial
+                        # if done, then reset, set next state is initial
                         if dones[step][thr]:
                             states_next[step][thr] = envs[thr].reset()
                             total_rewards[thr].append(sum_rewards[thr])
-                            sum_rewards[thr]=0
-                            episode_counts[thr]+=1
+                            sum_rewards[thr] = 0
+                            episode_counts[thr] += 1
 
-                    #append 1 step
+                    # append 1 step
                     step_count += advantage
 
                     # setting step to next advanced step
@@ -260,40 +255,41 @@ class A2C(object):
                 [self.envs[_t].epoch_step() for _t in range(threads)]
 
                 # copy rewards
-                target_rewards=np.copy(rewards)
+                target_rewards = np.copy(rewards)
 
-                #calculate rewards
+                # calculate rewards
                 for i in reversed(range(advantage-1)):
-                    target_rewards[i]=rewards[i]+target_rewards[i+1]*gamma*(1-dones[i])
+                    target_rewards[i] = rewards[i]+target_rewards[i+1]*gamma*(1-dones[i])
 
-                #-------calcuating gradients-----
+                # -------calcuating gradients-----
 
-                #reshaping states, target
-                reshaped_state = states.reshape((-1 , *envs[0].state_shape))
-                reshaped_target_rewards = target_rewards.reshape((-1 , 1))
-                advantage_reward = reshaped_target_rewards - values.reshape((-1 , 1))
+                # reshaping states, target
+                reshaped_state = states.reshape((-1, *envs[0].state_shape))
+                reshaped_target_rewards = target_rewards.reshape((-1, 1))
+                advantage_reward = reshaped_target_rewards - values.reshape((-1, 1))
 
                 total_n = advantage * threads
 
                 # reshape index variables for action
-                action_index=actions.reshape((-1,))
+                action_index = actions.reshape((-1,))
 
                 # caculate forward with comuptational graph
                 with self._network.train():
-                    act , val, entropy = self._calc_forward(reshaped_state)
+                    act, val, entropy = self._calc_forward(reshaped_state)
                     act_log = rm.log(act+1e-5)
 
                     # initiallize
                     action_coefs = np.zeros_like(act.as_ndarray())
 
                     # write 1 for index at action_coefs
-                    action_coefs[range(action_index.shape[0]),action_index.astype("int")] = 1
+                    action_coefs[range(action_index.shape[0]), action_index.astype("int")] = 1
 
                     # append act loss and val loss
-                    act_loss = rm.sum(- (advantage_reward * action_coefs * act_log + entropy * entropy_coef)/ total_n)
-                    val_loss = self.loss_func(reshaped_target_rewards,val)
+                    act_loss = rm.sum(- (advantage_reward * action_coefs *
+                                         act_log + entropy * entropy_coef) / total_n)
+                    val_loss = self.loss_func(reshaped_target_rewards, val)
 
-                    #total loss
+                    # total loss
                     total_loss = val_loss + act_loss
 
                 # calc
@@ -315,15 +311,15 @@ class A2C(object):
 
                 # message print
                 msg = "agent{}, epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f}  episode {:04.1f} rewards in episode {:4.3f}."\
-                    .format(0 , e, abs(total_loss_nd), total_rewards_per_thread[0], episode_counts[0],
-                     total_rewards[0][-1] if len(total_rewards[0]) > 0 else 0)
+                    .format(0, e, abs(total_loss_nd), total_rewards_per_thread[0], episode_counts[0],
+                            total_rewards[0][-1] if len(total_rewards[0]) > 0 else 0)
 
                 # description
                 tq.set_description(msg)
                 tq.update(advantage)
 
                 # event handler
-                self.events.on("step", e,j, step)
+                self.events.on("step", e, j, step)
 
                 if any([self.envs[_t].terminate() for _t in range(threads)]):
                     print("terminate")
@@ -333,16 +329,16 @@ class A2C(object):
 
                 summed_test_reward = self.test(test_step)
 
-                total_rewards_total= np.sum(total_rewards_per_thread)
-                total_rewards_avg = total_rewards_total /  np.sum(episode_counts)
+                total_rewards_total = np.sum(total_rewards_per_thread)
+                total_rewards_avg = total_rewards_total / np.sum(episode_counts)
 
                 msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
                     "avg train reward in episode:{:4.3f}"
                 msg = msg.format(e, total_loss_nd_in_epoch/max_step, total_rewards_total,
                                  summed_test_reward, total_rewards_avg)
 
-                self.events.on("end_epoch", e,j, self, total_loss_nd_in_epoch/max_step, total_rewards_total,
-                                summed_test_reward)
+                self.events.on("end_epoch", e, j, self, total_loss_nd_in_epoch/max_step, total_rewards_total,
+                               summed_test_reward)
 
                 tq.set_description(msg)
                 tq.update(0)
@@ -351,9 +347,6 @@ class A2C(object):
                 continue
 
             break
-
-
-
 
     def test(self, test_step=None, **kwargs):
         """
