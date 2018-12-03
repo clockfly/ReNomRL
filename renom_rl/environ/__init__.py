@@ -1,2 +1,2 @@
-from env import BaseEnv
-from openai import *
+from .env import BaseEnv
+from .openai import *

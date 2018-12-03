@@ -1,1 +1,1 @@
-from ddpg import *
+from .ddpg import *
