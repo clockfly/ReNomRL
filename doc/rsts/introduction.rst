@@ -1,5 +1,5 @@
 Introduction
-============
+==================
 
 Due to Deep Learning, the technology to learn from large data set has evolved exponentially and now, we are able to recognize certain objects and increase translation accuracy, especially for image and voice recognition purpose. There have even been reports that these models outperform specialists in certain fields. However, when we look back, we realize that humans can learn without input data. In machine learning, there is a machine learning field called “Reinforcement Learning”, which bases its algorithm on finding the optimal action using the intuitive human behavior of trial and error.
 

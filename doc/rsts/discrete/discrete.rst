@@ -7,4 +7,4 @@ Here, we provide RL for discrete action space.  Users can use already built algo
 
    dqn
    double_dqn
-
+   a2c

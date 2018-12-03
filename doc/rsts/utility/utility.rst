@@ -26,6 +26,7 @@ Noise are used to generate noise.
 	actionnoisefilter
 	epsilon
 	noise
+	DiscreteNodeChooser
 
 
 

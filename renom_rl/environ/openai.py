@@ -127,10 +127,64 @@ class Breakout(BaseEnv):
         return state, np.array(np.sum(reward_list) > 0), terminal
 
 
+class CartPole00(BaseEnv):
+
+    """A wrapper environment of OpenAI gym "CartPole-v0".
+    When 195 step is stepped without error, then reward is +1, else -1.
+
+    Example:
+        >>> import renom as rm
+        >>> from renom_rl.discrete.dqn import DQN
+        >>> from renom_rl.environ.openai import CartPole00
+        >>> env = CartPole01()
+        >>> model = rm.Sequential([
+        ...     rm.Dense(10),
+        ...     rm.Dense(2),
+        ... ])
+        ...
+        >>> agent = DQN(env, model)
+        >>> agent.fit()
+    """
+
+    def __init__(self):
+        self.action_shape = (2,)
+        self.state_shape = (4,)
+
+        self.env = gym.make('CartPole-v0')
+        self.step_continue = 0
+        self.test_mode = False
+        self.reward = 0
+
+    def reset(self):
+        return self.env.reset()
+
+    def sample(self):
+        rand = self.env.action_space.sample()
+        return rand
+
+    def step(self, action):
+        state, _, terminal, _ = self.env.step(int(action))
+
+        self.step_continue += 1
+        reward = 0
+
+        if terminal:
+            if self.step_continue >= 195:
+                reward = 1
+            else:
+                reward = -1
+
+            self.step_continue = 0
+
+        self.reward = reward
+
+        return state, reward, terminal
+
+
 class CartPole01(BaseEnv):
 
     """A wrapper environment of OpenAI gym "CartPole-v0".
-    When 200 step is stepped without error, then reward is +1, else -1.
+    When 195 step is stepped without error, then reward is +1, else -1.
     Training loop brakes when reward +1 is recieved 10 times.
 
     Example:
@@ -171,7 +225,7 @@ class CartPole01(BaseEnv):
         reward = 0
 
         if terminal:
-            if self.step_continue >= 200:
+            if self.step_continue >= 195:
                 reward = 1
                 if self.test_mode == False:
                     print(self.successful_episode)

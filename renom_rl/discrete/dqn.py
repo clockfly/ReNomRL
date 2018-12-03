@@ -11,7 +11,7 @@ from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.replaybuffer import ReplayBuffer
-from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter
+from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
 
 
 class DQN(AgentBase):
@@ -53,7 +53,8 @@ class DQN(AgentBase):
     """
 
     def __init__(self, env, q_network, loss_func=None,
-                 optimizer=None, gamma=0.99, buffer_size=1e6):
+                 optimizer=None, gamma=0.99, buffer_size=1e6,
+                 node_selector=None, test_node_selector=None):
         super(DQN, self).__init__()
 
         if loss_func is None:
@@ -77,6 +78,9 @@ class DQN(AgentBase):
         self._optimizer = optimizer
         self.gamma = gamma
         self.epsilon_update = None
+
+        self.node_selector = MaxNodeChooser() if node_selector is None else node_selector
+        self.test_node_selector = MaxNodeChooser() if test_node_selector is None else test_node_selector
 
         # Check Env class type.
         if isinstance(env, BaseEnv):
@@ -119,7 +123,15 @@ class DQN(AgentBase):
         """This method returns an action according to the given state.
         """
         self._q_network.set_models(inference=True)
-        return np.argmax(self._q_network(state[None, ...]).as_ndarray(), axis=1)
+        act = self._q_network(state[None, ...])
+        return self.node_selector(act)
+
+    def _test_action(self, state):
+        """This method returns an action according to the given state.
+        """
+        self._q_network.set_models(inference=True)
+        act = self._q_network(state[None, ...])
+        return self.test_node_selector(act)
 
     def _walk_model(self, model):
         yield self
@@ -147,7 +159,7 @@ class DQN(AgentBase):
         self._rec_copy(self._best_q_network, self._q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
-            test_step=2000, update_period=10000, train_frequency=4,
+            test_step=None, update_period=10000, train_frequency=4,
             action_filter=None, callback_end_epoch=None):
         """This method executes training of a q-network.
         Training will be done with epsilon-greedy method(default).
@@ -364,7 +376,7 @@ class DQN(AgentBase):
 
         if test_step is None:
             while True:
-                action = action_filter.test(self._action(state), self.env.sample())
+                action = action_filter.test(self._test_action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
@@ -377,7 +389,7 @@ class DQN(AgentBase):
 
         else:
             for j in range(test_step):
-                action = action_filter.test(self._action(state), self.env.sample())
+                action = action_filter.test(self._test_action(state), self.env.sample())
 
                 state, reward, terminal = self.env.step(action)
 
