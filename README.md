@@ -1,4 +1,4 @@
-# ReNomRL beta0.2 - Reinforcement Learning Modules
+# ReNomRL beta0.3 - Reinforcement Learning Modules
 
 - https://www.renom.jp/index.git
 

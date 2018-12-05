@@ -3,12 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ReNomRL version 0.2
+ReNomRL version 0.3
 ===================================
+Welcome to ReNomRL. To understand what ReNomRL is, go to Introduction. For understanding basic concept of how to use the module, go ot How to Use. For reference, go to API (library reference). For vesion changes, go to changes. For more details on how to use, go to `renom.jp <http://www.renom.jp>`_.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     rsts/introduction
     rsts/how_to_use
     rsts/api
+    rsts/version_changes/changes

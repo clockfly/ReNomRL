@@ -140,7 +140,7 @@ class DDPG(AgentBase):
         return self._actor(state.reshape(1, *self.state_size)).as_ndarray()[0]
 
     def fit(self, epoch=1000, epoch_step=250000, batch_size=64, random_step=5000,
-            test_step=2000, train_frequency=1, action_filter=None,
+            test_step=None, train_frequency=1, action_filter=None,
             ):
         """ This method executes training of an actor-network.
         Here, target actor & critic network weights are updated after every actor & critic update using self.tau
