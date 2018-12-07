@@ -172,3 +172,6 @@ Additional ignored files
 
 # All DS_Store
 .DS_Store
+
+# removing release script
+release.sh
