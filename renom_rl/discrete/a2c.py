@@ -287,7 +287,7 @@ class A2C(object):
                     # append act loss and val loss
                     act_loss = rm.sum(- (advantage_reward * action_coefs *
                                          act_log + entropy * entropy_coef) / total_n)
-                    val_loss = self.loss_func(reshaped_target_rewards, val)
+                    val_loss = self.loss_func(val,reshaped_target_rewards)
 
                     # total loss
                     total_loss = val_loss + act_loss
