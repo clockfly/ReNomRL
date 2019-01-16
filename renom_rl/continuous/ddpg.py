@@ -221,11 +221,12 @@ class DDPG(AgentBase):
             nth_episode = 0
             each_episode_reward = []
             tq = tqdm(range(epoch_step))
-            state = self.env.reset()
-            loss = 0.0
 
             # env epoch
             self.env.epoch()
+
+            state = self.env.reset()
+            loss = 0.0
 
             for j in range(epoch_step):
 

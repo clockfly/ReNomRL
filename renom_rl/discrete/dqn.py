@@ -235,11 +235,12 @@ class DQN(AgentBase):
             nth_episode = 0
             train_sum_rewards_in_each_episode = []
             tq = tqdm(range(epoch_step))
-            state = self.env.reset()
-            loss = 0
 
             # env epoch
             self.env.epoch()
+
+            state = self.env.reset()
+            loss = 0
 
             for j in range(epoch_step):
 

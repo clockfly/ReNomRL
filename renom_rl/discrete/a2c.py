@@ -59,7 +59,7 @@ class A2C(object):
     References:
         | A. V. Clemente, H. N. Castejon, and A. Chandra.
         | Efficient Parallel Methods for Deep Reinforcement Learning
-        | https://arxiv.org/abs/1509.02971
+        | https://arxiv.org/abs/1705.04862
 
 
 
@@ -70,6 +70,7 @@ class A2C(object):
                  node_selector=None, test_node_selector=None, gradient_clipping=None):
         super(A2C, self).__init__()
 
+        # Reset parameters.
         self._network = network
         self._advantage = advantage
         self._num_worker = num_worker
@@ -93,8 +94,6 @@ class A2C(object):
         self.action_size = action_shape
         self.state_size = state_shape
         self.bar = None
-
-        self._initialize()
 
         # Check Env class type.
         if isinstance(env, BaseEnv):
@@ -120,8 +119,12 @@ class A2C(object):
         assert out_res[1].shape[1:] == (1,), \
             "Expected value shape is {} but acctual is {}".format((1,), out_res[1].shape[1:])
 
+        self._action_shape = action_shape
+        self._state_shape = state_shape
+        self._initialize()
+
     def _initialize(self):
-        '''Target q-network is initialized with same neural network weights of q-network.'''
+        '''Target network is initialized with same neural network weights of network.'''
         # Reset weight.
         for layer in self._network.iter_models():
             if hasattr(layer, "params"):
@@ -178,6 +181,11 @@ class A2C(object):
         sum_rewards = np.zeros((threads,))
         avg_rewards = np.zeros((threads,))
 
+        # # max_reward for target network update
+        # count = 0
+        # max_reward_in_each_update_period = -np.Inf
+        #
+        #
         for e in range(1, epoch + 1):
 
             # r,a,r,t,s+1
@@ -201,6 +209,9 @@ class A2C(object):
             total_rewards_total = 0
             total_rewards_avg = 0
 
+            # env epoch
+            [self.envs[_t].epoch() for _t in range(threads)]
+
             # initiallize
             states[0] = np.array([envs[i].reset() for i in range(threads)]
                                  ).reshape((-1, *test_env.state_shape))
@@ -214,9 +225,6 @@ class A2C(object):
             max_step = epoch_step / advantage
 
             tq = tqdm(range(int(max_step)*advantage))
-
-            # env epoch
-            [self.envs[_t].epoch() for _t in range(threads)]
 
             for j in range(int(max_step)):
 
@@ -276,6 +284,7 @@ class A2C(object):
                 action_index = actions.reshape((-1,))
 
                 # caculate forward with comuptational graph
+                self._network.set_models(inference=False)
                 with self._network.train():
                     act, val, entropy = self._calc_forward(reshaped_state)
                     act_log = rm.log(act+1e-5)
@@ -289,7 +298,7 @@ class A2C(object):
                     # append act loss and val loss
                     act_loss = rm.sum(- (advantage_reward * action_coefs *
                                          act_log + entropy * entropy_coef) / total_n)
-                    val_loss = self.loss_func(val,reshaped_target_rewards)
+                    val_loss = self.loss_func(val,reshaped_target_rewards) * value_coef
 
                     # total loss
                     total_loss = val_loss + act_loss
@@ -332,7 +341,7 @@ class A2C(object):
                 summed_test_reward = self.test(test_step)
 
                 total_rewards_total = np.sum(total_rewards_per_thread)
-                total_rewards_avg = total_rewards_total / np.sum(episode_counts)
+                total_rewards_avg = np.mean(total_rewards_per_thread)
 
                 msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
                     "avg train reward in episode:{:4.3f}"

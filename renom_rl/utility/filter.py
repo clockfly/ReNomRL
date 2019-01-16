@@ -119,7 +119,7 @@ class EpsilonSLFilter(EpsilonGreedyFilter):
 
         .. math::
 
-            \\epsilon &= \\epsilon_{0}-\\frac{init-min}{epsilon\_step}step
+            \\epsilon &= \\epsilon_{0} - \\frac{init-min}{epsilon\_step} step
 
     Args:
 
@@ -155,7 +155,7 @@ class EpsilonEIFilter(EpsilonGreedyFilter):
 
         .. math::
 
-            \\epsilon=\\epsilon_{min}+\\frac{init-min}{1+episode * alpha}
+            \\epsilon &= \\epsilon_{min} + \\frac{init-min}{1+episode * alpha}
 
     Args:
 
