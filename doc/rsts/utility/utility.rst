@@ -7,21 +7,30 @@ There are modules that require these utilities. There are also modules which use
 Animation
 --------------------------------------------------------------
 
-This is allows users to create animation. Mainly developed for jupyter notebook.
+This allows users to create animation. Mainly developed for jupyter notebook.
 
 .. toctree::
    animation
-   
+
+Logger
+--------------------------------------------------------------
+
+Logger allows users to custom logging data.
+
+.. toctree::
+   logger
+
+
 Action Filter
 --------------------------------------------------------------
 
-Action filters are used to add noise or choose random actions. In the ``renom_rl.utility.filter``, there are various modules to design action filter. 
+Action filters are used to add noise or choose random actions. In the ``renom_rl.utility.filter``, there are various modules to design action filter.
 Action Filters are used for random action decision in algorithms such as DQN, DDQN etc.
 Action Noise Filters are used for random action noises in algorithms such as DDPG etc.
 Epsilon are used to change epsilon value during epsilon greedy decision etc.
 Noise are used to generate noise.
 
-.. toctree:: 
+.. toctree::
 	actionfilter
 	actionnoisefilter
 	epsilon

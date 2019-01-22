@@ -1,6 +1,6 @@
 ver 0.4
 ------------------------------------------------
-
+- Created Logger, SimpleLogger. See ``utility.logger``.
 - discrete/DQN: set env.epoch before reset()
 - discrete/DoubleDQN: set env.epoch before reset()
 - countinuous/DDPG: set env.epoch before reset()
