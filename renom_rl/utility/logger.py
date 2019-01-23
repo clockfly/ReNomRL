@@ -23,13 +23,20 @@ def _pass_logger():
     pass
 
 
+def remove_col(func):
+    def inner(*args,**kwargs):
+        return func(*args,**kwargs)[:-2]
+
+    return inner
+
 def _log_decorator_iter(self,log_func):
     """
     This function will decorate logging function.
     Do not delete this function.
     """
     def _decorator(**kwargs):
-
+        self.update(1)
+        
         log_msg = log_func(**kwargs)
 
         if log_msg:
@@ -40,7 +47,7 @@ def _log_decorator_iter(self,log_func):
                 if key in kwargs:
                     self.log_dic[key].append(copy(kwargs[key]))
 
-        self.update(1)
+
 
     return _decorator
 
@@ -69,14 +76,12 @@ class LoggerMeta(type):
         self = cls.__new__(cls, *args, **kwargs)
         cls.__init__(self, *args, **kwargs)
         self._assert_logger_super()
-        setattr(self,'logger',_log_decorator_iter(self,self.logger))
-        setattr(self,'logger_epoch',_log_decorator_epoch(self,self.logger_epoch))
         return self
 
 
 
 
-class Logger(tqdm , metaclass=LoggerMeta):
+class Logger(object, metaclass=LoggerMeta):
     """
     **Logger Module**
 
@@ -131,10 +136,10 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
     """
 
-    def __init__(self,log_key=None, record=True, show_bar=True, disable = False):
+    def __init__(self,log_key=None, record=True, show_bar=True, disable=False):
 
         assert isinstance(log_key,list), "log_var must be a list"
-        assert "env" in log_key or "network" in log_key, "do not record env or network object."
+        assert "env" not in log_key or "network" not in log_key, "do not record env or network object."
 
         log_dic={}
         for key in log_key:
@@ -142,9 +147,12 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
         self.log_dic = log_dic
         self.record = record
-        self.count = 0
         self._assert_logger_super = _pass_logger
+        self.logger = _log_decorator_iter(self,self.logger)
+        self.logger_epoch = _log_decorator_epoch(self,self.logger_epoch)
+        # setattr(self,'logger_epoch',_log_decorator_epoch(self,self.logger_epoch))
         self.show_bar = show_bar
+        self.tqdm = None
         self.disable = disable
 
 
@@ -158,17 +166,27 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
         """
         if not length or not self.show_bar:
-            super(Logger,self).__init__((),disable=self.disable,bar_format="---")
+            self.tqdm = tqdm(range(1),total=1,bar_format="-{desc}",disable=self.disable)
+            self.tqdm.__repr__ = remove_col(self.tqdm.__repr__)
         else:
-            super(Logger,self).__init__(range(length),disable=self.disable)
-        # self.format_meter(self.n, 1,0.0,bar_format="")
-        # self.format_meter=lambda *x: ""
+            self.tqdm = tqdm(range(length),disable=self.disable)
+
+    def  set_description(self,msg):
+        self.tqdm.set_description(msg)
+
+    def update(self,num):
+        if self.show_bar:
+            self.tqdm.update(num)
+
+    def close(self):
+        self.tqdm.close()
+
 
     def _key_check(self,existing_key_input):
         """
         Checks key. This will be called from each algorithm.
         """
-        for key in log_key:
+        for key in self.log_dic:
             assert key in existing_key_input, "{} does not exist as logging key in this module. Reset log_key.".format(key)
 
     def reset(self):
@@ -258,13 +276,16 @@ class Logger(tqdm , metaclass=LoggerMeta):
             assert x_key in self.log_dic,\
                  "set axis to keys set in log_key variable"
             x_data=np.array(self.log_dic[x_key])
+        else:
+            x_data=None
 
         # creating custom graph
-        self.graph_custom(y_data,x_data,x_lim,y_lim,x_interval,y_interval,figsize,
-                        dpi,average_range,grid)
+        self.graph_custom(y_data=y_data,x_data=x_data,y_label=y_key,x_label=x_key, x_lim=x_lim,y_lim=y_lim,
+                  x_interval=x_interval,y_interval=y_interval,figsize=figsize,
+                  dpi=dpi,average_range=average_range,grid=grid)
 
     #for custom graph
-    def graph_custom(self,y_data,x_data=None, x_lim=None,y_lim=None,
+    def graph_custom(self,y_data,x_data=None,y_label="",x_label="", x_lim=None,y_lim=None,
               x_interval=0,y_interval=0,figsize=None,
               dpi=100,average_range=0,grid=True):
         """
@@ -273,15 +294,18 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
         Args:
 
-            y_key (numpy): Y (vertical) axis data. 2-D data is allowed.
-            x_key (numpy): X (horizontal) axis data. This must be 1-D data. Default is None.
+            y_data (numpy): Y (vertical) axis data. 2-D data is allowed.
+            x_data (numpy): X (horizontal) axis data. This must be 1-D data. Default is None.
+            y_label (string):  Y (vertical) axis label.
+            x_label (string):  X (vertical) axis label.
 
         """
 
+        y_data = np.array(y_data)
         x_data = x_data if x_data is not None else np.arange(len(y_data))
 
-        assert len(x_data.shape) <= 1 and len(y_data.shape) <= 2,\
-            "key dimension conditions are x_key <= 1 and y_key <= 2 when plotting"
+        assert len(np.shape(x_data)) <= 1 and len(np.shape(y_data)) <= 2,\
+            "key dimension conditions are x_data <= 1 and y_data <= 2 when plotting"
 
         if figsize:
             plt.figure(figsize=figsize,dpi=dpi)
@@ -301,24 +325,24 @@ class Logger(tqdm , metaclass=LoggerMeta):
         plt.xlim(x_lim)
         plt.ylim(y_lim)
 
-        if len(y_data.shape)==1:
+        if len(np.shape(y_data))==1:
             plt.plot(x_data,y_data,"b",label="result")
-        if len(y_data.shape)==2:
+        if len(np.shape(y_data))==2:
             for i in range(len(y_data[0])):
-                plt.plot(x_data,y_data[:,i],label="{}[{}]".format(y_key,i))
+                plt.plot(x_data,y_data[:,i],label="{}[{}]".format(y_label,i))
 
 
         if x_interval: plt.xticks(np.arange(x_lim[0], x_lim[-1], x_interval))
         if y_interval: plt.yticks(np.arange(y_lim[0], y_lim[-1], y_interval))
 
-        if x_key: plt.xlabel(x_key)
-        if y_key: plt.ylabel(y_key)
+        if x_label: plt.xlabel(x_label)
+        if y_label: plt.ylabel(y_label)
 
         if average_range:
             if isinstance(average_range,list):
                 assert len(average_range)==2, \
                         "average_range must have 2 int"
-                assert isinstance(average_range[0],int) and isinstance(average_range[1],int) and np.all(np.array(average_range)>0),\
+                assert isinstance(average_range[0],int) and isinstance(average_range[1],int) and np.all(np.array(average_range)>=0),\
                         "average_range elements must be positive int"
 
                 avg_data = _moving_average(data = y_data,
@@ -369,7 +393,11 @@ class Logger(tqdm , metaclass=LoggerMeta):
         row_data=[]
 
         for i in range(data_length):
-            row_data.append({key_i:self.log_dic[key_i][i] for key_i in self.log_dic})
+            row_data.append({key_i: \
+                self.log_dic[key_i][i].tolist() if isinstance(self.log_dic[key_i][i],np.ndarray) \
+                else self.log_dic[key_i][i] \
+                    for key_i in self.log_dic})
+            # row_data.append({key_i:self.log_dic[key_i][i] for key_i in self.log_dic})
 
 
         with open(filename, mode="w") as f:
@@ -382,7 +410,7 @@ class Logger(tqdm , metaclass=LoggerMeta):
         """
         This function loads csv data.
         """
-        with open('some.csv', 'r') as f:
+        with open(filename, 'r') as f:
             reader = csv.reader(f,delimiter=',')
             header = next(reader)
 
@@ -391,15 +419,18 @@ class Logger(tqdm , metaclass=LoggerMeta):
                 self.log_dic[h]=[]
 
             for row in reader:
-                for i in range(row):
-                    self.log_dic[header[i]].append(row[i])
+                for i,_ in enumerate(row):
+                    self.log_dic[header[i]].append(eval(row[i]))
+
+            # for key in self.log_dic:
+            #     self.log_dic[key]=np.array(self.log_dic[key])
 
 
     def _assert_logger_super(self):
         """
         this is used when creating new object
         """
-        raise Exception("Need to call super('class',self).__init__(log_key,record=True)  ('class':Class Name.)")
+        raise NotImplementedError("Need to call super('class',self).__init__(log_key,record=True)  ('class':Class Name.)")
 
 
 
@@ -425,8 +456,8 @@ class SimpleLogger(Logger):
         >>> logger = SimpleLogger(log_key = ["state","reward"] , msg="this is {} reward:{}")
 
     """
-    def __init__(self, log_key, msg="",record = True):
-        super(SimpleLogger,self).__init__(log_key, record)
+    def __init__(self, log_key, msg="",record = True,show_bar=True, disable=False):
+        super(SimpleLogger,self).__init__(log_key, record, show_bar, disable)
         self.message = msg
         assert len(log_key)==len(re.findall(r'\{+.?\}',msg)),"log_key has {0} elements while message has {1} curly braces({2})".format(len(log_key),len(re.findall(r'\{+.?\}',msg)),"{ }")
 
