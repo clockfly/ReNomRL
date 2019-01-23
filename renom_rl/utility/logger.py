@@ -87,8 +87,10 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
     Args:
 
-        log_key(list): logging values.
-        record(boolean): keeps data for graph and csv. Default is True.
+        log_key(list): Logging values.
+        record(boolean): Keeps data for graph and csv. Default is True.
+        show_bar(boolean): Shows bar. Default is True.
+        disable(boolean): Disables tqdm. Default is False.
 
     Examples:
         >>> from renom_rl.utility.logger import Logger
@@ -375,6 +377,22 @@ class Logger(tqdm , metaclass=LoggerMeta):
             writer = csv.DictWriter(f, header)
             writer.writerows(row_data)
 
+
+    def from_csv(self,filename):
+        """
+        This function loads csv data.
+        """
+        with open('some.csv', 'r') as f:
+            reader = csv.reader(f,delimiter=',')
+            header = next(reader)
+
+            self.log_dic={}
+            for h in header:
+                self.log_dic[h]=[]
+
+            for row in reader:
+                for i in range(row):
+                    self.log_dic[header[i]].append(row[i])
 
 
     def _assert_logger_super(self):
