@@ -44,6 +44,25 @@ def _log_decorator_iter(self,log_func):
 
     return _decorator
 
+def _log_decorator_epoch(self,log_func):
+    """
+    This function will decorate logging function for epoch run.
+    Do not delete this function. Note there is no update.
+    """
+    def _decorator2(**kwargs):
+
+        log_msg = log_func(**kwargs)
+
+        if log_msg:
+            self.set_description(log_msg)
+
+        if self.record:
+            for key in self.log_dic:
+                if key in kwargs:
+                    self.log_dic[key].append(copy(kwargs[key]))
+
+    return _decorator2
+
 
 class LoggerMeta(type):
     def __call__(cls, *args, **kwargs):
@@ -51,7 +70,7 @@ class LoggerMeta(type):
         cls.__init__(self, *args, **kwargs)
         self._assert_logger_super()
         setattr(self,'logger',_log_decorator_iter(self,self.logger))
-        setattr(self,'logger_epoch',_log_decorator_iter(self,self.logger_epoch))
+        setattr(self,'logger_epoch',_log_decorator_epoch(self,self.logger_epoch))
         return self
 
 
@@ -61,7 +80,7 @@ class Logger(tqdm , metaclass=LoggerMeta):
     """
     **Logger Module**
 
-    This class logs variaous data of each module.
+    This class logs various data of each module.
     `log_key` argument must be a list of strings which exist in the algorithm.
     `logger(**log)` function returns at every iter. (Overwriting required.)
     Note that you must also call super class constructor(super().__init__) when initializing.
@@ -113,6 +132,7 @@ class Logger(tqdm , metaclass=LoggerMeta):
     def __init__(self,log_key=None, record=True, show_bar=True, disable = False):
 
         assert isinstance(log_key,list), "log_var must be a list"
+        assert "env" in log_key or "network" in log_key, "do not record env or network object."
 
         log_dic={}
         for key in log_key:
@@ -149,6 +169,12 @@ class Logger(tqdm , metaclass=LoggerMeta):
         for key in log_key:
             assert key in existing_key_input, "{} does not exist as logging key in this module. Reset log_key.".format(key)
 
+    def reset(self):
+        """
+        Resets logged data.
+        """
+        for key in self.log_dic:
+            self.log_dic[key]=[]
 
     def logger(self, **kwargs):
         """
@@ -163,7 +189,6 @@ class Logger(tqdm , metaclass=LoggerMeta):
         This function will be called when 1 epoch is done.
         Override this function when creating custom logger.
         """
-
         pass
 
 
@@ -221,6 +246,7 @@ class Logger(tqdm , metaclass=LoggerMeta):
 
         """
 
+        # x_data, y_data
         assert y_key in self.log_dic,\
            "set axis to keys set in log_key variable"
 
@@ -230,8 +256,27 @@ class Logger(tqdm , metaclass=LoggerMeta):
             assert x_key in self.log_dic,\
                  "set axis to keys set in log_key variable"
             x_data=np.array(self.log_dic[x_key])
-        else:
-            x_data=np.arange(len(y_data))
+
+        # creating custom graph
+        self.graph_custom(y_data,x_data,x_lim,y_lim,x_interval,y_interval,figsize,
+                        dpi,average_range,grid)
+
+    #for custom graph
+    def graph_custom(self,y_data,x_data=None, x_lim=None,y_lim=None,
+              x_interval=0,y_interval=0,figsize=None,
+              dpi=100,average_range=0,grid=True):
+        """
+        This function allows users to quickly create graph when custom creating own data.
+        refer `graph` for other arguments.
+
+        Args:
+
+            y_key (numpy): Y (vertical) axis data. 2-D data is allowed.
+            x_key (numpy): X (horizontal) axis data. This must be 1-D data. Default is None.
+
+        """
+
+        x_data = x_data if x_data is not None else np.arange(len(y_data))
 
         assert len(x_data.shape) <= 1 and len(y_data.shape) <= 2,\
             "key dimension conditions are x_key <= 1 and y_key <= 2 when plotting"
@@ -348,7 +393,7 @@ class SimpleLogger(Logger):
     """
     **Simple Logger Module**
 
-    This class logs variaous data of each module.
+    This class logs various data of each module.
     `log_key` argument must be a list of strings which exist in the algorithm.
     `msg` is required.
 
