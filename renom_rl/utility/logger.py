@@ -3,6 +3,7 @@ import re
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import csv
+from copy import copy
 
 
 def _moving_average(data, min_length, max_length):
@@ -22,19 +23,41 @@ def _pass_logger():
     pass
 
 
+def _log_decorator_iter(self,log_func):
+    """
+    This function will decorate logging function.
+    Do not delete this function.
+    """
+    def _decorator(**kwargs):
 
-class AssertMeta(type):
+        log_msg = log_func(**kwargs)
+
+        if log_msg:
+            self.set_description(log_msg)
+
+        if self.record:
+            for key in self.log_dic:
+                if key in kwargs:
+                    self.log_dic[key].append(copy(kwargs[key]))
+
+        self.update(1)
+
+    return _decorator
+
+
+class LoggerMeta(type):
     def __call__(cls, *args, **kwargs):
         self = cls.__new__(cls, *args, **kwargs)
         cls.__init__(self, *args, **kwargs)
         self._assert_logger_super()
-        setattr(self,'logger',self._log_decorator(self.logger))
+        setattr(self,'logger',_log_decorator_iter(self,self.logger))
+        setattr(self,'logger_epoch',_log_decorator_iter(self,self.logger_epoch))
         return self
 
 
 
 
-class Logger(tqdm,metaclass=AssertMeta):
+class Logger(tqdm , metaclass=LoggerMeta):
     """
     **Logger Module**
 
@@ -87,7 +110,7 @@ class Logger(tqdm,metaclass=AssertMeta):
 
     """
 
-    def __init__(self,log_key=None, record=True):
+    def __init__(self,log_key=None, record=True, show_bar=True, disable = False):
 
         assert isinstance(log_key,list), "log_var must be a list"
 
@@ -99,9 +122,11 @@ class Logger(tqdm,metaclass=AssertMeta):
         self.record = record
         self.count = 0
         self._assert_logger_super = _pass_logger
+        self.show_bar = show_bar
+        self.disable = disable
 
 
-    def start(self,length):
+    def start(self,length=0):
         """
         Initializes tqdm.
 
@@ -110,7 +135,12 @@ class Logger(tqdm,metaclass=AssertMeta):
             length(float): length of tqdm.
 
         """
-        super(Logger,self).__init__(range(length))
+        if not length or not self.show_bar:
+            super(Logger,self).__init__((),disable=self.disable,bar_format="---")
+        else:
+            super(Logger,self).__init__(range(length),disable=self.disable)
+        # self.format_meter(self.n, 1,0.0,bar_format="")
+        # self.format_meter=lambda *x: ""
 
     def _key_check(self,existing_key_input):
         """
@@ -118,27 +148,6 @@ class Logger(tqdm,metaclass=AssertMeta):
         """
         for key in log_key:
             assert key in existing_key_input, "{} does not exist as logging key in this module. Reset log_key.".format(key)
-
-
-    def _log_decorator(self,log_func):
-        """
-        This function will decorate logging function.
-        Do not delete this function.
-        """
-        def _decorator(**kwargs):
-
-            log_msg = log_func(**kwargs)
-
-            if log_msg:
-
-                if self.record:
-                    for key in self.log_dic:
-                        self.log_dic[key].append(kwargs[key])
-
-                self.update(1)
-                self.set_description(log_msg)
-
-        return _decorator
 
 
     def logger(self, **kwargs):
@@ -149,13 +158,14 @@ class Logger(tqdm,metaclass=AssertMeta):
 
         raise NotImplementedError("Please override ``logger`` method.")
 
-    def logger_test(self, **kwargs):
+    def logger_epoch(self, **kwargs):
         """
         This function will be called when 1 epoch is done.
         Override this function when creating custom logger.
         """
 
-        raise NotImplementedError("Please override ``logger`` method.")
+        pass
+
 
     def result(self,*args):
         """
@@ -261,7 +271,7 @@ class Logger(tqdm,metaclass=AssertMeta):
             if isinstance(average_range,list):
                 assert len(average_range)==2, \
                         "average_range must have 2 int"
-                assert isinstance(average_range[0],int) and isinstance(average_range[1],int) and np.all(a>0),\
+                assert isinstance(average_range[0],int) and isinstance(average_range[1],int) and np.all(np.array(average_range)>0),\
                         "average_range elements must be positive int"
 
                 avg_data = _moving_average(data = y_data,
