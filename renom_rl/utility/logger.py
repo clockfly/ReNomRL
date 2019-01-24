@@ -23,6 +23,9 @@ def _moving_average(data, min_length, max_length):
 
 
 def _pass_logger():
+    """
+    This function is used to override _assert_logger_super()
+    """
     pass
 
 
@@ -487,8 +490,11 @@ class SimpleLogger(Logger):
 
     Args:
 
-        log_key(list): logging values.
-        record(boolean): keeps data for graph and csv. Default is True.
+        log_key(list): Logging values. Elements
+        msg(string): Printing message using log_key. Use curly braces `{}`.
+        record(boolean): Keeps data for graph and csv. Default is True.
+        show_bar(boolean): Shows bar. Default is True.
+        disable(boolean): Disables tqdm. Default is False.
 
     Examples:
 
@@ -501,6 +507,9 @@ class SimpleLogger(Logger):
         assert len(log_key)==len(re.findall(r'\{+.?\}',msg)),"log_key has {0} elements while message has {1} curly braces({2})".format(len(log_key),len(re.findall(r'\{+.?\}',msg)),"{ }")
 
     def logger(self, **kwargs):
+        """
+        logs data
+        """
         args=[]
         for key in self.log_dic:
             args.append(kwargs[key])
