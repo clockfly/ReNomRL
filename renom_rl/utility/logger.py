@@ -3,10 +3,13 @@ import re
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import csv
-from copy import copy
+from copy import copy, deepcopy
 
 
 def _moving_average(data, min_length, max_length):
+    """
+    Average moving length.
+    """
 
     res = []
     for i in range(len(data)):
@@ -23,7 +26,11 @@ def _pass_logger():
     pass
 
 
-def remove_col(func):
+def _remove_col(func):
+    """
+    This function is used to remove `:` for tqdm.
+    tqdm ver.4.19 work.
+    """
     def inner(*args,**kwargs):
         return func(*args,**kwargs)[:-2]
 
@@ -35,8 +42,11 @@ def _log_decorator_iter(self,log_func):
     Do not delete this function.
     """
     def _decorator(**kwargs):
+
         self.update(1)
-        
+
+        kwargs=deepcopy(kwargs)
+
         log_msg = log_func(**kwargs)
 
         if log_msg:
@@ -45,7 +55,7 @@ def _log_decorator_iter(self,log_func):
         if self.record:
             for key in self.log_dic:
                 if key in kwargs:
-                    self.log_dic[key].append(copy(kwargs[key]))
+                    self.log_dic[key].append(kwargs[key])
 
 
 
@@ -58,6 +68,8 @@ def _log_decorator_epoch(self,log_func):
     """
     def _decorator2(**kwargs):
 
+        kwargs=deepcopy(kwargs)
+
         log_msg = log_func(**kwargs)
 
         if log_msg:
@@ -66,7 +78,7 @@ def _log_decorator_epoch(self,log_func):
         if self.record:
             for key in self.log_dic:
                 if key in kwargs:
-                    self.log_dic[key].append(copy(kwargs[key]))
+                    self.log_dic[key].append(kwargs[key])
 
     return _decorator2
 
@@ -86,6 +98,7 @@ class Logger(object, metaclass=LoggerMeta):
     **Logger Module**
 
     This class logs various data of each module.
+    By setting `log_key`, this class will record data based on log_key for every iteration.
     `log_key` argument must be a list of strings which exist in the algorithm.
     `logger(**log)` function returns at every iter. (Overwriting required.)
     Note that you must also call super class constructor(super().__init__) when initializing.
@@ -100,7 +113,6 @@ class Logger(object, metaclass=LoggerMeta):
     Examples:
         >>> from renom_rl.utility.logger import Logger
         >>> import numpy as np
-        >>> from copy import copy
         >>>
         >>> class Original(Logger):
         ...     def __init__(self,log_key,record=True):
@@ -129,7 +141,7 @@ class Logger(object, metaclass=LoggerMeta):
         ...     r = s + np.random.randint(-5,6)
         ...     t = np.random.randint(0,1)
         ...
-        ...     original_logger.logger(state=copy(s),reward=copy(r),terminal=copy(t))
+        ...     original_logger.logger(state=s,reward=r,terminal=t)
         ...
         >>> original_logger.close()
         30/30: 100%|██████████████████████████████████| 30/30 [00:00<00:00, 4865.41it/s]
@@ -138,7 +150,8 @@ class Logger(object, metaclass=LoggerMeta):
 
     def __init__(self,log_key=None, record=True, show_bar=True, disable=False):
 
-        assert isinstance(log_key,list), "log_var must be a list"
+        log_key = [] if log_key is None else log_key
+        assert isinstance(log_key,list), "log_var must be a list."
         assert "env" not in log_key or "network" not in log_key, "do not record env or network object."
 
         log_dic={}
@@ -150,13 +163,12 @@ class Logger(object, metaclass=LoggerMeta):
         self._assert_logger_super = _pass_logger
         self.logger = _log_decorator_iter(self,self.logger)
         self.logger_epoch = _log_decorator_epoch(self,self.logger_epoch)
-        # setattr(self,'logger_epoch',_log_decorator_epoch(self,self.logger_epoch))
         self.show_bar = show_bar
         self.tqdm = None
         self.disable = disable
 
 
-    def start(self,length=0):
+    def start(self,length):
         """
         Initializes tqdm.
 
@@ -165,22 +177,12 @@ class Logger(object, metaclass=LoggerMeta):
             length(float): length of tqdm.
 
         """
-        if not length or not self.show_bar:
+        assert length, "set argument `length`"
+        if not self.show_bar:
             self.tqdm = tqdm(range(1),total=1,bar_format="-{desc}",disable=self.disable)
             self.tqdm.__repr__ = remove_col(self.tqdm.__repr__)
         else:
             self.tqdm = tqdm(range(length),disable=self.disable)
-
-    def  set_description(self,msg):
-        self.tqdm.set_description(msg)
-
-    def update(self,num):
-        if self.show_bar:
-            self.tqdm.update(num)
-
-    def close(self):
-        self.tqdm.close()
-
 
     def _key_check(self,existing_key_input):
         """
@@ -299,6 +301,11 @@ class Logger(object, metaclass=LoggerMeta):
             y_label (string):  Y (vertical) axis label.
             x_label (string):  X (vertical) axis label.
 
+        Examples:
+            >>> # suppose logger.total has a 2D list
+            >>> array_list=np.array(logger.total_list)[:,1]
+            >>> logger.graph_custom(array_list,y_label="this is y",x_label="this is x",x_interval=5)
+
         """
 
         y_data = np.array(y_data)
@@ -363,6 +370,19 @@ class Logger(object, metaclass=LoggerMeta):
 
 
     def to_csv(self,filename,overwrite=False):
+        """
+        Stores csv file based on filename.
+
+        Args:
+
+            filename (string): Filename of the string.
+            overwrite (boolean): Overwrites if exist. Appends number if exist. Default is False.
+
+        Examples:
+
+            >>> logger.to_csv("./test.csv", overwrite=True)
+
+        """
         import csv
         import os
 
@@ -408,7 +428,16 @@ class Logger(object, metaclass=LoggerMeta):
 
     def from_csv(self,filename):
         """
-        This function loads csv data.
+        Loads csv file based on filename.
+
+        Args:
+
+            filename (string): Filename of the string.
+
+        Examples:
+
+            >>> logger.from_csv("./test.csv")
+
         """
         with open(filename, 'r') as f:
             reader = csv.reader(f,delimiter=',')
@@ -425,6 +454,16 @@ class Logger(object, metaclass=LoggerMeta):
             # for key in self.log_dic:
             #     self.log_dic[key]=np.array(self.log_dic[key])
 
+
+    def  set_description(self,msg):
+        self.tqdm.set_description(msg)
+
+    def update(self,num):
+        if self.show_bar:
+            self.tqdm.update(num)
+
+    def close(self):
+        self.tqdm.close()
 
     def _assert_logger_super(self):
         """
