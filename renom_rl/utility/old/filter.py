@@ -293,7 +293,7 @@ class AddNoiseFilter(ActionNoiseFilter):
 
     def sample(self):
 
-        return self.noise_value
+        return self.noise_value if not isinstance(self.epsilon, EpsilonC) else 0
 
 
 class OUFilter(AddNoiseFilter):
