@@ -1,18 +1,18 @@
-import copy
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from copy import copy , deepcopy
 import numpy as np
-from tqdm import tqdm
-# from concurrent.futures import ThreadPoolExecutor
-# from threading import BoundedSemaphore
 
 import renom as rm
-from renom_rl.environ.env import BaseEnv
 from renom import Rmsprop
-from renom_rl.utility.gradients import GradientClipping
+
+from renom_rl import AgentBase
+from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.filter import ProbNodeChooser, MaxNodeChooser
-from renom_rl.utility.event_handler import EventHandler
+from renom_rl.utility.logger import Logger, A2CLoggerD, _a2c_keys, _a2c_keys_epoch
 
-
-class A2C(object):
+class A2C(AgentBase):
     """A2C class
         This class provides a reinforcement learning agent including training method.
         This class runs on a single thread.
@@ -67,7 +67,7 @@ class A2C(object):
 
     def __init__(self, env, network, loss_func=None, optimizer=None,
                  gamma=0.99, num_worker=8, advantage=5, value_coef=0.5, entropy_coef=0.01,
-                 node_selector=None, test_node_selector=None, gradient_clipping=None):
+                 node_selector=None, test_node_selector=None, gradient_clipping=None, logger = None):
         super(A2C, self).__init__()
 
         # Reset parameters.
@@ -75,14 +75,13 @@ class A2C(object):
         self._advantage = advantage
         self._num_worker = num_worker
 
-        self.envs = [copy.deepcopy(env) for i in range(num_worker)]
+        self.envs = [deepcopy(env) for i in range(num_worker)]
         self.test_env = env
         self.loss_func = loss_func if loss_func is not None else rm.MeanSquaredError()
         self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(0.001, g=0.99, epsilon=1e-10)
         self.value_coef = value_coef
         self.entropy_coef = entropy_coef
         self.gamma = gamma
-        self.events = EventHandler()
 
         self.node_selector = ProbNodeChooser() if node_selector is None else node_selector
         self.test_node_selector = MaxNodeChooser() if test_node_selector is None else test_node_selector
@@ -93,7 +92,6 @@ class A2C(object):
 
         self.action_size = action_shape
         self.state_size = state_shape
-        self.bar = None
 
         # Check Env class type.
         if isinstance(env, BaseEnv):
@@ -122,6 +120,13 @@ class A2C(object):
         self._action_shape = action_shape
         self._state_shape = state_shape
         self._initialize()
+
+        # logger
+        logger = A2CLoggerD() if logger is None else logger
+        assert isinstance(logger,Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_a2c_keys,log_key_epoch=_a2c_keys_epoch)
+        self.logger = logger
+
 
     def _initialize(self):
         '''Target network is initialized with same neural network weights of network.'''
@@ -162,6 +167,10 @@ class A2C(object):
             test_step (int): Number steps during test.
         """
 
+        # check
+        assert isinstance(self.logger,Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_a2c_keys,log_key_epoch=_a2c_keys_epoch)
+
         # creating local variables
         envs = self.envs
         test_env = self.test_env
@@ -176,16 +185,14 @@ class A2C(object):
         [self.envs[_t].start() for _t in range(threads)]
 
         # logging
+        step_counts_log = np.zeros((advantage,threads,))
         step_count = 0
+        episode_counts_log = np.zeros((advantage,threads,))
         episode_counts = np.zeros((threads,))
-        sum_rewards = np.zeros((threads,))
-        avg_rewards = np.zeros((threads,))
 
-        # # max_reward for target network update
-        # count = 0
-        # max_reward_in_each_update_period = -np.Inf
-        #
-        #
+
+
+        # epoch
         for e in range(1, epoch + 1):
 
             # r,a,r,t,s+1
@@ -200,14 +207,14 @@ class A2C(object):
             target_rewards = np.zeros((advantage, threads, 1))
 
             # logging
-            total_rewards = []
-            for _ in range(threads):
-                total_rewards.append([])
-            total_loss_nd = 0
-            total_loss_nd_in_epoch = 0
-            total_rewards_per_thread = []
-            total_rewards_total = 0
-            total_rewards_avg = 0
+            sum_rewards_log = np.zeros((advantage, threads, ))
+            sum_rewards = np.zeros((threads,))
+            continuous_steps_log = np.zeros((advantage, threads, ))
+            continuous_steps = np.zeros((threads, ))
+            epoch_steps_log = np.zeros((advantage, threads, ))
+            epoch_steps_j = 0
+            nth_episode_counts_log = np.zeros((advantage, threads, ))
+            nth_episode_counts = np.zeros((threads, ))
 
             # env epoch
             [self.envs[_t].epoch() for _t in range(threads)]
@@ -224,7 +231,8 @@ class A2C(object):
 
             max_step = epoch_step / advantage
 
-            tq = tqdm(range(int(max_step)*advantage))
+            self.logger._rollout = True
+            self.logger.start(epoch_step)
 
             for j in range(int(max_step)):
 
@@ -241,18 +249,27 @@ class A2C(object):
                         states_next[step][thr], rewards[step][thr], dones[step][thr] = envs[thr].step(
                             int(actions[step][thr]))
 
-                        # summing rewards
+                        # summing rewards / append steps
                         sum_rewards[thr] += rewards[step][thr]
+                        sum_rewards_log[step][thr] = sum_rewards[thr]
+                        continuous_steps[thr] += 1
+                        continuous_steps_log[step][thr] = continuous_steps[thr]
+                        episode_counts_log[step][thr] = episode_counts[thr]
+                        nth_episode_counts_log[step][thr] = nth_episode_counts[thr]
 
                         # if done, then reset, set next state is initial
                         if dones[step][thr]:
                             states_next[step][thr] = envs[thr].reset()
-                            total_rewards[thr].append(sum_rewards[thr])
                             sum_rewards[thr] = 0
+                            continuous_steps[thr] = 0
                             episode_counts[thr] += 1
+                            nth_episode_counts[thr] += 1
 
                     # append 1 step
-                    step_count += advantage
+                    epoch_steps_j += 1
+                    step_count += 1
+                    epoch_steps_log[step] = epoch_steps_j
+                    step_counts_log[step] = step_count
 
                     # setting step to next advanced step
                     if step + 1 < advantage:
@@ -297,14 +314,11 @@ class A2C(object):
 
                     # append act loss and val loss
                     act_loss = rm.sum(- (advantage_reward * action_coefs *
-                                         act_log + entropy * entropy_coef) / total_n)
+                                         act_log + entropy * entropy_coef)/ total_n)
                     val_loss = self.loss_func(val,reshaped_target_rewards) * value_coef
 
                     # total loss
                     total_loss = val_loss + act_loss
-
-                # calc
-                total_rewards_per_thread = [np.sum(x) for x in total_rewards]
 
                 grad = total_loss.grad()
 
@@ -313,24 +327,33 @@ class A2C(object):
 
                 grad.update(self._optimizer)
 
-                total_loss_nd = float(total_loss.as_ndarray())
-                total_loss_nd_in_epoch += total_loss_nd
+                val_loss_nd = float(val_loss.as_ndarray())
+                entropy_np = float(rm.sum(entropy).as_ndarray())
 
-                # set next_state
-                for thr in range(threads):
-                    states[0][thr] = states_next[-1][thr]
 
-                # message print
-                msg = "agent{}, epoch {:04d} loss {:5.4f} rewards in epoch {:4.3f}  episode {:04.1f} rewards in episode {:4.3f}."\
-                    .format(0, e, abs(total_loss_nd), total_rewards_per_thread[0], episode_counts[0],
-                            total_rewards[0][-1] if len(total_rewards[0]) > 0 else 0)
+                singular_list = [epoch_step,e,epoch,val_loss_nd, entropy_np, advantage, threads]
+                log1_key = ["max_step","epoch","max_epoch","loss","entropy","advantage","num_worker"]
+                log1_value = [[data]*advantage for data in singular_list]
 
-                # description
-                tq.set_description(msg)
-                tq.update(advantage)
+                thread_step_reverse_list = [states,actions,rewards,dones,states_next,
+                                            step_counts_log,epoch_steps_log,
+                                            episode_counts_log,nth_episode_counts_log,
+                                            continuous_steps_log,sum_rewards_log,values]
 
-                # event handler
-                self.events.on("step", e, j, step)
+                log2_key = ["state","action","reward","terminal","next_state",
+                            "total_step","epoch_step",
+                            "total_episode","epoch_episode",
+                            "steps_per_episode","sum_reward","values"]
+
+                log2_value = [data.swapaxes(1,0)[0] for data in thread_step_reverse_list]
+
+                log_dic = {**dict(zip(log1_key,log1_value)),**dict(zip(log2_key,log2_value))}
+
+                self.logger.logger(**log_dic)
+
+                self.logger.update(advantage)
+
+                states[0] = states_next[-1]
 
                 if any([self.envs[_t].terminate() for _t in range(threads)]):
                     print("terminated")
@@ -339,22 +362,10 @@ class A2C(object):
             else:
 
                 summed_test_reward = self.test(test_step)
-
-                total_rewards_total = np.sum(total_rewards_per_thread)
-                total_rewards_avg = np.mean(total_rewards_per_thread)
-
-                msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                    "avg train reward in episode:{:4.3f}"
-                msg = msg.format(e, total_loss_nd_in_epoch/max_step, total_rewards_total,
-                                 summed_test_reward, total_rewards_avg)
-
-                self.events.on("end_epoch", e, j, self, total_loss_nd_in_epoch/max_step, total_rewards_total,
-                               summed_test_reward)
-
-                tq.set_description(msg)
-                tq.update(0)
-                tq.refresh()
-                tq.close()
+                self.logger.logger_epoch(total_episode=episode_counts_log[-1],epoch_episode=nth_episode_counts_log[-1],
+                                         epoch=e,max_epoch=epoch,test_reward=summed_test_reward,
+                                         advantage=advantage,num_worker=threads)
+                self.logger.close()
                 continue
 
             break
