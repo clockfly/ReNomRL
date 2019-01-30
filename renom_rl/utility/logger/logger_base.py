@@ -23,8 +23,8 @@ class Logger(object, metaclass=LoggerMeta):
     **Logger Module**
 
     This class logs various data of each module.\n
-    By setting ``log_key``, ``log_key_epoch``, this class will record data based on log_key for every iteration.
-    ``log_key``, ``log_key_epoch`` argument must be a list of strings which exist in the algorithm. \n
+    By setting ``log_key`` , ``log_key_epoch`` , this class will record data based on log_key for every iteration. 
+    ``log_key`` , ``log_key_epoch`` argument must be a list of strings which exist in the algorithm. \n
     ``logger(**log)`` function returns at every iter. **(Overriding Required.)**
     ``logger_epoch(**log)`` function returns at each end of epoch. **(Unnecessary.)**\n
     Users must also call super class ``super().__init__`` when initializing.\n
@@ -153,16 +153,18 @@ class Logger(object, metaclass=LoggerMeta):
 
     def result(self,*args):
         """
-        Returns dictionary of result. If argument is blank, then all output will be shown.
+        Returns dictionary of logging data. If argument is blank, then all output will be shown.
 
         Args:
             *args(string): Strings of arguments.
 
         Returns:
-            (dict): Dictionary of rewards.
+            (dict): Dictionary of logging data.
 
         Examples:
             >>> logger.result()
+            {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....]}
+            >>> logger.result("reward")
             {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....]}
 
         """
@@ -177,7 +179,7 @@ class Logger(object, metaclass=LoggerMeta):
 
     def result_epoch(self,*args):
         """
-        Returns dictionary of result that were specifed as log_key_epoch.
+        Returns dictionary of result that were specified as log_key_epoch.
         If argument is blank, then all output will be shown.
 
         """
@@ -474,8 +476,8 @@ class SimpleLogger(Logger):
     **Simple Logger Module**
 
     This class logs various data for each module.\n
-    ``log_key``, ``log_key_epoch`` argument must be a list of strings which exist in the algorithm.\n
-    ``msg``, ``msg_epoch`` is required.
+     ``log_key`` , ``log_key_epoch`` argument must be a list of strings which exist in the algorithm.\n
+     ``msg`` is required.　``msg_epoch`` is optional.
 
     Args:
         log_key(list): Logging values.
@@ -489,6 +491,7 @@ class SimpleLogger(Logger):
 
     Examples:
 
+        >>> logger = SimpleLogger(log_key = ["state","reward"] , msg="this is {state} reward:{reward}")
         >>> logger = SimpleLogger(log_key = ["state","reward"] , msg="this is {} reward:{}")
 
     """

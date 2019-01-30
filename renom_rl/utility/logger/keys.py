@@ -48,8 +48,6 @@ Keys Available for Specific Algorithm
 DQN
 ---------------------------------------------------
 
-``AVAIABLE_KEYS`` key:"dqn"
-
 .. csv-table::
    :header: "key", "description"
    :widths: 20, 80
@@ -60,8 +58,6 @@ DQN
 DoubleDQN
 ---------------------------------------------------
 
-``AVAIABLE_KEYS`` key:"ddqn"
-
 .. csv-table::
   :header: "key", "description"
   :widths: 20, 80
@@ -71,8 +67,6 @@ DoubleDQN
 
 A2C
 ---------------------------------------------------
-
-``AVAIABLE_KEYS`` key:"a2c"
 
 .. csv-table::
   :header: "key", "description"
@@ -85,8 +79,6 @@ A2C
 
 DDPG
 ---------------------------------------------------
-
-``AVAIABLE_KEYS`` key:"ddpg"
 
 .. csv-table::
   :header: "key", "description"

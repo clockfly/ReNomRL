@@ -16,7 +16,7 @@ Allows users to view keys that are avaiable for logging.
     - ddqn : ddqn epoch / epoch_logger keys
     - ddpg : ddpg epoch / epoch_logger keys
     - a2c  : a2c epoch / epoch_logger keys
-    - doc  : documentation of avaiable keys
+    - doc  : AVAIABLE_KEYS document
 
 Examples:
     >>> from renom_rl.utility.logger import AVAILABLE_KEYS
