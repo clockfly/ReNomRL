@@ -10,7 +10,10 @@ from renom import Rmsprop
 from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.filter import ProbNodeChooser, MaxNodeChooser
-from renom_rl.utility.logger import Logger, A2CLoggerD, _a2c_keys, _a2c_keys_epoch
+from renom_rl.utility.logger import Logger, A2CLoggerD, AVAILABLE_KEYS
+
+_a2c_keys = AVAILABLE_KEYS["a2c"]["logger"]
+_a2c_keys_epoch = AVAILABLE_KEYS["a2c"]["logger_epoch"]
 
 class A2C(AgentBase):
     """A2C class

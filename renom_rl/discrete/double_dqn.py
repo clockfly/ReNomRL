@@ -10,8 +10,10 @@ from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
-from renom_rl.utility.logger import Logger, DoubleDQNLogger, _ddqn_keys, _ddqn_keys_epoch
+from renom_rl.utility.logger import Logger, DoubleDQNLogger, AVAILABLE_KEYS
 
+_ddqn_keys = AVAILABLE_KEYS["ddqn"]["logger"]
+_ddqn_keys_epoch = AVAILABLE_KEYS["ddqn"]["logger_epoch"]
 
 class DoubleDQN(AgentBase):
     """Double DQN class

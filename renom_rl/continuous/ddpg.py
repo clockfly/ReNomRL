@@ -10,7 +10,10 @@ from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl import AgentBase
 from renom_rl.environ import BaseEnv
 from renom_rl.utility.filter import EpsilonSL, ActionNoiseFilter, OUFilter, NoNoiseFilter
-from renom_rl.utility.logger import Logger, DDPGLogger, _ddpg_keys, _ddpg_keys_epoch
+from renom_rl.utility.logger import Logger, DDPGLogger, AVAILABLE_KEYS
+
+_ddpg_keys = AVAILABLE_KEYS["ddpg"]["logger"]
+_ddpg_keys_epoch = AVAILABLE_KEYS["ddpg"]["logger_epoch"]
 
 class DDPG(AgentBase):
     """DDPG class

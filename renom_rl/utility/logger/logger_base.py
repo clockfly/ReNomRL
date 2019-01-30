@@ -22,58 +22,50 @@ class Logger(object, metaclass=LoggerMeta):
     """
     **Logger Module**
 
-    This class logs various data of each module.
-    By setting `log_key`, this class will record data based on log_key for every iteration.
-    `log_key` argument must be a list of strings which exist in the algorithm.
-    `logger(**log)` function returns at every iter. (Overwriting required.)
-    Note that you must also call super class constructor(super().__init__) when initializing.
+    This class logs various data of each module.\n
+    By setting ``log_key``, ``log_key_epoch``, this class will record data based on log_key for every iteration.
+    ``log_key``, ``log_key_epoch`` argument must be a list of strings which exist in the algorithm. \n
+    ``logger(**log)`` function returns at every iter. **(Overriding Required.)**
+    ``logger_epoch(**log)`` function returns at each end of epoch. **(Unnecessary.)**\n
+    Users must also call super class ``super().__init__`` when initializing.\n
 
     Args:
 
         log_key(list): Logging values.
         log_key_epoch(list): Logging values at end of epoch.
         record(boolean): Keeps data for graph and csv. Default is True.
-        record_episode_base(boolean): Keeps data when `record` is True and episode changes. Default is True.
+        record_episode_base(boolean): Keeps data when ``record`` is True and episode changes. Default is True.
         show_bar(boolean): Shows bar. Default is True.
         disable(boolean): Disables tqdm. Default is False.
 
 
     Examples:
-        >>> from renom_rl.utility.logger import Logger
         >>> import numpy as np
-        >>>
         >>> class Original(Logger):
-        ...     def __init__(self,log_key,record=True):
-        ...         super(Original,self).__init__(log_key,record=True)
-        ...
-        ...         self.reward=0
-        ...         self.state=0
-        ...         self.terminal=0
+        ...     def __init__(self,log_key):
+        ...         super(Original,self).__init__(log_key,record_episode_base=False)
+        ...         self.reward_previous = 0
+        ...         self.reward = 0
+        ...         self.total_list = []
+        ...         self.state = 0
+        ...         self.total = 0
         ...
         ...     def logger(self,**log):
         ...         self.state = log["state"]
         ...         self.reward = log["reward"]
-        ...         self.terminal= log["terminal"]
+        ...         self.total += log["reward"]
         ...
-        ...         if self.terminal:
-        ...             print("terminal")
+        ...         return "state----{}/reward---{}/total----{}".format(self.state, self.reward, self.total)
         ...
-        ...         return "{}/{}".format(self.reward , self.state)
-        ...
-        >>> original_logger=Original(["reward"])
-        >>> s=0
-        >>> length=30
-        >>> original_logger.start(length)
-        >>> for i in range(length):
-        ...     s += 1
-        ...     r = s + np.random.randint(-5,6)
-        ...     t = np.random.randint(0,1)
-        ...
-        ...     original_logger.logger(state=s,reward=r,terminal=t)
-        ...
-        >>> original_logger.close()
-        30/30: 100%|██████████████████████████████████| 30/30 [00:00<00:00, 4865.41it/s]
-
+        >>>
+        >>>
+        >>> import renom as rm
+        >>> from renom_rl.environ.openai import CartPole00
+        >>> from renom_rl.discrete.dqn import DQN
+        >>> network = rm.Sequential([rm.Dense(32),rm.Relu(),rm.Dense(32),rm.Relu(),rm.Dense(2)])
+        >>> logger = Original(["reward"])
+        >>> dqn=DQN(env=CartPole00(),q_network=network,logger=logger)
+        state----[-0.00528582  0.76312646 -0.00763515 -1.1157825 ]/reward---0/total-----39: 100%|██████████████████████████████████████| 500/500 [00:01<00:00, 438.39it/s]
     """
 
     def __init__(self,log_key=None, log_key_epoch=None, record=True, record_episode_base=True, show_bar=True, disable=False):
@@ -117,7 +109,7 @@ class Logger(object, metaclass=LoggerMeta):
         assert length, "set argument `length`"
         if not self._show_bar:
             self._tqdm = tqdm(range(1),total=1,bar_format="-{desc}",disable=self._disable)
-            self._tqdm.__repr__ = remove_col(self._tqdm.__repr__)
+            self._tqdm.__repr__ = _remove_col(self._tqdm.__repr__)
         else:
             self._tqdm = tqdm(range(length),disable = self._disable)
 
@@ -134,6 +126,11 @@ class Logger(object, metaclass=LoggerMeta):
     def reset(self):
         """
         Resets logged data.
+
+        Examples:
+            >>> logger.reset()
+            >>> logger.result()
+            {'reward': []}
         """
         for key in self._log_dic:
             self._log_dic[key]=[]
@@ -141,15 +138,15 @@ class Logger(object, metaclass=LoggerMeta):
     def logger(self, **kwargs):
         """
         This function will be called for every iteration.
-        Override this function when creating custom logger.
+        **Override this function when creating custom logger.**
         """
 
-        raise NotImplementedError("Please override ``logger`` method.")
+        raise NotImplementedError("Please override `logger` method.")
 
     def logger_epoch(self, **kwargs):
         """
         This function will be called when 1 epoch is done.
-        Override this function when creating custom logger.
+        **Override this function when creating custom logger.**
         """
         pass
 
@@ -165,8 +162,8 @@ class Logger(object, metaclass=LoggerMeta):
             (dict): Dictionary of rewards.
 
         Examples:
-            >>> original_logger.result("reward")
-            {'reward': [2, 3, 1, 2, 6, 3, 10, 7, 8, 11, 15, 8, 17, 15, 14, 19, 21, 16, 22, 24, 24, 25, 26, 24, 24, 25, 32, 31, 31, 30]}
+            >>> logger.result()
+            {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....]}
 
         """
         if args:
@@ -180,6 +177,8 @@ class Logger(object, metaclass=LoggerMeta):
 
     def result_epoch(self,*args):
         """
+        Returns dictionary of result that were specifed as log_key_epoch.
+        If argument is blank, then all output will be shown.
 
         """
         if args:
@@ -197,9 +196,9 @@ class Logger(object, metaclass=LoggerMeta):
               dpi=100,average_range=0,grid=True):
 
         """
-        Shows plot from recorded data. Keys must be from log_key. if `x_key` is None,
-        y_key will be plot based on its length. Note that this function is focused on
-        quick view so if detailed view is required, save data as csv.(refer `to_csv` function)
+        Shows plot from recorded data. Keys must be from log_key. if ``x_key`` is None,
+        ``y_key`` will be plot based on its length. Note that this function is focused on
+        quick view so if detailed view is required, save data as csv.(refer ``to_csv`` function)
 
         Args:
             y_key (string): Key for Y (vertical) axis. 2-D data is allowed.
@@ -217,19 +216,19 @@ class Logger(object, metaclass=LoggerMeta):
             grid (boolean): Shows grid based on ticks. Default is True.
 
         Examples:
-            >>> original_logger.graph(y_key="reward",figsize=(6,6),dpi=100,average_range=[1,1])
+            >>> logger.graph(y_key="reward",figsize=(6,6),dpi=100,average_range=[1,1])
 
         """
 
         # x_data, y_data
         assert y_key in self._log_dic,\
-           "set axis to keys set in log_key variable"
+           "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic.keys()))
 
         y_data=np.array(self._log_dic[y_key])
 
         if x_key is not None:
             assert x_key in self._log_dic,\
-                 "set axis to keys set in log_key variable"
+                 "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic.keys()))
             x_data = np.array(self._log_dic[x_key])
 
         else:
@@ -251,13 +250,13 @@ class Logger(object, metaclass=LoggerMeta):
 
         # x_data, y_data
         assert y_key in self._log_dic_epoch,\
-           "set axis to keys set in log_key variable"
+           "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic_epoch.keys()))
 
         y_data=np.array(self._log_dic_epoch[y_key])
 
         if x_key is not None:
             assert x_key in self._log_dic_epoch,\
-                 "set axis to keys set in log_key variable"
+                 "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic_epoch.keys()))
             x_data=np.array(self._log_dic_epoch[x_key])
         else:
             x_data=None
@@ -273,8 +272,8 @@ class Logger(object, metaclass=LoggerMeta):
               x_interval=0,y_interval=0,figsize=None,
               dpi=100,average_range=0,grid=True):
         """
-        This function allows users to quickly create graph when custom creating own data.
-        refer `graph` for other arguments.
+        This function allows users to quickly create graph when custom creating own data.\n
+        refer ``graph`` for other arguments.
 
         Args:
 
@@ -410,7 +409,7 @@ class Logger(object, metaclass=LoggerMeta):
 
     def from_csv(self,filename):
         """
-        Loads csv file based on filename. If file ends with `_e`,csv file will be loaded as epoch data.
+        Loads csv file based on filename. If file ends with '_e',csv file will be loaded as epoch data.
 
         Args:
 
@@ -474,16 +473,17 @@ class SimpleLogger(Logger):
     """
     **Simple Logger Module**
 
-    This class logs various data of each module.
-    `log_key` argument must be a list of strings which exist in the algorithm.
-    `msg` is required.
+    This class logs various data for each module.\n
+    ``log_key``, ``log_key_epoch`` argument must be a list of strings which exist in the algorithm.\n
+    ``msg``, ``msg_epoch`` is required.
 
     Args:
-
-        log_key(list): Logging values. Elements
-        msg(string): Printing message using log_key. Use curly braces `{}`.
+        log_key(list): Logging values.
+        log_key_epoch(list): Logging values at end of epoch.
+        msg(string): Printing message for each iteration. Use curly braces '{}'.
+        msg_epoch(string): Printing message for each epoch. Use curly braces '{}'.
         record(boolean): Keeps data for graph and csv. Default is True.
-        record_episode_base(boolean): Keeps data when `record` is True and episode changes. Default is True.
+        record_episode_base(boolean): Keeps data when ``record`` is True and episode changes. Default is True.
         show_bar(boolean): Shows bar. Default is True.
         disable(boolean): Disables tqdm. Default is False.
 
@@ -492,10 +492,24 @@ class SimpleLogger(Logger):
         >>> logger = SimpleLogger(log_key = ["state","reward"] , msg="this is {} reward:{}")
 
     """
-    def __init__(self, log_key, msg="",record = True, record_episode_base=True, show_bar=True, disable=False):
-        super(SimpleLogger,self).__init__(log_key=log_key, record=record, record_episode_base=record_episode_base, show_bar=show_bar, disable=disable)
+    def __init__(self, log_key, log_key_epoch=None,
+                  msg="", msg_epoch="", record = True,
+                  record_episode_base=True,
+                  show_bar=True, disable=False):
+
+        log_key_epoch = [] if log_key_epoch is None else log_key_epoch
+        super(SimpleLogger,self).__init__(log_key=log_key, log_key_epoch=log_key_epoch,
+                                           record=record, record_episode_base=record_episode_base,
+                                           show_bar=show_bar, disable=disable)
         self.message = msg
-        assert len(log_key)==len(re.findall(r'\{+.?\}',msg)),"log_key has {0} elements while message has {1} curly braces({2})".format(len(log_key),len(re.findall(r'\{+.?\}',msg)),"{ }")
+        self.message_epoch = msg_epoch
+        assert len(log_key)==len(re.findall(r'\{+.?\}',msg)),\
+                "log_key has {0} elements while message has {1} curly braces({2})".format(
+                  len(log_key),len(re.findall(r'\{+.?\}',msg)),"{ }")
+
+        assert len(log_key_epoch)==len(re.findall(r'\{+.?\}',msg_epoch)),\
+                "log_key has {0} elements while message has {1} curly braces({2})".format(
+                  len(log_key_epoch),len(re.findall(r'\{+.?\}',msg_epoch)),"{ }")
 
     def logger(self, **kwargs):
         """
@@ -506,3 +520,14 @@ class SimpleLogger(Logger):
             args.append(kwargs[key])
 
         return self.message.format(*args)
+
+
+    def logger_epoch(self, **kwargs):
+        """
+        logs epoch data
+        """
+        args=[]
+        for key in self._log_dic_epoch:
+            args.append(kwargs[key])
+
+        return self.message_epoch.format(*args)

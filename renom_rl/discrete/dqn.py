@@ -11,7 +11,10 @@ from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
 from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
-from renom_rl.utility.logger import Logger, DQNLogger, _dqn_keys, _dqn_keys_epoch
+from renom_rl.utility.logger import Logger, DQNLogger, AVAILABLE_KEYS
+
+_dqn_keys = AVAILABLE_KEYS["dqn"]["logger"]
+_dqn_keys_epoch = AVAILABLE_KEYS["dqn"]["logger_epoch"]
 
 class DQN(AgentBase):
     """DQN class
