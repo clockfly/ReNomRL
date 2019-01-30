@@ -1,7 +1,7 @@
 renom_rl.utility.logger : Logger Series
 =============================================================
 
-Here is the description for logger modules.
+This section shows description for logger modules.
 
 **About Iteration**
 
