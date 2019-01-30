@@ -15,10 +15,15 @@ This allows users to create animation. Mainly developed for jupyter notebook.
 Logger
 --------------------------------------------------------------
 
-Logger allows users to custom logging data.
+Logger allows users to custom logging data. By modifying the logger function and implementing
+it to the algorithms, users can view their own original logging data, save logged data to csv
+or view graph data for immediate check.
 
 .. toctree::
+   :maxdepth: 2
+
    logger
+   logger_key
 
 
 Action Filter

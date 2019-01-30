@@ -1,9 +1,13 @@
 ver 0.4
 ------------------------------------------------
-- Created Logger, SimpleLogger. See ``utility.logger``.
+- Created Logger, SimpleLogger etc. See ``utility.logger``.
+- Every Algorithm: Applied Logger Module.
+- ``__init__``: Modified for logging error exception.
+- utility: Rearranged folder.
+- utility/filter: Fixed OU filter.
 - discrete/DQN: set env.epoch before reset()
 - discrete/DoubleDQN: set env.epoch before reset()
-- countinuous/DDPG: set env.epoch before reset()
+- continuous/DDPG: set env.epoch before reset()
 - discrete/A2C: calculation Bug fixed at A2C (value coef)
 - discrete/A2C: total rewards per thread was adjusted
 - discrete/A2C: set env.epoch before reset()

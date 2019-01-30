@@ -1,0 +1,422 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-30 14:07+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../../rsts/utility/logger.rst:2
+msgid "renom_rl.utility.logger : Logger Series"
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:4
+msgid "Here is the description for logger modules."
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:6
+msgid "**About Iteration**"
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:8
+msgid ""
+"For modules using a single agent and non advanced steps, 1 iteration is "
+"equivalent to 1 step."
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:10
+msgid ""
+"For modules using advantage steps, 1 iteration is equivalent to the "
+"advantage step."
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:11
+msgid "For modules using multiple agents, 1 agent is logged."
+msgstr ""
+
+#: ../../rsts/utility/logger.rst:13
+msgid ""
+"View `Logger Key Table <./logger_key.html>`_ for variables available to "
+"log."
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "**AVAIABLE_KEYS**"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:3
+msgid "Allows users to view keys that are avaiable for logging."
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:7
+msgid "dqn  : dqn epoch / epoch_logger keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:8
+msgid "ddqn : ddqn epoch / epoch_logger keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:9
+msgid "ddpg : ddpg epoch / epoch_logger keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:10
+msgid "a2c  : a2c epoch / epoch_logger keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:11
+msgid "doc  : documentation of avaiable keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:14
+#: renom_rl.utility.logger.Logger:30 renom_rl.utility.logger.Logger.from_csv:8
+#: renom_rl.utility.logger.Logger.graph:28
+#: renom_rl.utility.logger.Logger.graph_custom:16
+#: renom_rl.utility.logger.Logger.result:12
+#: renom_rl.utility.logger.Logger.to_csv:12
+#: renom_rl.utility.logger.SimpleLogger:28
+msgid "Examples"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:1
+msgid "**Logger Module**"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:3
+msgid "This class logs various data of each module."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:5
+msgid ""
+"By setting ``log_key``, ``log_key_epoch``, this class will record data "
+"based on log_key for every iteration. ``log_key``, ``log_key_epoch`` "
+"argument must be a list of strings which exist in the algorithm."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:8
+msgid ""
+"``logger(**log)`` function returns at every iter. **(Overriding "
+"Required.)** ``logger_epoch(**log)`` function returns at each end of "
+"epoch. **(Unnecessary.)**"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:11
+msgid "Users must also call super class ``super().__init__`` when initializing."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:14 renom_rl.utility.logger.SimpleLogger:9
+msgid "Logging values."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:16 renom_rl.utility.logger.SimpleLogger:11
+msgid "Logging values at end of epoch."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:18 renom_rl.utility.logger.SimpleLogger:17
+msgid "Keeps data for graph and csv. Default is True."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:20 renom_rl.utility.logger.SimpleLogger:19
+msgid "Keeps data when ``record`` is True and episode changes. Default is True."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:22 renom_rl.utility.logger.SimpleLogger:21
+msgid "Shows bar. Default is True."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger:24 renom_rl.utility.logger.SimpleLogger:23
+msgid "Disables tqdm. Default is False."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.logger:1
+msgid ""
+"This function will be called for every iteration. **Override this "
+"function when creating custom logger.**"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.logger_epoch:1
+msgid ""
+"This function will be called when 1 epoch is done. **Override this "
+"function when creating custom logger.**"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.result:1
+msgid ""
+"Returns dictionary of result. If argument is blank, then all output will "
+"be shown."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.result:3
+msgid "Strings of arguments."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.result:7
+msgid "Dictionary of rewards."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.result_epoch:1
+msgid ""
+"Returns dictionary of result that were specifed as log_key_epoch. If "
+"argument is blank, then all output will be shown."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:1
+msgid ""
+"Shows plot from recorded data. Keys must be from log_key. if ``x_key`` is"
+" None, ``y_key`` will be plot based on its length. Note that this "
+"function is focused on quick view so if detailed view is required, save "
+"data as csv.(refer ``to_csv`` function)"
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:5
+msgid "Key for Y (vertical) axis. 2-D data is allowed."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:7
+msgid "Key for X (horizontal) axis. This must be 1-D data. Default is None."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:9
+msgid "[min,max] range for X axis. Default is min,max of x_key data."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:11
+msgid "[min,max] range for Y axis. Default is min,max of y_key data."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:13
+#: renom_rl.utility.logger.Logger.graph:15
+msgid "Interval of ticks for X axis. Default is None (ticks: auto)."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:17
+msgid "When (a,b) is input, plot increase to a*x_axis, b*y_axis."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:19
+msgid "Digital Pixel Image. Default is 100."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:21
+msgid ""
+"Creates average plot in [i - min, i + max] range"
+"                                     (i being plotted point), when "
+"[min,max] is set. If int                                     type is set,"
+" it becomes [average_length,average_length]."
+"                                     Default is 0."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph:23
+msgid "Shows grid based on ticks. Default is True."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_epoch:1
+msgid ""
+"Shows plot from recorded data at every epoch. View the function above for"
+" details."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:1
+msgid ""
+"This function allows users to quickly create graph when custom creating "
+"own data."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:3
+msgid "refer ``graph`` for other arguments."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:5
+msgid "Y (vertical) axis data. 2-D data is allowed."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:7
+msgid "X (horizontal) axis data. This must be 1-D data. Default is None."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:9
+msgid "Y (vertical) axis label."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.graph_custom:11
+msgid "X (vertical) axis label."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.to_csv:1
+msgid ""
+"Stores csv file based on filename. Epoch data are stored as filename "
+"+\"_e.csv\""
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.from_csv:3
+#: renom_rl.utility.logger.Logger.to_csv:3
+msgid "Filename of the string."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.to_csv:5
+msgid "Overwrites if exist. Appends number if exist. Default is False."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.to_csv:7
+msgid "Stores epoch data if True. Default is True."
+msgstr ""
+
+#: of renom_rl.utility.logger.Logger.from_csv:1
+msgid ""
+"Loads csv file based on filename. If file ends with '_e',csv file will be"
+" loaded as epoch data."
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:1
+msgid "**Simple Logger Module**"
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:3
+msgid "This class logs various data for each module."
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:5
+msgid ""
+"``log_key``, ``log_key_epoch`` argument must be a list of strings which "
+"exist in the algorithm."
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:7
+msgid "``msg``, ``msg_epoch`` is required."
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:13
+msgid "Printing message for each iteration. Use curly braces '{}'."
+msgstr ""
+
+#: of renom_rl.utility.logger.SimpleLogger:15
+msgid "Printing message for each epoch. Use curly braces '{}'."
+msgstr ""
+
+#~ msgid "Keys Available When Logging"
+#~ msgstr ""
+
+#~ msgid "Here, we describe the keys that are available to log."
+#~ msgstr ""
+
+#~ msgid "Common Keys"
+#~ msgstr ""
+
+#~ msgid "Table Title"
+#~ msgstr ""
+
+#~ msgid "key"
+#~ msgstr ""
+
+#~ msgid "description, or something"
+#~ msgstr ""
+
+#~ msgid "state"
+#~ msgstr ""
+
+#~ msgid "aaaa"
+#~ msgstr ""
+
+#~ msgid "reward"
+#~ msgstr ""
+
+#~ msgid "bbbb"
+#~ msgstr ""
+
+#~ msgid "action"
+#~ msgstr ""
+
+#~ msgid "ccc"
+#~ msgstr ""
+
+#~ msgid "next_state"
+#~ msgstr ""
+
+#~ msgid "ddd"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This class logs various data of "
+#~ "each module. By setting `log_key`, this"
+#~ " class will record data based on "
+#~ "log_key for every iteration. `log_key` "
+#~ "argument must be a list of strings"
+#~ " which exist in the algorithm. "
+#~ "`logger(**log)` function returns at every "
+#~ "iter. (Overwriting required.) Note that "
+#~ "you must also call super class "
+#~ "constructor(super().__init__) when initializing."
+#~ msgstr ""
+
+#~ msgid "Keeps data when `record` is True and episode changes. Default is True."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Loads csv file based on filename. "
+#~ "If file ends with `_e`,csv file "
+#~ "will be loaded as epoch data."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Shows plot from recorded data. Keys "
+#~ "must be from log_key. if `x_key` "
+#~ "is None, y_key will be plot based"
+#~ " on its length. Note that this "
+#~ "function is focused on quick view "
+#~ "so if detailed view is required, "
+#~ "save data as csv.(refer `to_csv` "
+#~ "function)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This function allows users to quickly"
+#~ " create graph when custom creating "
+#~ "own data. refer `graph` for other "
+#~ "arguments."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This function will be called for "
+#~ "every iteration. Override this function "
+#~ "when creating custom logger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This function will be called when "
+#~ "1 epoch is done. Override this "
+#~ "function when creating custom logger."
+#~ msgstr ""
+
+#~ msgid "Resets logged data."
+#~ msgstr ""
+
+#~ msgid "Initializes tqdm."
+#~ msgstr ""
+
+#~ msgid "length of tqdm."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This class logs various data of "
+#~ "each module. `log_key` argument must be"
+#~ " a list of strings which exist "
+#~ "in the algorithm. `msg` is required."
+#~ msgstr ""
+
+#~ msgid "Printing message using log_key. Use curly braces `{}`."
+#~ msgstr ""
+
+#~ msgid "logs data"
+#~ msgstr ""
+

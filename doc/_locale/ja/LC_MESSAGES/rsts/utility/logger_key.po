@@ -1,0 +1,251 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-30 14:07+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../../rsts/utility/logger_key.rst:2
+msgid "Logger Key Table"
+msgstr ""
+
+#: ../../rsts/utility/logger_key.rst:4
+msgid "In this section, we made a table of available keys in loggers."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:2
+msgid "Common Keys"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:5
+msgid "logger function"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "key"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "description"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "state"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "State the agent is in."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "action"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Action took in environment."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "reward"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Reward received from environment."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "terminal"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Terminal status for each iteration."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "next_state"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "State after action occurs."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "total_step"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Steps agent took after ``fit`` function was executed."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "epoch_step"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Steps agent took during 1 epoch."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "max_step"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Maximum steps that can be taken in 1 epoch."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "total_episode"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Episodes agent experienced after ``fit`` function was executed."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "epoch_episode"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Episodes agent experienced during 1 epoch."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "steps_per_episode"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Steps agent took at certain episode."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "epoch"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Number of epochs after ``fit`` function was executed."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "max_epoch"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Maximum epochs that can be taken in training session."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "loss"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Value of loss function. (Usually V/Q function)"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "sum_reward"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Total rewards of 1 episode."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:28
+msgid "logger_epoch function"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "test_reward"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Total rewards of ``test`` result."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:45
+msgid "Keys Available for Specific Algorithm"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:48
+msgid "DQN"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:50
+msgid "``AVAIABLE_KEYS`` key:\"dqn\""
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "epsilon"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Epsilon value of random action choice."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:60
+msgid "DoubleDQN"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:62
+msgid "``AVAIABLE_KEYS`` key:\"ddqn\""
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:72
+msgid "A2C"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:74
+msgid "``AVAIABLE_KEYS`` key:\"a2c\""
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "entropy"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Entropy value."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "advantage"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Advantage steps."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "num_worker"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Number of workers used to calculate."
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:86
+msgid "DDPG"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:88
+msgid "``AVAIABLE_KEYS`` key:\"ddpg\""
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "noise_value"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Noise value."
+msgstr ""
+
