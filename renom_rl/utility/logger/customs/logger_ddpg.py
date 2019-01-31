@@ -47,6 +47,7 @@ class DDPGLogger(Logger):
         avg_train_reward = self.train_sum_rewards_in_epoch/(self.tick + 1)
         train_reward = self.sum_reward_per_epoch
         test_reward = log["test_reward"]
+        e_rate=self.e_rate
 
         msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-rate:{:5.3f}"
         msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)

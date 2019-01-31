@@ -10,13 +10,15 @@ AVAILABLE_KEYS = available_keys
 
 Allows users to view keys that are avaiable for logging.
 
-:Keys for AVAIABLE_KEYS:
+.. csv-table::
+   :header: "key", "description"
+   :widths: 20, 80
 
-    - dqn  : dqn epoch / epoch_logger keys
-    - ddqn : ddqn epoch / epoch_logger keys
-    - ddpg : ddpg epoch / epoch_logger keys
-    - a2c  : a2c epoch / epoch_logger keys
-    - doc  : AVAIABLE_KEYS document
+   "dqn", "dqn epoch / epoch_logger keys"
+   "ddqn", "ddqn epoch / epoch_logger keys"
+   "ddpg", "ddpg epoch / epoch_logger keys"
+   "a2c", "a2c epoch / epoch_logger keys"
+   "doc", "AVAIABLE_KEYS document"
 
 Examples:
     >>> from renom_rl.utility.logger import AVAILABLE_KEYS

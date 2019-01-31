@@ -23,16 +23,18 @@ class Logger(object, metaclass=LoggerMeta):
     **Logger Module**
 
     This class logs various data of each module.\n
-    By setting ``log_key`` , ``log_key_epoch`` , this class will record data based on log_key for every iteration. 
+    By setting ``log_key`` , ``log_key_epoch`` , this class will record data based on keys for every iteration.
+    Keys specified for these argument are mainly used for plotting graph and csv output.
     ``log_key`` , ``log_key_epoch`` argument must be a list of strings which exist in the algorithm. \n
-    ``logger(**log)`` function returns at every iter. **(Overriding Required.)**
-    ``logger_epoch(**log)`` function returns at each end of epoch. **(Unnecessary.)**\n
+    ``logger(**log)`` function reads all keys that are available to read at every iteration and returns as a progress bar message. Simultaneously, data specified at ``log_key`` will be memorized as iteration data. **(Overriding Required)**
+    ``logger_epoch(**log)`` function reads all keys that are available to read at every end of epoch and returns as a progress bar message. Simultaneously, data specified at ``log_key_epoch`` will be memorized as epoch data. **(Not Mandatory)**\n
     Users must also call super class ``super().__init__`` when initializing.\n
+
 
     Args:
 
-        log_key(list): Logging values.
-        log_key_epoch(list): Logging values at end of epoch.
+        log_key(list): List of logging keys for each iteration.
+        log_key_epoch(list): List of logging keys for each epoch.
         record(boolean): Keeps data for graph and csv. Default is True.
         record_episode_base(boolean): Keeps data when ``record`` is True and episode changes. Default is True.
         show_bar(boolean): Shows bar. Default is True.
@@ -60,12 +62,46 @@ class Logger(object, metaclass=LoggerMeta):
         >>>
         >>>
         >>> import renom as rm
+        >>>
         >>> from renom_rl.environ.openai import CartPole00
         >>> from renom_rl.discrete.dqn import DQN
+        >>>
         >>> network = rm.Sequential([rm.Dense(32),rm.Relu(),rm.Dense(32),rm.Relu(),rm.Dense(2)])
+        >>>
         >>> logger = Original(["reward"])
+        >>>
         >>> dqn=DQN(env=CartPole00(),q_network=network,logger=logger)
         state----[-0.00528582  0.76312646 -0.00763515 -1.1157825 ]/reward---0/total-----39: 100%|██████████████████████████████████████| 500/500 [00:01<00:00, 438.39it/s]
+
+
+    .. note::
+
+        Note that keys ``log_key`` does not suppress logger from reading values. For example, users can specify ``log_key`` as: ::
+
+            log_k = ["state","reward"]
+
+            class Original(Logger):
+                 def __init__(self,log_key):
+                     super(Original,self).__init__(log_key)
+                     .....
+
+            original = Original(log_key = log_k)
+
+
+        and still view other keys such as "next_state", "terminal" at ``logger(**log)`` function, as shown below: ::
+
+            def logger(**log):
+                log_key = log["next_state"]
+                terminal = log["terminal"]
+
+                return .....
+
+        However, users cannot graph data for "next_state", "terminal" at ``graph`` function etc..
+        Users will only be able to graph using key "state", "reward" at ``graph`` function etc. ::
+
+            graph(y_key="reward")  # Pass
+            graph(y_key="terminal")  # Error
+
     """
 
     def __init__(self,log_key=None, log_key_epoch=None, record=True, record_episode_base=True, show_bar=True, disable=False):
@@ -135,17 +171,41 @@ class Logger(object, metaclass=LoggerMeta):
         for key in self._log_dic:
             self._log_dic[key]=[]
 
-    def logger(self, **kwargs):
+    def logger(self, **log):
         """
         This function will be called for every iteration.
         **Override this function when creating custom logger.**
+
+        Args:
+            log(dictionary): Data input from every iteration. Keys are logging keys.
+
+        Returns:
+            (str): Message required for progress view.
+
+        Examples:
+
+            >>> class Some_Logger(Logger):
+            ...     def __init__(self,log_key):
+            ...            ...
+            ...
+            ...     def logger(self,**log):
+            ...         self.state = log["state"]
+            ...         self.reward = log["reward"]
+            ...         self.total += log["reward"]
+            ...
+            ...         return "making original reward:{}".format(self.reward)
+            ...
+            >>>
+            >>> dqn=DQN(env=... , q_network= ... ,logger=Some_Logger)
+            making original reward:0: 50%|████████████████████                  | 250/500 [00:01<00:00, 438.39it/s]
+
         """
 
         raise NotImplementedError("Please override `logger` method.")
 
-    def logger_epoch(self, **kwargs):
+    def logger_epoch(self, **log):
         """
-        This function will be called when 1 epoch is done.
+        This function will be called when 1 epoch is done. Due to its similiarity, view ``logger`` function for detail.
         **Override this function when creating custom logger.**
         """
         pass
@@ -153,7 +213,8 @@ class Logger(object, metaclass=LoggerMeta):
 
     def result(self,*args):
         """
-        Returns dictionary of logging data. If argument is blank, then all output will be shown.
+        Returns dictionary of data that were specified as log_key.
+        If argument is blank, then all output will be shown.
 
         Args:
             *args(string): Strings of arguments.
@@ -164,8 +225,13 @@ class Logger(object, metaclass=LoggerMeta):
         Examples:
             >>> logger.result()
             {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....]}
+            >>>
             >>> logger.result("reward")
             {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....]}
+            >>>
+            >>> logger.result("reward","state")
+            {'reward': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, ....],
+            'state': [....],}
 
         """
         if args:
@@ -179,7 +245,7 @@ class Logger(object, metaclass=LoggerMeta):
 
     def result_epoch(self,*args):
         """
-        Returns dictionary of result that were specified as log_key_epoch.
+        Returns dictionary of data that were specified as log_key_epoch.
         If argument is blank, then all output will be shown.
 
         """
@@ -198,7 +264,7 @@ class Logger(object, metaclass=LoggerMeta):
               dpi=100,average_range=0,grid=True):
 
         """
-        Shows plot from recorded data. Keys must be from log_key. if ``x_key`` is None,
+        Shows plot from recorded data. Keys must be from ``log_key`` . if ``x_key`` is None,
         ``y_key`` will be plot based on its length. Note that this function is focused on
         quick view so if detailed view is required, save data as csv.(refer ``to_csv`` function)
 
@@ -207,7 +273,7 @@ class Logger(object, metaclass=LoggerMeta):
             x_key (string): Key for X (horizontal) axis. This must be 1-D data. Default is None.
             x_lim (list): [min,max] range for X axis. Default is min,max of x_key data.
             y_lim (list): [min,max] range for Y axis. Default is min,max of y_key data.
-            x_interval (float): Interval of ticks for X axis. Default is None (ticks: auto).
+            x_interval (float): Interval of ticks for Y axis. Default is None (ticks: auto).
             y_interval(float): Interval of ticks for X axis. Default is None (ticks: auto).
             figsize (tuple): When (a,b) is input, plot increase to a*x_axis, b*y_axis.
             dpi (int): Digital Pixel Image. Default is 100.
@@ -292,7 +358,7 @@ class Logger(object, metaclass=LoggerMeta):
         """
 
         y_data = np.array(y_data)
-        x_data = x_data if x_data is not None else np.arange(len(y_data))
+        x_data = x_data if x_data is not None else np.arange(len(y_data))+1
 
         assert len(np.shape(x_data)) <= 1 and len(np.shape(y_data)) <= 2,\
             "key dimension conditions are x_data <= 1 and y_data <= 2 when plotting"

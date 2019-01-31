@@ -322,7 +322,8 @@ class DDPG(AgentBase):
                                          epoch=e,max_epoch=epoch,test_reward=summed_test_reward,
                                          epsilon=e_rate,noise_value=noise_value)
                 self.logger.close()
-
+                continue
+                
             break
 
         # env close
