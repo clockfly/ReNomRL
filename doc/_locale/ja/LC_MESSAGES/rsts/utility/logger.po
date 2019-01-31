@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-30 17:56+0900\n"
-"PO-Revision-Date: 2019-01-30 18:44+0900\n"
+"POT-Creation-Date: 2019-01-31 16:01+0900\n"
+"PO-Revision-Date: 2019-01-31 16:20+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: \n"
@@ -24,8 +24,8 @@ msgid "renom_rl.utility.logger : Logger Series"
 msgstr ""
 
 #: ../../rsts/utility/logger.rst:4
-msgid "This section shows description for logger modules."
-msgstr "ここではロガーモジュールについて説明します。"
+msgid "This section shows description for logger class series."
+msgstr "ここではロガーについて説明します。"
 
 #: ../../rsts/utility/logger.rst:6
 msgid "**About Iteration**"
@@ -37,7 +37,7 @@ msgid ""
 "equivalent to 1 step."
 msgstr ""
 "シングルエージェントでかつアドバンスステップをしないモジュールの場合、 1 "
-"iteration と１step は等価です。"
+"iteration と1 step は等価です。"
 
 #: ../../rsts/utility/logger.rst:10
 msgid ""
@@ -50,15 +50,29 @@ msgstr ""
 #: ../../rsts/utility/logger.rst:11
 msgid "For modules using multiple agents, 1 agent is logged."
 msgstr ""
-"複数のエージェントを使用しているモジュールの場合、１エージェント分のみロギング"
+"複数のエージェントを使用しているモジュールの場合、1 エージェント分のみロギング"
 "します。"
 
-#: ../../rsts/utility/logger.rst:13
+#: ../../rsts/utility/logger.rst:14
+msgid "**About Keys**"
+msgstr "**キーについて**"
+
+#: ../../rsts/utility/logger.rst:16
+msgid ""
+"Keys are string values which refer to variables inside algorithms. For "
+"example, if users set \"reward\" as a key value, \"reward\" variables will be "
+"viewed (or recorded.)"
+msgstr ""
+"ロガーにおけるキーはstring型であり、アルゴリズムの変数を読み取る際に使用しま"
+"す。例えば、”reward” がロガーキーとして与えられた場合、アルゴリズムの各"
+"iterationにおける報酬を意味します。"
+
+#: ../../rsts/utility/logger.rst:18
 msgid ""
 "View `Logger Key Table <./logger_key.html>`_ for variables available to log."
 msgstr ""
-"ロギングできるキー値については、 `Logger Key Table <./logger_key.html>`_ を参"
-"照してください。"
+"記録、読み込みできるキーについては、 `Logger Key Table <./logger_key.html>`_ "
+"を参照してください。"
 
 #: of renom_rl.utility.logger.AVAILABLE_KEYS:1
 msgid "**AVAIABLE_KEYS**"
@@ -68,31 +82,60 @@ msgstr ""
 msgid "Allows users to view keys that are avaiable for logging."
 msgstr "ロギングする際に設定可能な変数を表示します。"
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:7
-msgid "dqn  : dqn epoch / epoch_logger keys"
-msgstr "dqn  : dqn epoch / epoch_logger キー一覧"
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "key"
+msgstr "キー"
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:8
-msgid "ddqn : ddqn epoch / epoch_logger keys"
-msgstr "ddqn : ddqn epoch / epoch_logger キー一覧"
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "description"
+msgstr "説明"
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:9
-msgid "ddpg : ddpg epoch / epoch_logger keys"
-msgstr "ddpg : ddpg epoch / epoch_logger キー一覧"
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "dqn"
+msgstr ""
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:10
-msgid "a2c  : a2c epoch / epoch_logger keys"
-msgstr "a2c  : a2c epoch / epoch_logger キー一覧"
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "dqn epoch / epoch_logger keys"
+msgstr "dqn epoch / epoch_logger キー一覧"
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:11
-msgid "doc  : AVAIABLE_KEYS document"
-msgstr "doc  : AVAIABLE_KEYSのドキュメント"
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "ddqn"
+msgstr ""
 
-#: of renom_rl.utility.logger.AVAILABLE_KEYS:14
-#: renom_rl.utility.logger.Logger:30 renom_rl.utility.logger.Logger.from_csv:8
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "ddqn epoch / epoch_logger keys"
+msgstr "ddqn epoch / epoch_logger キー一覧"
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "ddpg"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "ddpg epoch / epoch_logger keys"
+msgstr "ddpg epoch / epoch_logger キー一覧"
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "a2c"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "a2c epoch / epoch_logger keys"
+msgstr "a2c epoch / epoch_logger キー一覧"
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "doc"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:1
+msgid "AVAIABLE_KEYS document"
+msgstr ""
+
+#: of renom_rl.utility.logger.AVAILABLE_KEYS:16
+#: renom_rl.utility.logger.Logger:32 renom_rl.utility.logger.Logger.from_csv:8
 #: renom_rl.utility.logger.Logger.graph:28
 #: renom_rl.utility.logger.Logger.graph_custom:16
-#: renom_rl.utility.logger.Logger.result:12
+#: renom_rl.utility.logger.Logger.logger:13
+#: renom_rl.utility.logger.Logger.result:13
 #: renom_rl.utility.logger.Logger.to_csv:12
 #: renom_rl.utility.logger.SimpleLogger:28
 msgid "Examples"
@@ -109,103 +152,152 @@ msgstr "このクラスは様々なアルゴリズムをロギングするため
 #: of renom_rl.utility.logger.Logger:5
 msgid ""
 "By setting ``log_key`` , ``log_key_epoch`` , this class will record data "
-"based on log_key for every iteration. ``log_key`` , ``log_key_epoch`` "
-"argument must be a list of strings which exist in the algorithm."
+"based on keys for every iteration. Keys specified for these argument are "
+"mainly used for plotting graph and csv output. ``log_key`` , "
+"``log_key_epoch`` argument must be a list of strings which exist in the "
+"algorithm."
 msgstr ""
-"``log_key`` , ``log_key_epoch`` にキー値を含むlist型変数を入力することで、各"
-"iterationごとにロギングします。 ``log_key`` , ``log_key_epoch`` はstring型要素"
-"を含むlist型変数であり、各アルゴリズムに存在するキーを指定することしかできませ"
-"ん。"
+"``log_key`` , ``log_key_epoch`` にキーのlistを入力することで、各iteration、"
+"epochごとに記録したい変数を記録します。主に、グラフ出力、csv出力するために使用"
+"します。 ``log_key`` , ``log_key_epoch`` はstring型要素を含むlist型変数であ"
+"り、各アルゴリズムに存在するキーを指定することで記録します。"
 
-#: of renom_rl.utility.logger.Logger:8
+#: of renom_rl.utility.logger.Logger:9
 msgid ""
-"``logger(**log)`` function returns at every iter. **(Overriding Required.)** "
-"``logger_epoch(**log)`` function returns at each end of epoch. "
-"**(Unnecessary.)**"
+"``logger(**log)`` function reads all keys that are available to read at every "
+"iteration and returns as a progress bar message. Simultaneously, data "
+"specified at ``log_key`` will be memorized as iteration data. **(Overriding "
+"Required)** ``logger_epoch(**log)`` function reads all keys that are "
+"available to read at every end of epoch and returns as a progress bar "
+"message. Simultaneously, data specified at ``log_key_epoch`` will be "
+"memorized as epoch data. **(Not Mandatory)**"
 msgstr ""
-"``logger(**log)`` 関数は各iterationにつき、ロギングします。 **(オーバーライド"
-"必須 )** ``logger_epoch(**log)`` 関数は各epochの終了ごとにロギングします。"
-"**(任意)**"
+"``logger(**log)`` 関数は各iterationにつき、``logger`` が読み取れる全てのキーを"
+"読み取り、返り値として進捗バーに表示するメッセージとして出力します。また、同時"
+"に ``log_key`` で指定したキーの変数を記録します。 **(オーバーライド必須 )** "
+"``logger_epoch(**log)`` 関数は各epochの終了ごとに ``logger_epoch`` が読み取れ"
+"る全てのキーを読み取り、返り値として進捗バーに表示するメッセージとして出力しま"
+"す。また、同時に ``log_key_epoch`` で指定したキーの変数を記録します。**(任"
+"意)** "
 
-#: of renom_rl.utility.logger.Logger:11
+#: of renom_rl.utility.logger.Logger:12
 msgid "Users must also call super class ``super().__init__`` when initializing."
 msgstr "初期化する際は必ず ``super().__init__`` を実行してください。"
 
-#: of renom_rl.utility.logger.Logger:14 renom_rl.utility.logger.SimpleLogger:9
-msgid "Logging values."
-msgstr "各iterationごとに記録するキー。"
+#: of renom_rl.utility.logger.Logger:16
+msgid "List of logging keys for each iteration."
+msgstr "各iterationごとに記録したいキーのリスト"
 
-#: of renom_rl.utility.logger.Logger:16 renom_rl.utility.logger.SimpleLogger:11
-msgid "Logging values at end of epoch."
-msgstr "各epochごとに記録するキー。"
+#: of renom_rl.utility.logger.Logger:18
+msgid "List of logging keys for each epoch."
+msgstr "各epochごとに記録したいキーのリスト"
 
-#: of renom_rl.utility.logger.Logger:18 renom_rl.utility.logger.SimpleLogger:17
+#: of renom_rl.utility.logger.Logger:20 renom_rl.utility.logger.SimpleLogger:17
 msgid "Keeps data for graph and csv. Default is True."
 msgstr ""
 "True の場合、各itertionごとに指定したキー値の変数を記録します。デフォルトは"
 "Trueです。"
 
-#: of renom_rl.utility.logger.Logger:20 renom_rl.utility.logger.SimpleLogger:19
+#: of renom_rl.utility.logger.Logger:22 renom_rl.utility.logger.SimpleLogger:19
 msgid "Keeps data when ``record`` is True and episode changes. Default is True."
 msgstr ""
 "True であり、かつ ``record`` が Trueの場合、各エピソード終了時にて記録します。"
 "デフォルトはTrueです。"
 
-#: of renom_rl.utility.logger.Logger:22 renom_rl.utility.logger.SimpleLogger:21
+#: of renom_rl.utility.logger.Logger:24 renom_rl.utility.logger.SimpleLogger:21
 msgid "Shows bar. Default is True."
 msgstr "True の場合、進行バーを表示します。デフォルトはTrueです。"
 
-#: of renom_rl.utility.logger.Logger:24 renom_rl.utility.logger.SimpleLogger:23
+#: of renom_rl.utility.logger.Logger:26 renom_rl.utility.logger.SimpleLogger:23
 msgid "Disables tqdm. Default is False."
 msgstr "True の場合、tqdm は表示しません。デフォルトはFalseです。"
+
+#: of renom_rl.utility.logger.Logger:66
+msgid ""
+"Note that keys ``log_key`` does not suppress logger from reading values. For "
+"example, users can specify ``log_key`` as: ::"
+msgstr ""
+"注意いただきたいのが、``log_key`` を指定しても、``logger`` 関数の読み込みに影"
+"響しないと考えてください。例えば、 ``log_key`` を下記のように指定したとしても"
+
+#: of renom_rl.utility.logger.Logger:78
+msgid ""
+"and still view other keys such as \"next_state\", \"terminal\" at "
+"``logger(**log)`` function, as shown below: ::"
+msgstr ""
+"下記のように ``logger(**log)`` 関数では “next_state”、“terminal” を読み取るこ"
+"とはできます。"
+
+#: of renom_rl.utility.logger.Logger:86
+msgid ""
+"However, users cannot graph data for \"next_state\", \"terminal\" at "
+"``graph`` function etc.. Users will only be able to graph using key \"state"
+"\", \"reward\" at ``graph`` function etc. ::"
+msgstr ""
+"しかし、 ``graph`` を使用する場合、 ”next_state” 、 “terminal” は使用できませ"
+"ん。ユーザーは最初に指定した ”state”、“reward” を入力キーとして指定できませ"
+"ん。"
 
 #: of renom_rl.utility.logger.Logger.logger:1
 msgid ""
 "This function will be called for every iteration. **Override this function "
 "when creating custom logger.**"
-msgstr "各iterationごとに実行する関数です。"
+msgstr "各iterationごとに実行する関数です。**必ずオーバーライドしてください。**"
+
+#: of renom_rl.utility.logger.Logger.logger:4
+msgid "Data input from every iteration. Keys are logging keys."
+msgstr ""
+"各iterationごとに入力する変数一覧です。キーはロギングするためのキーです。"
+
+#: of renom_rl.utility.logger.Logger.logger:8
+msgid "Message required for progress view."
+msgstr "進捗バーに表示するメッセージ"
 
 #: of renom_rl.utility.logger.Logger.logger_epoch:1
 msgid ""
-"This function will be called when 1 epoch is done. **Override this function "
-"when creating custom logger.**"
-msgstr "各epochごとに実行する関数です。"
+"This function will be called when 1 epoch is done. Due to its similiarity, "
+"view ``logger`` function for detail. **Override this function when creating "
+"custom logger.**"
+msgstr ""
+"各epochごとに実行する関数です。 ``logger`` 関数と機能が似ているため、そちらを"
+"参照してください。**こちらの関数をオーバライドしてください。**"
 
 #: of renom_rl.utility.logger.Logger.result:1
 msgid ""
-"Returns dictionary of logging data. If argument is blank, then all output "
-"will be shown."
+"Returns dictionary of data that were specified as log_key. If argument is "
+"blank, then all output will be shown."
 msgstr ""
-"log_keyで指定した変数をdictionaryとして出力する関数です。引数がなければ、全て"
-"表示します。"
+"log_key_epochで指定した変数をdictionaryとして出力する関数です。引数がなけれ"
+"ば、全て表示します。"
 
-#: of renom_rl.utility.logger.Logger.result:3
+#: of renom_rl.utility.logger.Logger.result:4
 msgid "Strings of arguments."
 msgstr "表示したいキー。入力変数はstring。"
 
-#: of renom_rl.utility.logger.Logger.result:7
+#: of renom_rl.utility.logger.Logger.result:8
 msgid "Dictionary of logging data."
-msgstr "キーのロギング結果"
+msgstr "キーの記録結果"
 
 #: of renom_rl.utility.logger.Logger.result_epoch:1
 msgid ""
-"Returns dictionary of result that were specified as log_key_epoch. If "
-"argument is blank, then all output will be shown."
+"Returns dictionary of data that were specified as log_key_epoch. If argument "
+"is blank, then all output will be shown."
 msgstr ""
 "log_key_epochで指定した変数をdictionaryとして出力する関数です。引数がなけれ"
 "ば、全て表示します。"
 
 #: of renom_rl.utility.logger.Logger.graph:1
 msgid ""
-"Shows plot from recorded data. Keys must be from log_key. if ``x_key`` is "
-"None, ``y_key`` will be plot based on its length. Note that this function is "
-"focused on quick view so if detailed view is required, save data as csv."
+"Shows plot from recorded data. Keys must be from ``log_key`` . if ``x_key`` "
+"is None, ``y_key`` will be plot based on its length. Note that this function "
+"is focused on quick view so if detailed view is required, save data as csv."
 "(refer ``to_csv`` function)"
 msgstr ""
-"log_keyで指定した値をグラフ化する関数です。 key値は必ずlog_keyに存在する必要が"
-"あります。もし ``x_key`` が ない場合、 ``y_key`` の長さに応じて設定します。こ"
-"の関数はあくまで経過状況を速やかに確認するための関数であるため、より詳細な表示"
-"が必要な場合はcsv形式で保存してください。( ``to_csv`` 関数を参照)"
+"log_keyで指定した値をグラフ化する関数です。 キーは必ず最初に指定した "
+"``log_key`` のどれかを指定します。もし ``x_key`` が ない場合、 ``y_key`` の長"
+"さに応じて設定します。この関数はあくまで経過状況を速やかに確認するための関数で"
+"あるため、より詳細な表示が必要な場合はcsv形式で保存してください。( ``to_csv`` "
+"関数を参照)"
 
 #: of renom_rl.utility.logger.Logger.graph:5
 msgid "Key for Y (vertical) axis. 2-D data is allowed."
@@ -224,7 +316,10 @@ msgid "[min,max] range for Y axis. Default is min,max of y_key data."
 msgstr "Y軸[min,max]における表示範囲。"
 
 #: of renom_rl.utility.logger.Logger.graph:13
-#: renom_rl.utility.logger.Logger.graph:15
+msgid "Interval of ticks for Y axis. Default is None (ticks: auto)."
+msgstr "Y軸間隔。デフォルトは None(自動)です。"
+
+#: of renom_rl.utility.logger.Logger.graph:15
 msgid "Interval of ticks for X axis. Default is None (ticks: auto)."
 msgstr "X軸間隔。デフォルトは None(自動)です。"
 
@@ -341,6 +436,14 @@ msgstr ""
 msgid "``msg`` is required.　``msg_epoch`` is optional."
 msgstr "``msg`` は必須。 ``msg_epoch`` は任意。"
 
+#: of renom_rl.utility.logger.SimpleLogger:9
+msgid "Logging values."
+msgstr "各iterationごとに記録するキー。"
+
+#: of renom_rl.utility.logger.SimpleLogger:11
+msgid "Logging values at end of epoch."
+msgstr "各epochごとに記録するキー。"
+
 #: of renom_rl.utility.logger.SimpleLogger:13
 msgid "Printing message for each iteration. Use curly braces '{}'."
 msgstr "各iterationにおける表示メッセージ。 '{}'を使用してください。"
@@ -348,3 +451,29 @@ msgstr "各iterationにおける表示メッセージ。 '{}'を使用してく�
 #: of renom_rl.utility.logger.SimpleLogger:15
 msgid "Printing message for each epoch. Use curly braces '{}'."
 msgstr "各epoch終了時に表示するメッセージ。 '{}'を使用してください。"
+
+#~ msgid "ddqn : ddqn epoch / epoch_logger keys"
+#~ msgstr "ddqn : ddqn epoch / epoch_logger キー一覧"
+
+#~ msgid "doc  : AVAIABLE_KEYS document"
+#~ msgstr "doc  : AVAIABLE_KEYSのドキュメント"
+
+#~ msgid ""
+#~ "``logger(**log)`` function returns at every iter. **(Overriding "
+#~ "Required.)** ``logger_epoch(**log)`` function returns at each end of "
+#~ "epoch. **(Unnecessary.)**"
+#~ msgstr ""
+#~ "``logger(**log)`` 関数は各iterationにつき、``logger`` が読み取れる全ての"
+#~ "キーを読み取り、返り値として進捗バーに表示するメッセージとして出力します。"
+#~ "また、同時に ``log_key`` で指定したキーの変数を記録します。 **(オーバーライ"
+#~ "ド必須 )** ``logger_epoch(**log)`` 関数は各epochの終了ごとに "
+#~ "``logger_epoch`` が読み取れる全てのキーを読み取り、返り値として進捗バーに表"
+#~ "示するメッセージとして出力します。**(任意)** また、同時に "
+#~ "``log_key_epoch`` で指定したキーの変数を記録します。"
+
+#~ msgid ""
+#~ "Returns dictionary of logging data. If argument is blank, then all output "
+#~ "will be shown."
+#~ msgstr ""
+#~ "log_keyで指定した変数をdictionaryとして出力する関数です。引数がなければ、全"
+#~ "て表示します。"
