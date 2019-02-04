@@ -39,7 +39,7 @@ class DQN(AgentBase):
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
         ...   )
-        >>> agent.train(episode=10000)
+        >>> agent.fit(epoch=10, epoch_step=1)
         episode 001 avg_loss: 0.004 total_reward [train:2.000 test:-] e-greedy:0.000: : 190it [00:03, 48.42it/s]
         episode 002 avg_loss: 0.003 total_reward [train:0.000 test:-] e-greedy:0.000: : 126it [00:02, 50.59it/s]
         episode 003 avg_loss: 0.003 total_reward [train:3.000 test:-] e-greedy:0.001: : 250it [00:04, 51.31it/s]

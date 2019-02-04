@@ -9,6 +9,7 @@ URL: https://github.com/ReNom-dev-team/ReNomRL.git
 
    git clone https://github.com/ReNom-dev-team/ReNomRL.git
    cd ReNomRL
+   pip install -r requirements.txt
    python setup.py build_ext -f -i
    pip install -e .
 
