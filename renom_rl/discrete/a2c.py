@@ -220,7 +220,7 @@ class A2C(AgentBase):
             nth_episode_counts = np.zeros((threads, ))
 
             # env epoch
-            [self.envs[_t].epoch() for _t in range(threads)]
+            _ =[self.envs[_t].epoch() for _t in range(threads)]
 
             # initiallize
             states[0] = np.array([envs[i].reset() for i in range(threads)]
@@ -281,8 +281,8 @@ class A2C(AgentBase):
                     # values are calculated at this section
                     values[step] = self._value(states[step])
 
-                # env epoch step
-                [self.envs[_t].epoch_step() for _t in range(threads)]
+                    # env epoch step
+                    _ = [self.envs[_t].epoch_step() for _t in range(threads)]
 
                 # copy rewards
                 target_rewards = np.copy(rewards)
