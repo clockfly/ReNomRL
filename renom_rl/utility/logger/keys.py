@@ -92,15 +92,15 @@ DDPG
 
 from copy import copy
 
-_common_keys = ["state","action","reward","terminal","next_state",
-                "total_step","epoch_step","max_step",
-                "total_episode","epoch_episode","steps_per_episode",
-                "epoch","max_epoch","loss",
+_common_keys = ["state", "action", "reward", "terminal", "next_state",
+                "total_step", "epoch_step", "max_step",
+                "total_episode", "epoch_episode", "steps_per_episode",
+                "epoch", "max_epoch", "loss",
                 "sum_reward"]
 
 
-_common_keys_epoch = ["total_episode","epoch_episode",
-                         "epoch","max_epoch","test_reward"]
+_common_keys_epoch = ["total_episode", "epoch_episode",
+                      "epoch", "max_epoch", "test_reward"]
 
 
 # dqn parameters
@@ -112,16 +112,16 @@ _ddqn_keys = _common_keys + ["epsilon"]
 _ddqn_keys_epoch = _common_keys_epoch + ["epsilon"]
 
 # ddpg parameters
-_ddpg_keys = _common_keys + ["epsilon","noise_value"]
-_ddpg_keys_epoch = _common_keys_epoch + ["epsilon","noise_value"]
+_ddpg_keys = _common_keys + ["epsilon", "noise_value"]
+_ddpg_keys_epoch = _common_keys_epoch + ["epsilon", "noise_value"]
 
 # a2c parameters
-_a2c_keys = _common_keys + ["entropy","advantage","num_worker"]
-_a2c_keys_epoch = _common_keys_epoch + ["entropy","advantage","num_worker"]
+_a2c_keys = _common_keys + ["entropy", "advantage", "num_worker"]
+_a2c_keys_epoch = _common_keys_epoch + ["entropy", "advantage", "num_worker"]
 
 #: dictionary value
-available_keys = {"dqn":{"logger":copy(_dqn_keys),"logger_epoch":copy(_dqn_keys_epoch)},\
-                  "ddqn":{"logger":copy(_ddqn_keys),"logger_epoch":copy(_ddqn_keys_epoch)},\
-                  "a2c":{"logger":copy(_a2c_keys),"logger_epoch":copy(_a2c_keys_epoch)},\
-                  "ddpg":{"logger":copy(_ddpg_keys),"logger_epoch":copy(_ddpg_keys_epoch)},\
-                  "doc":__doc__}
+available_keys = {"dqn": {"logger": copy(_dqn_keys), "logger_epoch": copy(_dqn_keys_epoch)},
+                  "ddqn": {"logger": copy(_ddqn_keys), "logger_epoch": copy(_ddqn_keys_epoch)},
+                  "a2c": {"logger": copy(_a2c_keys), "logger_epoch": copy(_a2c_keys_epoch)},
+                  "ddpg": {"logger": copy(_ddpg_keys), "logger_epoch": copy(_ddpg_keys_epoch)},
+                  "doc": __doc__}

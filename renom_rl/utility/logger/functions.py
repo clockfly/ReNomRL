@@ -1,6 +1,7 @@
 import numpy as np
 from copy import copy, deepcopy
 
+
 def _moving_average(data, min_length, max_length):
     """
     Average moving length.
@@ -8,10 +9,10 @@ def _moving_average(data, min_length, max_length):
 
     res = []
     for i in range(len(data)):
-        min_i = np.maximum(i - min_length,0)
-        max_i = np.minimum(i + max_length + 1,len(data))
+        min_i = np.maximum(i - min_length, 0)
+        max_i = np.minimum(i + max_length + 1, len(data))
 
-        avg = np.sum(data[min_i:max_i],axis=0)/(max_i-min_i)
+        avg = np.sum(data[min_i:max_i], axis=0)/(max_i-min_i)
         res.append(avg)
 
     return np.array(res)
@@ -29,19 +30,20 @@ def _remove_col(func):
     This function is used to remove `:` for tqdm.
     tqdm ver.4.19 work.
     """
-    def inner(*args,**kwargs):
-        return func(*args,**kwargs)[:-2]
+    def inner(*args, **kwargs):
+        return func(*args, **kwargs)[:-2]
 
     return inner
 
-def _log_decorator_iter(self,log_func):
+
+def _log_decorator_iter(self, log_func):
     """
     This function will decorate logging function.
     Do not delete this function.
     """
     def _decorator(**kwargs):
 
-        kwargs=deepcopy(kwargs)
+        kwargs = deepcopy(kwargs)
 
         log_msg = log_func(**kwargs)
 
@@ -69,18 +71,17 @@ def _log_decorator_iter(self,log_func):
                     for value in key_value_list[terminal_index]:
                         self._log_dic[key].append(value)
 
-
-
     return _decorator
 
-def _log_decorator_epoch(self,log_func):
+
+def _log_decorator_epoch(self, log_func):
     """
     This function will decorate logging function for epoch run.
     Do not delete this function.
     """
     def _decorator2(**kwargs):
 
-        kwargs=deepcopy(kwargs)
+        kwargs = deepcopy(kwargs)
 
         log_msg = log_func(**kwargs)
 
@@ -94,21 +95,22 @@ def _log_decorator_epoch(self,log_func):
 
     return _decorator2
 
+
 def _to_csv_data(log_dic):
     """
     Creates data structure to write in csv.
     """
     key_list = log_dic.keys()
-    header = {val:val for val in key_list}
+    header = {val: val for val in key_list}
     first_key = next(iter(log_dic))
     data_length = len(log_dic[first_key])
 
-    row_data=[]
+    row_data = []
 
     for i in range(data_length):
-        row_data.append({key_i: \
-            log_dic[key_i][i].tolist() if isinstance(log_dic[key_i][i],np.ndarray) \
-            else log_dic[key_i][i] \
-                for key_i in log_dic})
+        row_data.append({key_i:
+                         log_dic[key_i][i].tolist() if isinstance(log_dic[key_i][i], np.ndarray)
+                         else log_dic[key_i][i]
+                         for key_i in log_dic})
 
-    return header,row_data
+    return header, row_data

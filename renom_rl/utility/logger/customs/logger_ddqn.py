@@ -3,13 +3,13 @@ from ..logger_base import Logger
 
 
 class DoubleDQNLogger(Logger):
-    def __init__(self,log_key = None,log_key_epoch=None):
+    def __init__(self, log_key=None, log_key_epoch=None):
         log_key = ["sum_reward"] if log_key is None else log_key
         log_key_epoch = ["test_reward"] if log_key_epoch is None else log_key_epoch
-        super(DoubleDQNLogger,self).__init__(log_key=log_key,log_key_epoch=log_key_epoch)
+        super(DoubleDQNLogger, self).__init__(log_key=log_key, log_key_epoch=log_key_epoch)
         self.train_sum_rewards_in_epoch = 0
         self.tick = 0
-        self.train_loss=0
+        self.train_loss = 0
         self.epoch_step = 0
         self.greedy = 0
 
@@ -18,7 +18,7 @@ class DoubleDQNLogger(Logger):
         # reset
         if not log["epoch_step"]:
             self.train_sum_rewards_in_epoch = 0
-            self.train_loss=0
+            self.train_loss = 0
             self.tick = 0
 
         #　defining variable
@@ -34,10 +34,10 @@ class DoubleDQNLogger(Logger):
             self.train_sum_rewards_in_epoch += sum_reward
             self.tick += 1
         self.train_loss += loss
-        self.epoch_step = log ["epoch_step"]
+        self.epoch_step = log["epoch_step"]
         self.greedy = greedy
 
-        ##　message
+        # 　message
         msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
             .format(e, greedy, loss, rewards_in_epoch, nth_episode, sum_reward)
 
@@ -52,7 +52,7 @@ class DoubleDQNLogger(Logger):
         avg_train_reward = self.train_sum_rewards_in_epoch/(self.tick + 1)
         greedy = self.greedy
 
-        ##　message
+        # 　message
         msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
             "avg train reward in episode:{:4.3f} epsilon :{:4.3f}"
         msg = msg.format(e, avg_error, summed_train_reward,

@@ -7,15 +7,12 @@ from copy import copy, deepcopy
 from .functions import _moving_average, _pass_logger, _remove_col, _log_decorator_iter, _log_decorator_epoch, _to_csv_data
 
 
-
 class LoggerMeta(type):
     def __call__(cls, *args, **kwargs):
         self = cls.__new__(cls, *args, **kwargs)
         cls.__init__(self, *args, **kwargs)
         self._assert_logger_super()
         return self
-
-
 
 
 class Logger(object, metaclass=LoggerMeta):
@@ -104,21 +101,21 @@ class Logger(object, metaclass=LoggerMeta):
 
     """
 
-    def __init__(self,log_key=None, log_key_epoch=None, record=True, record_episode_base=True, show_bar=True, disable=False):
+    def __init__(self, log_key=None, log_key_epoch=None, record=True, record_episode_base=True, show_bar=True, disable=False):
 
         log_key = [] if log_key is None else log_key
-        assert isinstance(log_key,list), "log_key must be a list."
+        assert isinstance(log_key, list), "log_key must be a list."
 
         log_key_epoch = [] if log_key_epoch is None else log_key_epoch
-        assert isinstance(log_key_epoch,list), "log_key_epoch must be a list."
+        assert isinstance(log_key_epoch, list), "log_key_epoch must be a list."
 
-        log_dic={}
+        log_dic = {}
         for key in log_key:
-            log_dic[key]=[]
+            log_dic[key] = []
 
-        log_dic_epoch={}
+        log_dic_epoch = {}
         for key in log_key_epoch:
-            log_dic_epoch[key]=[]
+            log_dic_epoch[key] = []
 
         self._log_dic = log_dic
         self._log_dic_epoch = log_dic_epoch
@@ -126,14 +123,13 @@ class Logger(object, metaclass=LoggerMeta):
         self._rollout = False
         self._record_episode_base = record_episode_base
         self._assert_logger_super = _pass_logger
-        self.logger = _log_decorator_iter(self,self.logger)
-        self.logger_epoch = _log_decorator_epoch(self,self.logger_epoch)
+        self.logger = _log_decorator_iter(self, self.logger)
+        self.logger_epoch = _log_decorator_epoch(self, self.logger_epoch)
         self._show_bar = show_bar
         self._tqdm = None
         self._disable = disable
 
-
-    def start(self,length):
+    def start(self, length):
         """
         Initializes tqdm.
 
@@ -144,20 +140,22 @@ class Logger(object, metaclass=LoggerMeta):
         """
         assert length, "set argument `length`"
         if not self._show_bar:
-            self._tqdm = tqdm(range(1),total=1,bar_format="-{desc}",disable=self._disable)
+            self._tqdm = tqdm(range(1), total=1, bar_format="-{desc}", disable=self._disable)
             self._tqdm.__repr__ = _remove_col(self._tqdm.__repr__)
         else:
-            self._tqdm = tqdm(range(length),disable = self._disable)
+            self._tqdm = tqdm(range(length), disable=self._disable)
 
-    def _key_check(self,log_key=[],log_key_epoch=[]):
+    def _key_check(self, log_key=[], log_key_epoch=[]):
         """
         Checks key. This will be called from each algorithm.
         """
         for key in self._log_dic:
-            assert key in log_key, "{} does not exist as logging key in this module. Reset log_key.".format(key)
+            assert key in log_key, "{} does not exist as logging key in this module. Reset log_key.".format(
+                key)
 
         for key in self._log_dic_epoch:
-            assert key in log_key_epoch, "{} does not exist as logging key in this module. Reset log_key.".format(key)
+            assert key in log_key_epoch, "{} does not exist as logging key in this module. Reset log_key.".format(
+                key)
 
     def reset(self):
         """
@@ -169,7 +167,7 @@ class Logger(object, metaclass=LoggerMeta):
             {'reward': []}
         """
         for key in self._log_dic:
-            self._log_dic[key]=[]
+            self._log_dic[key] = []
 
     def logger(self, **log):
         """
@@ -210,8 +208,7 @@ class Logger(object, metaclass=LoggerMeta):
         """
         pass
 
-
-    def result(self,*args):
+    def result(self, *args):
         """
         Returns dictionary of data that were specified as log_key.
         If argument is blank, then all output will be shown.
@@ -235,34 +232,32 @@ class Logger(object, metaclass=LoggerMeta):
 
         """
         if args:
-            res={}
+            res = {}
             for key in args:
-                assert key in self._log_dic,"no such key as {} in log_key".format(key)
-                res[key]=self._log_dic[key]
+                assert key in self._log_dic, "no such key as {} in log_key".format(key)
+                res[key] = self._log_dic[key]
             return res
         else:
             return self._log_dic
 
-    def result_epoch(self,*args):
+    def result_epoch(self, *args):
         """
         Returns dictionary of data that were specified as log_key_epoch.
         If argument is blank, then all output will be shown.
 
         """
         if args:
-            res={}
+            res = {}
             for key in args:
-                assert key in self._log_dic_epoch,"no such key as {} in log_key_epoch".format(key)
-                res[key]=self._log_dic_epoch[key]
+                assert key in self._log_dic_epoch, "no such key as {} in log_key_epoch".format(key)
+                res[key] = self._log_dic_epoch[key]
             return res
         else:
             return self._log_dic_epoch
 
-
-    def graph(self,y_key,x_key=None,x_lim=None,y_lim=None,
-              x_interval=0,y_interval=0,figsize=None,
-              dpi=100,average_range=0,grid=True):
-
+    def graph(self, y_key, x_key=None, x_lim=None, y_lim=None,
+              x_interval=0, y_interval=0, figsize=None,
+              dpi=100, average_range=0, grid=True):
         """
         Shows plot from recorded data. Keys must be from ``log_key`` . if ``x_key`` is None,
         ``y_key`` will be plot based on its length. Note that this function is focused on
@@ -290,13 +285,15 @@ class Logger(object, metaclass=LoggerMeta):
 
         # x_data, y_data
         assert y_key in self._log_dic,\
-           "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic.keys()))
+            "set axis to keys set in log_key variable. Avaiable variables are {}".format(
+                list(self._log_dic.keys()))
 
-        y_data=np.array(self._log_dic[y_key])
+        y_data = np.array(self._log_dic[y_key])
 
         if x_key is not None:
             assert x_key in self._log_dic,\
-                 "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic.keys()))
+                "set axis to keys set in log_key variable. Avaiable variables are {}".format(
+                    list(self._log_dic.keys()))
             x_data = np.array(self._log_dic[x_key])
 
         else:
@@ -304,41 +301,42 @@ class Logger(object, metaclass=LoggerMeta):
             x_key = "episodes" if self._record_episode_base else "steps"
 
         # creating custom graph
-        self.graph_custom(y_data=y_data,x_data=x_data,y_label=y_key,x_label=x_key, x_lim=x_lim,y_lim=y_lim,
-                  x_interval=x_interval,y_interval=y_interval,figsize=figsize,
-                  dpi=dpi,average_range=average_range,grid=grid)
+        self.graph_custom(y_data=y_data, x_data=x_data, y_label=y_key, x_label=x_key, x_lim=x_lim, y_lim=y_lim,
+                          x_interval=x_interval, y_interval=y_interval, figsize=figsize,
+                          dpi=dpi, average_range=average_range, grid=grid)
 
-    def graph_epoch(self,y_key,x_key=None,x_lim=None,y_lim=None,
-              x_interval=0,y_interval=0,figsize=None,
-              dpi=100,average_range=0,grid=True):
-
+    def graph_epoch(self, y_key, x_key=None, x_lim=None, y_lim=None,
+                    x_interval=0, y_interval=0, figsize=None,
+                    dpi=100, average_range=0, grid=True):
         """
         Shows plot from recorded data at every epoch. View the function above for details.
         """
 
         # x_data, y_data
         assert y_key in self._log_dic_epoch,\
-           "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic_epoch.keys()))
+            "set axis to keys set in log_key variable. Avaiable variables are {}".format(
+                list(self._log_dic_epoch.keys()))
 
-        y_data=np.array(self._log_dic_epoch[y_key])
+        y_data = np.array(self._log_dic_epoch[y_key])
 
         if x_key is not None:
             assert x_key in self._log_dic_epoch,\
-                 "set axis to keys set in log_key variable. Avaiable variables are {}".format(list(self._log_dic_epoch.keys()))
-            x_data=np.array(self._log_dic_epoch[x_key])
+                "set axis to keys set in log_key variable. Avaiable variables are {}".format(
+                    list(self._log_dic_epoch.keys()))
+            x_data = np.array(self._log_dic_epoch[x_key])
         else:
-            x_data=None
+            x_data = None
             x_key = "epoch"
 
         # creating custom graph
-        self.graph_custom(y_data=y_data,x_data=x_data,y_label=y_key,x_label=x_key, x_lim=x_lim,y_lim=y_lim,
-                  x_interval=x_interval,y_interval=y_interval,figsize=figsize,
-                  dpi=dpi,average_range=average_range,grid=grid)
+        self.graph_custom(y_data=y_data, x_data=x_data, y_label=y_key, x_label=x_key, x_lim=x_lim, y_lim=y_lim,
+                          x_interval=x_interval, y_interval=y_interval, figsize=figsize,
+                          dpi=dpi, average_range=average_range, grid=grid)
 
-    #for custom graph
-    def graph_custom(self,y_data,x_data=None,y_label="",x_label="", x_lim=None,y_lim=None,
-              x_interval=0,y_interval=0,figsize=None,
-              dpi=100,average_range=0,grid=True):
+    # for custom graph
+    def graph_custom(self, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
+                     x_interval=0, y_interval=0, figsize=None,
+                     dpi=100, average_range=0, grid=True):
         """
         This function allows users to quickly create graph when custom creating own data.\n
         refer ``graph`` for other arguments.
@@ -364,61 +362,62 @@ class Logger(object, metaclass=LoggerMeta):
             "key dimension conditions are x_data <= 1 and y_data <= 2 when plotting"
 
         if figsize:
-            plt.figure(figsize=figsize,dpi=dpi)
+            plt.figure(figsize=figsize, dpi=dpi)
 
         if x_lim:
-            assert isinstance(x_lim,list) and len(x_lim)==2,\
-                  "x_lim must be a [min,max] structure"
+            assert isinstance(x_lim, list) and len(x_lim) == 2,\
+                "x_lim must be a [min,max] structure"
 
         if y_lim:
-            assert isinstance(y_lim,list) and len(y_lim)==2,\
-                  "y_lim must be a [min,max] structure"
+            assert isinstance(y_lim, list) and len(y_lim) == 2,\
+                "y_lim must be a [min,max] structure"
 
-
-        x_lim = x_lim if x_lim else [np.min(x_data),np.max(x_data)]
-        y_lim = y_lim if y_lim else [np.min(y_data)-0.1,np.max(y_data)+0.1]
+        x_lim = x_lim if x_lim else [np.min(x_data), np.max(x_data)]
+        y_lim = y_lim if y_lim else [np.min(y_data)-0.1, np.max(y_data)+0.1]
 
         plt.xlim(x_lim)
         plt.ylim(y_lim)
 
-        if len(np.shape(y_data))==1:
-            plt.plot(x_data,y_data,"b",label="result")
-        if len(np.shape(y_data))==2:
+        if len(np.shape(y_data)) == 1:
+            plt.plot(x_data, y_data, "b", label="result")
+        if len(np.shape(y_data)) == 2:
             for i in range(len(y_data[0])):
-                plt.plot(x_data,y_data[:,i],label="{}[{}]".format(y_label,i))
+                plt.plot(x_data, y_data[:, i], label="{}[{}]".format(y_label, i))
 
+        if x_interval:
+            plt.xticks(np.arange(x_lim[0], x_lim[-1], x_interval))
+        if y_interval:
+            plt.yticks(np.arange(y_lim[0], y_lim[-1], y_interval))
 
-        if x_interval: plt.xticks(np.arange(x_lim[0], x_lim[-1], x_interval))
-        if y_interval: plt.yticks(np.arange(y_lim[0], y_lim[-1], y_interval))
-
-        if x_label: plt.xlabel(x_label)
-        if y_label: plt.ylabel(y_label)
+        if x_label:
+            plt.xlabel(x_label)
+        if y_label:
+            plt.ylabel(y_label)
 
         if average_range:
-            if isinstance(average_range,list):
-                assert len(average_range)==2, \
-                        "average_range must have 2 int"
-                assert isinstance(average_range[0],int) and isinstance(average_range[1],int) and np.all(np.array(average_range)>=0),\
-                        "average_range elements must be positive int"
+            if isinstance(average_range, list):
+                assert len(average_range) == 2, \
+                    "average_range must have 2 int"
+                assert isinstance(average_range[0], int) and isinstance(average_range[1], int) and np.all(np.array(average_range) >= 0),\
+                    "average_range elements must be positive int"
 
-                avg_data = _moving_average(data = y_data,
-                            min_length = average_range[0], max_length=average_range[1])
+                avg_data = _moving_average(data=y_data,
+                                           min_length=average_range[0], max_length=average_range[1])
 
-            elif isinstance(float(average_range),float):
-                avg_data = _moving_average(data = y_data,
-                            min_length = int(average_range),
-                            max_length = int(average_range))
+            elif isinstance(float(average_range), float):
+                avg_data = _moving_average(data=y_data,
+                                           min_length=int(average_range),
+                                           max_length=int(average_range))
             else:
                 assert Exception("average_range must be int or list (len == 2)")
 
-            plt.plot(x_data,avg_data,"r",label="average")
+            plt.plot(x_data, avg_data, "r", label="average")
             plt.legend()
 
         plt.grid(grid)
         plt.show()
 
-
-    def to_csv(self,filename, overwrite=False, epoch_data=True):
+    def to_csv(self, filename, overwrite=False, epoch_data=True):
         """
         Stores csv file based on filename. Epoch data are stored as filename +"_e.csv"
 
@@ -436,12 +435,12 @@ class Logger(object, metaclass=LoggerMeta):
         import csv
         import os
 
-        assert isinstance(filename,str),"filename must be a string"
-        assert filename.split(".")[-1]=="csv", "file name must be a csv"
+        assert isinstance(filename, str), "filename must be a string"
+        assert filename.split(".")[-1] == "csv", "file name must be a csv"
 
         if not overwrite and os.path.exists(filename):
-            exist=True
-            file_i=0
+            exist = True
+            file_i = 0
 
             while exist:
 
@@ -450,32 +449,27 @@ class Logger(object, metaclass=LoggerMeta):
                 if "-" in file:
                     file = "-".join(file.split("-")[:-1])
 
-                filename = "{}-{}.csv".format(file,file_i)
+                filename = "{}-{}.csv".format(file, file_i)
                 exist = os.path.exists(filename)
                 file_i += 1
 
-        header , row_data = _to_csv_data(self._log_dic)
+        header, row_data = _to_csv_data(self._log_dic)
 
         with open(filename, mode="w") as f:
             row_data.insert(0, header)
             writer = csv.DictWriter(f, header)
             writer.writerows(row_data)
 
-
         if self._log_dic_epoch:
             filename_e = ".".join(filename.split(".")[:-1]) + "_e.csv"
-            header_e , row_data_e = _to_csv_data(self._log_dic_epoch)
+            header_e, row_data_e = _to_csv_data(self._log_dic_epoch)
 
             with open(filename_e, mode="w") as f:
                 row_data_e.insert(0, header_e)
                 writer_e = csv.DictWriter(f, header_e)
                 writer_e.writerows(header_e)
 
-
-
-
-
-    def from_csv(self,filename):
+    def from_csv(self, filename):
         """
         Loads csv file based on filename. If file ends with '_e',csv file will be loaded as epoch data.
 
@@ -489,36 +483,35 @@ class Logger(object, metaclass=LoggerMeta):
 
         """
         with open(filename, 'r') as f:
-            reader = csv.reader(f,delimiter=',')
+            reader = csv.reader(f, delimiter=',')
             header = next(reader)
 
-            m = np.minimum(len(filename)-4,6)
+            m = np.minimum(len(filename)-4, 6)
 
             if filename[-m:-4] != "_e":
-                self._log_dic={}
+                self._log_dic = {}
                 for h in header:
-                    self._log_dic[h]=[]
+                    self._log_dic[h] = []
 
                 for row in reader:
-                    for i,_ in enumerate(row):
+                    for i, _ in enumerate(row):
                         self._log_dic[header[i]].append(eval(row[i]))
             else:
-                self._log_dic_epoch={}
+                self._log_dic_epoch = {}
                 for h in header:
-                    self._log_dic_epoch[h]=[]
+                    self._log_dic_epoch[h] = []
 
                 for row in reader:
-                    for i,_ in enumerate(row):
+                    for i, _ in enumerate(row):
                         self._log_dic_epoch[header[i]].append(eval(row[i]))
 
             # for key in self._log_dic:
             #     self._log_dic[key]=np.array(self._log_dic[key])
 
-
-    def set_description(self,msg):
+    def set_description(self, msg):
         self._tqdm.set_description(msg)
 
-    def update(self,num):
+    def update(self, num):
         if self._show_bar:
             self._tqdm.update(num)
 
@@ -529,12 +522,8 @@ class Logger(object, metaclass=LoggerMeta):
         """
         this is used when creating new object
         """
-        raise NotImplementedError("Need to call super('class',self).__init__(log_key,record=True)  ('class':Class Name.)")
-
-
-
-
-
+        raise NotImplementedError(
+            "Need to call super('class',self).__init__(log_key,record=True)  ('class':Class Name.)")
 
 
 class SimpleLogger(Logger):
@@ -561,41 +550,41 @@ class SimpleLogger(Logger):
         >>> logger = SimpleLogger(log_key = ["state","reward"] , msg="this is {} reward:{}")
 
     """
+
     def __init__(self, log_key, log_key_epoch=None,
-                  msg="", msg_epoch="", record = True,
-                  record_episode_base=True,
-                  show_bar=True, disable=False):
+                 msg="", msg_epoch="", record=True,
+                 record_episode_base=True,
+                 show_bar=True, disable=False):
 
         log_key_epoch = [] if log_key_epoch is None else log_key_epoch
-        super(SimpleLogger,self).__init__(log_key=log_key, log_key_epoch=log_key_epoch,
+        super(SimpleLogger, self).__init__(log_key=log_key, log_key_epoch=log_key_epoch,
                                            record=record, record_episode_base=record_episode_base,
                                            show_bar=show_bar, disable=disable)
         self.message = msg
         self.message_epoch = msg_epoch
-        assert len(log_key)==len(re.findall(r'\{+.?\}',msg)),\
-                "log_key has {0} elements while message has {1} curly braces({2})".format(
-                  len(log_key),len(re.findall(r'\{+.?\}',msg)),"{ }")
+        assert len(log_key) == len(re.findall(r'\{+.?\}', msg)),\
+            "log_key has {0} elements while message has {1} curly braces({2})".format(
+            len(log_key), len(re.findall(r'\{+.?\}', msg)), "{ }")
 
-        assert len(log_key_epoch)==len(re.findall(r'\{+.?\}',msg_epoch)),\
-                "log_key has {0} elements while message has {1} curly braces({2})".format(
-                  len(log_key_epoch),len(re.findall(r'\{+.?\}',msg_epoch)),"{ }")
+        assert len(log_key_epoch) == len(re.findall(r'\{+.?\}', msg_epoch)),\
+            "log_key has {0} elements while message has {1} curly braces({2})".format(
+            len(log_key_epoch), len(re.findall(r'\{+.?\}', msg_epoch)), "{ }")
 
     def logger(self, **kwargs):
         """
         logs data
         """
-        args=[]
+        args = []
         for key in self._log_dic:
             args.append(kwargs[key])
 
         return self.message.format(*args)
 
-
     def logger_epoch(self, **kwargs):
         """
         logs epoch data
         """
-        args=[]
+        args = []
         for key in self._log_dic_epoch:
             args.append(kwargs[key])
 

@@ -2,6 +2,7 @@ import numpy as np
 from ..filter_base import AddNoiseFilter
 from ..variables import OU, GP
 
+
 class OUFilter(AddNoiseFilter):
     """
     **OUFilter**

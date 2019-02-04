@@ -107,9 +107,6 @@ class EpsilonGreedyFilter(ActionFilter):
         return self.func.epsilon
 
 
-
-
-
 class ActionNoiseFilter(object):
     """
     **Action Noise Filter**

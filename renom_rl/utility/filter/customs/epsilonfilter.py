@@ -2,6 +2,7 @@ import numpy as np
 from ..filter_base import EpsilonGreedyFilter
 from ..variables import EpsilonSL, EpsilonEI
 
+
 class EpsilonSLFilter(EpsilonGreedyFilter):
     """
     **Epsilon Step Linear Filter**
