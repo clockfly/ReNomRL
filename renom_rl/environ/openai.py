@@ -30,7 +30,7 @@ from .env import BaseEnv
 class Pendulum(BaseEnv):
     """
     OpenAI gym "Pendulum".
-    
+
     """
 
     def __init__(self):

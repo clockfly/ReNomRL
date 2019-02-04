@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from copy import copy , deepcopy
+from copy import copy, deepcopy
 import numpy as np
 
 import renom as rm
@@ -14,6 +14,7 @@ from renom_rl.utility.logger import Logger, A2CLoggerD, AVAILABLE_KEYS
 
 _a2c_keys = AVAILABLE_KEYS["a2c"]["logger"]
 _a2c_keys_epoch = AVAILABLE_KEYS["a2c"]["logger_epoch"]
+
 
 class A2C(AgentBase):
     """A2C class
@@ -70,7 +71,7 @@ class A2C(AgentBase):
 
     def __init__(self, env, network, loss_func=None, optimizer=None,
                  gamma=0.99, num_worker=8, advantage=5, value_coef=0.5, entropy_coef=0.01,
-                 node_selector=None, test_node_selector=None, gradient_clipping=None, logger = None):
+                 node_selector=None, test_node_selector=None, gradient_clipping=None, logger=None):
         super(A2C, self).__init__()
 
         # Reset parameters.
@@ -81,7 +82,8 @@ class A2C(AgentBase):
         self.envs = [deepcopy(env) for i in range(num_worker)]
         self.test_env = env
         self.loss_func = loss_func if loss_func is not None else rm.MeanSquaredError()
-        self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(0.001, g=0.99, epsilon=1e-10)
+        self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(
+            0.001, g=0.99, epsilon=1e-10)
         self.value_coef = value_coef
         self.entropy_coef = entropy_coef
         self.gamma = gamma
@@ -126,10 +128,9 @@ class A2C(AgentBase):
 
         # logger
         logger = A2CLoggerD() if logger is None else logger
-        assert isinstance(logger,Logger), "Argument logger must be Logger class"
-        logger._key_check(log_key=_a2c_keys,log_key_epoch=_a2c_keys_epoch)
+        assert isinstance(logger, Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_a2c_keys, log_key_epoch=_a2c_keys_epoch)
         self.logger = logger
-
 
     def _initialize(self):
         '''Target network is initialized with same neural network weights of network.'''
@@ -171,8 +172,8 @@ class A2C(AgentBase):
         """
 
         # check
-        assert isinstance(self.logger,Logger), "logger must be Logger class"
-        self.logger._key_check(log_key=_a2c_keys,log_key_epoch=_a2c_keys_epoch)
+        assert isinstance(self.logger, Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_a2c_keys, log_key_epoch=_a2c_keys_epoch)
 
         # creating local variables
         envs = self.envs
@@ -188,12 +189,10 @@ class A2C(AgentBase):
         [self.envs[_t].start() for _t in range(threads)]
 
         # logging
-        step_counts_log = np.zeros((advantage,threads,))
+        step_counts_log = np.zeros((advantage, threads,))
         step_count = 0
-        episode_counts_log = np.zeros((advantage,threads,))
+        episode_counts_log = np.zeros((advantage, threads,))
         episode_counts = np.zeros((threads,))
-
-
 
         # epoch
         for e in range(1, epoch + 1):
@@ -220,7 +219,7 @@ class A2C(AgentBase):
             nth_episode_counts = np.zeros((threads, ))
 
             # env epoch
-            _ =[self.envs[_t].epoch() for _t in range(threads)]
+            _ = [self.envs[_t].epoch() for _t in range(threads)]
 
             # initiallize
             states[0] = np.array([envs[i].reset() for i in range(threads)]
@@ -317,8 +316,8 @@ class A2C(AgentBase):
 
                     # append act loss and val loss
                     act_loss = rm.sum(- (advantage_reward * action_coefs *
-                                         act_log + entropy * entropy_coef)/ total_n)
-                    val_loss = self.loss_func(val,reshaped_target_rewards) * value_coef
+                                         act_log + entropy * entropy_coef) / total_n)
+                    val_loss = self.loss_func(val, reshaped_target_rewards) * value_coef
 
                     # total loss
                     total_loss = val_loss + act_loss
@@ -333,24 +332,24 @@ class A2C(AgentBase):
                 val_loss_nd = float(val_loss.as_ndarray())
                 entropy_np = float(rm.sum(entropy).as_ndarray())
 
-
-                singular_list = [epoch_step,e,epoch,val_loss_nd, entropy_np, advantage, threads]
-                log1_key = ["max_step","epoch","max_epoch","loss","entropy","advantage","num_worker"]
+                singular_list = [epoch_step, e, epoch, val_loss_nd, entropy_np, advantage, threads]
+                log1_key = ["max_step", "epoch", "max_epoch",
+                            "loss", "entropy", "advantage", "num_worker"]
                 log1_value = [[data]*advantage for data in singular_list]
 
-                thread_step_reverse_list = [states,actions,rewards,dones,states_next,
-                                            step_counts_log,epoch_steps_log,
-                                            episode_counts_log,nth_episode_counts_log,
-                                            continuous_steps_log,sum_rewards_log,values]
+                thread_step_reverse_list = [states, actions, rewards, dones, states_next,
+                                            step_counts_log, epoch_steps_log,
+                                            episode_counts_log, nth_episode_counts_log,
+                                            continuous_steps_log, sum_rewards_log, values]
 
-                log2_key = ["state","action","reward","terminal","next_state",
-                            "total_step","epoch_step",
-                            "total_episode","epoch_episode",
-                            "steps_per_episode","sum_reward","values"]
+                log2_key = ["state", "action", "reward", "terminal", "next_state",
+                            "total_step", "epoch_step",
+                            "total_episode", "epoch_episode",
+                            "steps_per_episode", "sum_reward", "values"]
 
-                log2_value = [data.swapaxes(1,0)[0] for data in thread_step_reverse_list]
+                log2_value = [data.swapaxes(1, 0)[0] for data in thread_step_reverse_list]
 
-                log_dic = {**dict(zip(log1_key,log1_value)),**dict(zip(log2_key,log2_value))}
+                log_dic = {**dict(zip(log1_key, log1_value)), **dict(zip(log2_key, log2_value))}
 
                 self.logger.logger(**log_dic)
 
@@ -365,9 +364,9 @@ class A2C(AgentBase):
             else:
 
                 summed_test_reward = self.test(test_step)
-                self.logger.logger_epoch(total_episode=episode_counts_log[-1],epoch_episode=nth_episode_counts_log[-1],
-                                         epoch=e,max_epoch=epoch,test_reward=summed_test_reward,
-                                         advantage=advantage,num_worker=threads)
+                self.logger.logger_epoch(total_episode=episode_counts_log[-1], epoch_episode=nth_episode_counts_log[-1],
+                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
+                                         advantage=advantage, num_worker=threads)
                 self.logger.close()
                 continue
 

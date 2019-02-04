@@ -15,6 +15,7 @@ from renom_rl.utility.logger import Logger, DoubleDQNLogger, AVAILABLE_KEYS
 _ddqn_keys = AVAILABLE_KEYS["ddqn"]["logger"]
 _ddqn_keys_epoch = AVAILABLE_KEYS["ddqn"]["logger_epoch"]
 
+
 class DoubleDQN(AgentBase):
     """Double DQN class
     This class provides a reinforcement learning agent including training method.
@@ -54,7 +55,7 @@ class DoubleDQN(AgentBase):
 
     def __init__(self, env, q_network, loss_func=None,
                  optimizer=None, gamma=0.99, buffer_size=1e6,
-                 node_selector=None, test_node_selector=None, logger = None):
+                 node_selector=None, test_node_selector=None, logger=None):
         super(DoubleDQN, self).__init__()
 
         if loss_func is None:
@@ -103,8 +104,8 @@ class DoubleDQN(AgentBase):
 
         # logger
         logger = DoubleDQNLogger() if logger is None else logger
-        assert isinstance(logger,Logger), "Argument logger must be Logger class"
-        logger._key_check(log_key=_ddqn_keys,log_key_epoch=_ddqn_keys_epoch)
+        assert isinstance(logger, Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_ddqn_keys, log_key_epoch=_ddqn_keys_epoch)
         self.logger = logger
         # self.fit = fit_decorator(self,self.fit)
 
@@ -208,9 +209,8 @@ class DoubleDQN(AgentBase):
 
         assert isinstance(action_filter, ActionFilter)
 
-        assert isinstance(self.logger,Logger), "logger must be Logger class"
-        self.logger._key_check(log_key=_ddqn_keys,log_key_epoch=_ddqn_keys_epoch)
-
+        assert isinstance(self.logger, Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_ddqn_keys, log_key_epoch=_ddqn_keys_epoch)
 
         # random step phase
         print("Run random {} step for storing experiences".format(random_step))
@@ -324,12 +324,12 @@ class DoubleDQN(AgentBase):
 
                     self.env.reset()
 
-                self.logger.logger(state=state,action=action,reward=reward,
-                                     terminal=terminal,next_state=next_state,
-                                     total_step=step_count,epoch_step=j,max_step=epoch_step, steps_per_episode = continuous_step_log,
-                                     total_episode=episode_count,epoch_episode=nth_episode,
-                                     epoch=e,max_epoch=epoch,loss=loss,
-                                     sum_reward=sum_reward_log,epsilon=greedy)
+                self.logger.logger(state=state, action=action, reward=reward,
+                                   terminal=terminal, next_state=next_state,
+                                   total_step=step_count, epoch_step=j, max_step=epoch_step, steps_per_episode=continuous_step_log,
+                                   total_episode=episode_count, epoch_episode=nth_episode,
+                                   epoch=e, max_epoch=epoch, loss=loss,
+                                   sum_reward=sum_reward_log, epsilon=greedy)
                 self.logger.update(1)
 
                 continuous_step += 1
@@ -343,13 +343,12 @@ class DoubleDQN(AgentBase):
 
             else:
                 summed_test_reward = self.test(test_step, action_filter)
-                self.logger.logger_epoch(total_episode=episode_count,epoch_episode=nth_episode,
-                                         epoch=e,max_epoch=epoch,test_reward=summed_test_reward, epsilon=greedy)
+                self.logger.logger_epoch(total_episode=episode_count, epoch_episode=nth_episode,
+                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward, epsilon=greedy)
                 self.logger.close()
                 continue
 
             break
-
 
     def test(self, test_step=None, action_filter=None, **kwargs):
         """

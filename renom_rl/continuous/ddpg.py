@@ -15,6 +15,7 @@ from renom_rl.utility.logger import Logger, DDPGLogger, AVAILABLE_KEYS
 _ddpg_keys = AVAILABLE_KEYS["ddpg"]["logger"]
 _ddpg_keys_epoch = AVAILABLE_KEYS["ddpg"]["logger_epoch"]
 
+
 class DDPG(AgentBase):
     """DDPG class
 
@@ -71,7 +72,7 @@ class DDPG(AgentBase):
 
     def __init__(self, env, actor_network, critic_network, loss_func=None,
                  actor_optimizer=None, critic_optimizer=None, gamma=0.99,
-                 tau=0.001, buffer_size=1e6, logger = None):
+                 tau=0.001, buffer_size=1e6, logger=None):
         super(DDPG, self).__init__()
         if loss_func is None:
             loss_func = rm.MeanSquaredError()
@@ -128,10 +129,9 @@ class DDPG(AgentBase):
 
         # logger
         logger = DDPGLogger() if logger is None else logger
-        assert isinstance(logger,Logger), "Argument logger must be Logger class"
-        logger._key_check(log_key=_ddpg_keys,log_key_epoch=_ddpg_keys_epoch)
+        assert isinstance(logger, Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_ddpg_keys, log_key_epoch=_ddpg_keys_epoch)
         self.logger = logger
-
 
     def _action(self, state):
         """This method returns an action according to the given state.
@@ -203,8 +203,8 @@ class DDPG(AgentBase):
         assert isinstance(
             action_filter, ActionNoiseFilter), "action_filter must be a class of ActionNoiseFilter"
 
-        assert isinstance(self.logger,Logger), "logger must be Logger class"
-        self.logger._key_check(log_key=_ddpg_keys,log_key_epoch=_ddpg_keys_epoch)
+        assert isinstance(self.logger, Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_ddpg_keys, log_key_epoch=_ddpg_keys_epoch)
 
         state = self.env.reset()
 
@@ -293,18 +293,18 @@ class DDPG(AgentBase):
                     # reset log values
                     sum_reward_episode = 0.0
                     continuous_step = 0
-                    #increment episode values
+                    # increment episode values
                     nth_episode += 1
                     episode_count += 1
 
                     state = self.env.reset()
 
-                self.logger.logger(state=state,action=action,reward=reward,
-                                     terminal=terminal,next_state=next_state,
-                                     total_step=step_count,epoch_step=j,max_step=epoch_step, steps_per_episode = continuous_step_log,
-                                     total_episode=episode_count,epoch_episode=nth_episode,
-                                     epoch=e,max_epoch=epoch,loss=loss,
-                                     sum_reward=sum_reward_episode_log,epsilon=e_rate,noise_value=noise_value)
+                self.logger.logger(state=state, action=action, reward=reward,
+                                   terminal=terminal, next_state=next_state,
+                                   total_step=step_count, epoch_step=j, max_step=epoch_step, steps_per_episode=continuous_step_log,
+                                   total_episode=episode_count, epoch_episode=nth_episode,
+                                   epoch=e, max_epoch=epoch, loss=loss,
+                                   sum_reward=sum_reward_episode_log, epsilon=e_rate, noise_value=noise_value)
                 self.logger.update(1)
 
                 continuous_step += 1
@@ -318,12 +318,12 @@ class DDPG(AgentBase):
 
             else:
                 summed_test_reward = self.test(test_step, action_filter)
-                self.logger.logger_epoch(total_episode=episode_count,epoch_episode=nth_episode,
-                                         epoch=e,max_epoch=epoch,test_reward=summed_test_reward,
-                                         epsilon=e_rate,noise_value=noise_value)
+                self.logger.logger_epoch(total_episode=episode_count, epoch_episode=nth_episode,
+                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
+                                         epsilon=e_rate, noise_value=noise_value)
                 self.logger.close()
                 continue
-                
+
             break
 
         # env close
