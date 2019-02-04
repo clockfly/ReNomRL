@@ -175,3 +175,4 @@ Additional ignored files
 
 # removing release script
 release.sh
+version_list.txt
