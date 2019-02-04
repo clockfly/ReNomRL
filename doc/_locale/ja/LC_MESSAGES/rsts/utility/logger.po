@@ -177,7 +177,7 @@ msgstr ""
 "に ``log_key`` で指定したキーの変数を記録します. **(オーバーライド必須 )** "
 "``logger_epoch(**log)`` 関数は各epochの終了ごとに ``logger_epoch`` が読み取れ"
 "る全てのキーを読み取り、返り値として進捗バーに表示するメッセージとして出力しま"
-"す.また、同時に ``log_key_epoch`` で指定したキーの変数を記録します.**(任"
+"す.また、同時に ``log_key_epoch`` で指定したキーの変数を記録します. **(任"
 "意)** "
 
 #: of renom_rl.utility.logger.Logger:12
@@ -241,8 +241,8 @@ msgstr ""
 #: of renom_rl.utility.logger.Logger.logger:1
 msgid ""
 "This function will be called for every iteration. **Override this function "
-"when creating custom logger.**"
-msgstr "各iterationごとに実行する関数です.**必ずオーバーライドしてください.**"
+"when creating custom logger. **"
+msgstr "各iterationごとに実行する関数です. **必ずオーバーライドしてください. **"
 
 #: of renom_rl.utility.logger.Logger.logger:4
 msgid "Data input from every iteration. Keys are logging keys."
@@ -257,10 +257,10 @@ msgstr "進捗バーに表示するメッセージ"
 msgid ""
 "This function will be called when 1 epoch is done. Due to its similiarity, "
 "view ``logger`` function for detail. **Override this function when creating "
-"custom logger.**"
+"custom logger. **"
 msgstr ""
 "各epochごとに実行する関数です. ``logger`` 関数と機能が似ているため、そちらを"
-"参照してください.**こちらの関数をオーバライドしてください.**"
+"参照してください. **こちらの関数をオーバライドしてください. **"
 
 #: of renom_rl.utility.logger.Logger.result:1
 msgid ""
@@ -468,7 +468,7 @@ msgstr "各epoch終了時に表示するメッセージ. '{}'を使用してく�
 #~ "また、同時に ``log_key`` で指定したキーの変数を記録します. **(オーバーライ"
 #~ "ド必須 )** ``logger_epoch(**log)`` 関数は各epochの終了ごとに "
 #~ "``logger_epoch`` が読み取れる全てのキーを読み取り、返り値として進捗バーに表"
-#~ "示するメッセージとして出力します.**(任意)** また、同時に "
+#~ "示するメッセージとして出力します. **(任意)** また、同時に "
 #~ "``log_key_epoch`` で指定したキーの変数を記録します."
 
 #~ msgid ""
