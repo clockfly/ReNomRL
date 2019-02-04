@@ -241,8 +241,8 @@ msgstr ""
 #: of renom_rl.utility.logger.Logger.logger:1
 msgid ""
 "This function will be called for every iteration. **Override this function "
-"when creating custom logger. **"
-msgstr "各iterationごとに実行する関数です. **必ずオーバーライドしてください. **"
+"when creating custom logger**"
+msgstr "各iterationごとに実行する関数です. **必ずオーバーライドしてください**"
 
 #: of renom_rl.utility.logger.Logger.logger:4
 msgid "Data input from every iteration. Keys are logging keys."
@@ -257,10 +257,10 @@ msgstr "進捗バーに表示するメッセージ"
 msgid ""
 "This function will be called when 1 epoch is done. Due to its similiarity, "
 "view ``logger`` function for detail. **Override this function when creating "
-"custom logger. **"
+"custom logger**"
 msgstr ""
 "各epochごとに実行する関数です. ``logger`` 関数と機能が似ているため、そちらを"
-"参照してください. **こちらの関数をオーバライドしてください. **"
+"参照してください. **オーバライド任意**"
 
 #: of renom_rl.utility.logger.Logger.result:1
 msgid ""
