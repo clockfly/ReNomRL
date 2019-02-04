@@ -32,47 +32,47 @@ msgstr ""
 
 #: of renom_rl.continuous.ddpg.DDPG:3
 msgid "This class provides a reinforcement learning for DDPG."
-msgstr ""
+msgstr "DDPG クラスは学習アルゴリズムを含んだモデルです. "
 
 #: of renom_rl.continuous.ddpg.DDPG:5
 msgid "Environment. This must be a child class of ``BaseEnv``."
-msgstr ""
+msgstr "Evironmentです. BaseEnv を親クラスに持ちます. "
 
 #: of renom_rl.continuous.ddpg.DDPG:7
 msgid "Actor-Network."
-msgstr ""
+msgstr "エージェント. アクターネットワーク. "
 
 #: of renom_rl.continuous.ddpg.DDPG:9
 msgid "Critic-Network. This is a Q(s,a) Network. Requires state and action input."
-msgstr ""
+msgstr "クリティックネットワーク. "
 
 #: of renom_rl.continuous.ddpg.DDPG:11
 msgid "Loss function for critic network. Default is ``MeanSquaredError()``"
-msgstr ""
+msgstr "Critic-Networkを学習させるための誤差関数. デフォルトでは, MeanSquaredError()."
 
 #: of renom_rl.continuous.ddpg.DDPG:12
 msgid ""
 "Optimizer object for training actor network. Default is "
 "``Adam(lr=0.0001)``"
-msgstr ""
+msgstr "Actor-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.0001)."
 
 #: of renom_rl.continuous.ddpg.DDPG:13
 msgid "Optimizer object for training actor network. Default is ``Adam(lr=0.001)``"
-msgstr ""
+msgstr "Critic-Networkを学習させるための勾配降下手法. デフォルトではAdam(lr=0.001)."
 
 #: of renom_rl.continuous.ddpg.DDPG:14
 msgid "Discount rate."
-msgstr ""
+msgstr "割引率"
 
 #: of renom_rl.continuous.ddpg.DDPG:16
 msgid ""
 "target_networks update parameter. If this is 0, weight parameters will be"
 " copied."
-msgstr ""
+msgstr "ターゲットネットワークの更新割合. ０の時は, エージェントとアクターネットワークの重みがそのままの状態で, コピーされる. "
 
 #: of renom_rl.continuous.ddpg.DDPG:18
 msgid "The size of replay buffer."
-msgstr ""
+msgstr "replay buffer のサイズ"
 
 #: of renom_rl.continuous.ddpg.DDPG:23 renom_rl.continuous.ddpg.DDPG.fit:21
 msgid "Example"
@@ -103,55 +103,55 @@ msgid ""
 "This method executes training of an actor-network. Here, target actor & "
 "critic network weights are updated after every actor & critic update "
 "using self.tau"
-msgstr ""
+msgstr "このメソッドは エージェント の学習を開始します. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:4
 msgid "Training number of epochs."
-msgstr ""
+msgstr "学習のためのエポック数. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:6
 msgid "Number of step of one epoch."
-msgstr ""
+msgstr "１エポックにおけるステップ数. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:8
 msgid "Batch size."
-msgstr ""
+msgstr バッチサイズ. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:10
 msgid "Number of random step which will be executed before training."
-msgstr ""
+msgstr "乱数による行動選択. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:12
 msgid "Number of test step."
-msgstr ""
+msgstr "テストステップ数. ０の場合は, テストが終了するまで実行する. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:14
 msgid "For the learning step, training is done at this cycle."
-msgstr ""
+msgstr "学習を実行する頻度. "
 
 #: of renom_rl.continuous.ddpg.DDPG.fit:16
 msgid "Exploration filter during learning. Default is ``OUFilter``."
-msgstr ""
+msgstr "探索するためのノイズフィルタ. デフォルトは ``OUFilter``. "
 
 #: of renom_rl.continuous.ddpg.DDPG.test:1
 msgid "Test the trained agent."
-msgstr ""
+msgstr "エージェントのテストを実行します. "
 
 #: of renom_rl.continuous.ddpg.DDPG.test:3
 msgid ""
 "Number of steps for test. If None is given, this method tests just 1 "
 "episode."
-msgstr ""
+msgstr "Test時に実行するstep数. Noneが与えられた場合, 1episode分のTestが実行."
 
 #: of renom_rl.continuous.ddpg.DDPG.test:5
 msgid ""
 "Exploration filter during learning. Default is "
 "``ConstantFilter(threshold=1.0)``."
-msgstr ""
+msgstr "探索を実現する行動フィルタ. デフォルトは　``ConstantFilter(threshold=1.0)`` ."
 
 #: of renom_rl.continuous.ddpg.DDPG.test:9
 msgid "Sum of rewards."
-msgstr ""
+msgstr "報酬の合計値. "
 
 #~ msgid "Parameters"
 #~ msgstr ""
@@ -365,4 +365,3 @@ msgstr ""
 #~ "Exploration filter during learning. Default"
 #~ " is ``ConstantFilter(threshold=1.0)``."
 #~ msgstr "探索を実現する行動フィルタ. デフォルトは ``OUFilter``. "
-

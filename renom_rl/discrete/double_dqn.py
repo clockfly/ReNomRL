@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import division, print_function
 import copy
 import numpy as np
-from tqdm import tqdm
 
 import renom as rm
+
+from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl import AgentBase
 from renom_rl.environ.env import BaseEnv
-from renom_rl.utility.event_handler import EventHandler
-from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl.utility.filter import EpsilonSLFilter, EpsilonCFilter, ActionFilter, MaxNodeChooser
+from renom_rl.utility.logger import Logger, DoubleDQNLogger, AVAILABLE_KEYS
+
+_ddqn_keys = AVAILABLE_KEYS["ddqn"]["logger"]
+_ddqn_keys_epoch = AVAILABLE_KEYS["ddqn"]["logger_epoch"]
 
 
 class DoubleDQN(AgentBase):
@@ -29,10 +31,10 @@ class DoubleDQN(AgentBase):
     Example:
         >>> import renom as rm
         >>> from renom_rl.discrete.double_dqn import DoubleDQN
-        >>> from renom_rl.environ.openai import Breakout
+        >>> from renom_rl.environ.openai import CartPole00
         >>> model = rm.Sequential(...)
         >>> agent = DQN(
-        ...       Breakout(),
+        ...       CartPole00(),
         ...       model,
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
@@ -53,7 +55,7 @@ class DoubleDQN(AgentBase):
 
     def __init__(self, env, q_network, loss_func=None,
                  optimizer=None, gamma=0.99, buffer_size=1e6,
-                 node_selector=None, test_node_selector=None):
+                 node_selector=None, test_node_selector=None, logger=None):
         super(DoubleDQN, self).__init__()
 
         if loss_func is None:
@@ -98,8 +100,14 @@ class DoubleDQN(AgentBase):
         self._action_shape = action_shape
         self._state_shape = state_shape
         self._buffer = ReplayBuffer([1, ], self._state_shape, buffer_size)
-        self.events = EventHandler()
         self._initialize()
+
+        # logger
+        logger = DoubleDQNLogger() if logger is None else logger
+        assert isinstance(logger, Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_ddqn_keys, log_key_epoch=_ddqn_keys_epoch)
+        self.logger = logger
+        # self.fit = fit_decorator(self,self.fit)
 
     def _initialize(self):
         '''Target q-network is initialized with same neural network weights of q-network.'''
@@ -188,10 +196,6 @@ class DoubleDQN(AgentBase):
             ... ])
             >>> model = DoubleDQN(Breakout(), q_network)
             >>>
-            >>> @model.event.end_epoch
-            >>> def callback(epoch, ddqn, train_rew, test_rew, avg_loss):
-            ... # This function will be called end of each epoch.
-            ...
             >>>
             >>> model.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]
@@ -204,6 +208,9 @@ class DoubleDQN(AgentBase):
             epsilon_step=int(0.8 * epoch * epoch_step))
 
         assert isinstance(action_filter, ActionFilter)
+
+        assert isinstance(self.logger, Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_ddqn_keys, log_key_epoch=_ddqn_keys_epoch)
 
         # random step phase
         print("Run random {} step for storing experiences".format(random_step))
@@ -232,24 +239,20 @@ class DoubleDQN(AgentBase):
 
         # 1 epoch stores multiple epoch steps thus 1 epoch can hold multiple episodes
         for e in range(1, epoch + 1):
+            continuous_step = 0
+            continuous_step_log = 0
             sum_reward = 0
-            train_loss = 0
+            sum_reward_log = 0
             nth_episode = 0
-            train_sum_rewards_in_each_episode = []
-            tq = tqdm(range(epoch_step))
-            state = self.env.reset()
-            loss = 0
+            self.logger.start(epoch_step)
 
             # env epoch
             self.env.epoch()
 
+            state = self.env.reset()
+            loss = 0
+
             for j in range(epoch_step):
-                # if greedy > np.random.rand():  # and state is not None:
-                #     self._q_network.set_models(inference=True)
-                #     action = np.argmax(np.atleast_2d(self._q_network(
-                #         state[None, ...]).as_ndarray()), axis=1)
-                # else:
-                #     action = self.env.sample()
 
                 # set action
                 action = action_filter(self._action(state), self.env.sample(),
@@ -296,7 +299,6 @@ class DoubleDQN(AgentBase):
                             ls = self.loss_func(z, target)
                         ls.grad().update(self._optimizer)
                         loss = np.sum(ls.as_ndarray())
-                        train_loss += loss
 
                         if count % update_period == 0 and count:
                             max_reward_in_each_update_period = -np.Inf
@@ -309,23 +311,30 @@ class DoubleDQN(AgentBase):
                     if max_reward_in_each_update_period <= sum_reward:
                         self._update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
-                    train_sum_rewards_in_each_episode.append(sum_reward)
+                    # train_sum_rewards_in_each_episode.append(sum_reward)
+                    # hold log values
+                    sum_reward_log = sum_reward
+                    continuous_step_log = continuous_step
+                    # reset log values
                     sum_reward = 0
+                    continuous_step = 0
+                    # increment episode values
                     nth_episode += 1
                     episode_count += 1
 
                     self.env.reset()
 
-                # message print
-                msg = "epoch {:04d} epsilon {:.4f} loss {:5.4f} rewards in epoch {:4.3f} episode {:04d} rewards in episode {:4.3f}."\
-                    .format(e, greedy, loss, np.sum(train_sum_rewards_in_each_episode) + sum_reward, nth_episode,
-                            train_sum_rewards_in_each_episode[-1] if len(train_sum_rewards_in_each_episode) > 0 else 0)
-                step_count += 1
-                tq.set_description(msg)
-                tq.update(1)
+                self.logger.logger(state=state, action=action, reward=reward,
+                                   terminal=terminal, next_state=next_state,
+                                   total_step=step_count, epoch_step=j, max_step=epoch_step, steps_per_episode=continuous_step_log,
+                                   total_episode=episode_count, epoch_episode=nth_episode,
+                                   epoch=e, max_epoch=epoch, loss=loss,
+                                   sum_reward=sum_reward_log, epsilon=greedy)
+                self.logger.update(1)
 
-                # event handler
-                self.events.on("step", e, reward, self, step_count, episode_count, greedy)
+                continuous_step += 1
+                step_count += 1
+                state = next_state
 
                 # if terminate executes, then do execute "continue"
                 if self.env.terminate():
@@ -333,36 +342,13 @@ class DoubleDQN(AgentBase):
                     break
 
             else:
-                # Calc
-                avg_error = train_loss / (j + 1)
-                avg_train_reward = np.mean(train_sum_rewards_in_each_episode)
-                summed_train_reward = np.sum(train_sum_rewards_in_each_episode) + sum_reward
                 summed_test_reward = self.test(test_step, action_filter)
-
-                self._append_history(e, avg_error, avg_train_reward,
-                                     summed_train_reward, summed_test_reward)
-
-                msg = "epoch {:03d} avg_loss:{:6.4f} total reward in epoch: [train:{:4.3f} test:{:4.3}] " + \
-                    "avg train reward in episode:{:4.3f} e-greedy:{:4.3f}"
-                msg = msg.format(e, avg_error, summed_train_reward,
-                                 summed_test_reward, avg_train_reward, greedy)
-
-                self.events.on("end_epoch", e, self, avg_error, avg_train_reward,
-                               summed_train_reward, summed_test_reward, greedy)
-
-                tq.set_description(msg)
-                tq.update(0)
-                tq.refresh()
-                tq.close()
+                self.logger.logger_epoch(total_episode=episode_count, epoch_episode=nth_episode,
+                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward, epsilon=greedy)
+                self.logger.close()
                 continue
 
-            tq.update(0)
-            tq.refresh()
-            tq.close()
             break
-
-        # env close
-        self.env.close()
 
     def test(self, test_step=None, action_filter=None, **kwargs):
         """

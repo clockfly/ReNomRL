@@ -7,10 +7,8 @@ This page is the API renferece for ReNomRL. The following index is structured ba
 
 .. toctree::
     :maxdepth: 1
-    
+
     continuous/continuous
     discrete/discrete
     environ/environ
     utility/utility
-
-
