@@ -3,17 +3,17 @@
 
 import copy
 import numpy as np
-from tqdm import tqdm
 
 import renom as rm
-from renom.utility.initializer import Uniform, GlorotUniform
-from renom.utility.reinforcement.replaybuffer import ReplayBuffer
 
+from renom_rl.utility.replaybuffer import ReplayBuffer
 from renom_rl import AgentBase
-# from renom_rl.noise import OU
 from renom_rl.environ import BaseEnv
-from renom_rl.utility.event_handler import EventHandler
 from renom_rl.utility.filter import EpsilonSL, ActionNoiseFilter, OUFilter, NoNoiseFilter
+from renom_rl.utility.logger import Logger, DDPGLogger, AVAILABLE_KEYS
+
+_ddpg_keys = AVAILABLE_KEYS["ddpg"]["logger"]
+_ddpg_keys_epoch = AVAILABLE_KEYS["ddpg"]["logger_epoch"]
 
 
 class DDPG(AgentBase):
@@ -72,7 +72,7 @@ class DDPG(AgentBase):
 
     def __init__(self, env, actor_network, critic_network, loss_func=None,
                  actor_optimizer=None, critic_optimizer=None, gamma=0.99,
-                 tau=0.001, buffer_size=1e6):
+                 tau=0.001, buffer_size=1e6, logger=None):
         super(DDPG, self).__init__()
         if loss_func is None:
             loss_func = rm.MeanSquaredError()
@@ -125,8 +125,13 @@ class DDPG(AgentBase):
         self.action_size = action_shape
         self.state_size = state_shape
         self._buffer = ReplayBuffer(self.action_size, self.state_size, buffer_size)
-        self.events = EventHandler()
         self._initialize()
+
+        # logger
+        logger = DDPGLogger() if logger is None else logger
+        assert isinstance(logger, Logger), "Argument logger must be Logger class"
+        logger._key_check(log_key=_ddpg_keys, log_key_epoch=_ddpg_keys_epoch)
+        self.logger = logger
 
     def _action(self, state):
         """This method returns an action according to the given state.
@@ -194,8 +199,12 @@ class DDPG(AgentBase):
         _e = EpsilonSL(epsilon_step=int(0.8 * epoch * epoch_step))
         action_filter = action_filter if action_filter is not None else OUFilter(epsilon=_e)
 
+        # check
         assert isinstance(
             action_filter, ActionNoiseFilter), "action_filter must be a class of ActionNoiseFilter"
+
+        assert isinstance(self.logger, Logger), "logger must be Logger class"
+        self.logger._key_check(log_key=_ddpg_keys, log_key_epoch=_ddpg_keys_epoch)
 
         state = self.env.reset()
 
@@ -216,16 +225,18 @@ class DDPG(AgentBase):
         episode_count = 0  # episodes
 
         for e in range(1, epoch + 1):
-            sum_reward = 0.0
+            continuous_step = 0
+            continuous_step_log = 0
             sum_reward_episode = 0.0
+            sum_reward_episode_log = 0.0
             nth_episode = 0
-            each_episode_reward = []
-            tq = tqdm(range(epoch_step))
-            state = self.env.reset()
-            loss = 0.0
+            self.logger.start(epoch_step)
 
             # env epoch
             self.env.epoch()
+
+            state = self.env.reset()
+            loss = 0.0
 
             for j in range(epoch_step):
 
@@ -233,16 +244,13 @@ class DDPG(AgentBase):
                 action = action_filter(self._action(state),
                                        step=step_count, episode=episode_count, epoch=e)
                 e_rate = action_filter.value()
+                noise_value = action_filter.sample()
 
                 # if isinstance(self.env, BaseEnv):
                 next_state, reward, terminal = self.env.step(action)
 
                 self._buffer.store(state, action,
                                    np.array(reward), next_state, np.array(terminal))
-
-                sum_reward += reward
-                sum_reward_episode += reward
-                state = next_state
 
                 if len(self._buffer) > batch_size and j % train_frequency == 0:
                     train_prestate, train_action, train_reward, train_state, train_terminal = \
@@ -278,30 +286,30 @@ class DDPG(AgentBase):
                     loss += critic_loss.as_ndarray()
                     self._update()
 
-                sum_reward = float(sum_reward)
-
-                tq.set_description("epoch: {:03d} Each step reward:{:0.2f}".format(e, sum_reward))
-                tq.update(1)
-
                 if terminal:
-                    each_episode_reward.append(sum_reward_episode)
+                    # hold log values
+                    sum_reward_episode_log = sum_reward_episode
+                    continuous_step_log = continuous_step
+                    # reset log values
                     sum_reward_episode = 0.0
-                    state = self.env.reset()
+                    continuous_step = 0
+                    # increment episode values
                     nth_episode += 1
                     episode_count += 1
-                    # break
 
-                # for test
-                # msg = "noise e-greedy:{:5.3f}"
-                # msg = msg.format(e_rate)
-                # tq.set_description(msg)
-                # tq.update(1)
+                    state = self.env.reset()
 
+                self.logger.logger(state=state, action=action, reward=reward,
+                                   terminal=terminal, next_state=next_state,
+                                   total_step=step_count, epoch_step=j, max_step=epoch_step, steps_per_episode=continuous_step_log,
+                                   total_episode=episode_count, epoch_episode=nth_episode,
+                                   epoch=e, max_epoch=epoch, loss=loss,
+                                   sum_reward=sum_reward_episode_log, epsilon=e_rate, noise_value=noise_value)
+                self.logger.update(1)
+
+                continuous_step += 1
                 step_count += 1
-
-                # event handler
-                self.events.on("step", e, reward, self, step_count, episode_count,
-                               e_rate, action, action_filter.sample())
+                state = next_state
 
                 # if terminate executes, then do execute "continue"
                 if self.env.terminate():
@@ -309,35 +317,13 @@ class DDPG(AgentBase):
                     break
 
             else:
-                # Calc
-                avg_loss = float(loss) / (j + 1)
-                avg_train_reward = np.mean(each_episode_reward)
-                train_reward = sum_reward
-                test_reward = self.test(test_step, action_filter)
-
-                self._append_history(e, avg_loss, avg_train_reward,
-                                     train_reward, test_reward)
-
-                tq.set_description("Running test for {} step".format(test_step))
-                tq.update(0)
-                msg = "epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-rate:{:5.3f}"
-                msg = msg.format(e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
-
-                # msg = "action{} epoch {:03d} avg_loss:{:6.3f} total_reward [train:{:5.3f} test:{:5.3f}] avg train reward in episode:{:4.3f} e-greedy:{:5.3f}"
-                # msg = msg.format(action, e, avg_loss, train_reward, test_reward, avg_train_reward, e_rate)
-
-                self.events.on("end_epoch",
-                               e, self, train_reward, test_reward, avg_loss)
-
-                tq.set_description(msg)
-                tq.update(0)
-                tq.refresh()
-                tq.close()
+                summed_test_reward = self.test(test_step, action_filter)
+                self.logger.logger_epoch(total_episode=episode_count, epoch_episode=nth_episode,
+                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
+                                         epsilon=e_rate, noise_value=noise_value)
+                self.logger.close()
                 continue
 
-            tq.update(0)
-            tq.refresh()
-            tq.close()
             break
 
         # env close

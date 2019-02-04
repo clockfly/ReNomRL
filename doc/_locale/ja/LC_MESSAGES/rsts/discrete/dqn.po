@@ -30,33 +30,33 @@ msgstr ""
 msgid ""
 "DQN class This class provides a reinforcement learning agent including "
 "training method."
-msgstr ""
+msgstr "DQN クラスは学習アルゴリズムを含んだモデルです. "
 
 #: of renom_rl.discrete.dqn.DQN:4
 msgid "Environment. This must be a child class of ``BaseEnv``."
-msgstr ""
+msgstr "エージェントを訓練させる環境. 環境オブジェクトはReNomRLが提供するBaseEnvクラスの子クラスである必要がある."
 
 #: of renom_rl.discrete.dqn.DQN:6
 msgid "Agent. Q-Network."
-msgstr ""
+msgstr "エージェント. Q関数. "
 
 #: of renom_rl.discrete.dqn.DQN:8
 msgid ""
 "Loss function for train q-network. Default is "
 "``ClippedMeanSquaredError()``."
-msgstr ""
+msgstr "Q-networkを訓練させるための誤差関数. デフォルトでは, ClippedMeanSquaredError()."
 
 #: of renom_rl.discrete.dqn.DQN:10
 msgid "Optimizer for train q-network. Default is ``Rmsprop(lr=0.00025, g=0.95)``."
-msgstr ""
+msgstr "Q-networkを学習させるための勾配降下手法. デフォルトでは, Rmsprop(lr=0.00025, g=0.95)."
 
 #: of renom_rl.discrete.dqn.DQN:11
 msgid "Discount rate."
-msgstr ""
+msgstr "割引率"
 
 #: of renom_rl.discrete.dqn.DQN:13
 msgid "The size of replay buffer."
-msgstr ""
+msgstr "replay buffer のサイズ"
 
 #: of renom_rl.discrete.dqn.DQN:18 renom_rl.discrete.dqn.DQN.fit:23
 msgid "Example"
@@ -84,59 +84,61 @@ msgstr ""
 msgid ""
 "This method executes training of a q-network. Training will be done with "
 "epsilon-greedy method(default)."
-msgstr ""
+msgstr "Q-Networkの学習を実行する関数. 学習はe-greedy法に基づいて行われる."
 
 #: of renom_rl.discrete.dqn.DQN.fit:4
 msgid "Number of epoch for training."
-msgstr ""
+msgstr "学習のためのエポック数"
 
 #: of renom_rl.discrete.dqn.DQN.fit:6
 msgid "Number of step of one epoch."
-msgstr ""
+msgstr "１エポックにおけるステップ数"
 
 #: of renom_rl.discrete.dqn.DQN.fit:8
 msgid "Batch size."
-msgstr ""
+msgstr "バッチサイズ. "
 
 #: of renom_rl.discrete.dqn.DQN.fit:10
 msgid "Number of random step which will be executed before training."
-msgstr ""
+msgstr "乱数による行動選択. "
 
 #: of renom_rl.discrete.dqn.DQN.fit:12
 msgid "Number of test step."
-msgstr ""
+msgstr "テストステップ数. ０の場合は, テストが終了するまで実行する. "
 
 #: of renom_rl.discrete.dqn.DQN.fit:14
 msgid "Period of updating target network."
-msgstr ""
+msgstr "ターゲットネットワークを更新する頻度. "
 
 #: of renom_rl.discrete.dqn.DQN.fit:16
 msgid "For the learning step, training is done at this cycle"
-msgstr ""
+msgstr "学習を実行する頻度. "
 
 #: of renom_rl.discrete.dqn.DQN.fit:18
 msgid "Exploration filter during learning. Default is `EpsilonGreedyFilter`."
-msgstr ""
+msgstr "探索するためのアクションフィルタ. デフォルトは ``EpsilonGreedyFilter``. "
 
 #: of renom_rl.discrete.dqn.DQN.test:1
 msgid "Test the trained agent."
-msgstr ""
+msgstr "学習したエージェントをテストする関数."
 
 #: of renom_rl.discrete.dqn.DQN.test:3
 msgid ""
 "Number of steps (not episodes) for test. If None is given, this method "
 "tests execute only 1 episode."
-msgstr ""
+msgstr "テストの際に実行するステップ数.Noneが与えられた場合.エピソードが終了するまで実行する."
 
 #: of renom_rl.discrete.dqn.DQN.test:5
 msgid ""
 "Exploartion filter during test. Default is "
 "`ConstantFilter(threshold=1.0)`."
 msgstr ""
+"テスト時におけるアクションフィルタ. デフォルトは "
+"`ConstantFilter(threshold=1.0)`."
 
 #: of renom_rl.discrete.dqn.DQN.test:9
 msgid "Sum of rewards."
-msgstr ""
+msgstr "報酬の合計値"
 
 #~ msgid "Parameters"
 #~ msgstr ""
@@ -341,4 +343,3 @@ msgstr ""
 #~ "Exploartion filter during test. Default "
 #~ "is `ConstantFilter(threshold=1.0)`."
 #~ msgstr "探索を実現する行動フィルタ. デフォルトは ``ConstantFilter(threshold=1.0)``. "
-

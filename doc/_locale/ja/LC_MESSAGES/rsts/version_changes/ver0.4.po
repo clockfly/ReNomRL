@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, grid
+# This file is distributed under the same license as the ReNomRL package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ReNomRL 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-04 15:17+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../../rsts/version_changes/ver0.4.rst:2
+msgid "ver 0.4"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:3
+msgid "Created Logger, SimpleLogger etc. See ``utility.logger``."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:4
+msgid "AgentBase: Modified for logging error exception."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:5
+msgid "utility: Rearranged folder."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:6
+msgid "utility/filter: Fixed OU filter."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:7
+msgid "continuous+discrete: Applied Logger Module."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:8
+msgid "continuous+discrete: set env.epoch before reset()"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:9
+msgid "discrete/A2C: calculation Bug fixed at A2C (value coef)"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:10
+msgid "discrete/A2C: total rewards per thread was adjusted"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:11
+msgid "discrete/A2C: changed url citation of document"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:12
+msgid "discrete/A2C: added ``BaseEnv.start()`` ~ ``BaseEnv.test_close()``"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:13
+msgid "envrion/openai: removed Breakout"
+msgstr ""
+
+#~ msgid "Every Algorithm: Applied Logger Module."
+#~ msgstr ""
+
+#~ msgid "``__init__``: Modified for logging error exception."
+#~ msgstr ""
+
+#~ msgid "discrete/DQN: set env.epoch before reset()"
+#~ msgstr ""
+
+#~ msgid "discrete/DoubleDQN: set env.epoch before reset()"
+#~ msgstr ""
+
+#~ msgid "continuous/DDPG: set env.epoch before reset()"
+#~ msgstr ""
+
+#~ msgid "discrete/A2C: set env.epoch before reset()"
+#~ msgstr ""
+

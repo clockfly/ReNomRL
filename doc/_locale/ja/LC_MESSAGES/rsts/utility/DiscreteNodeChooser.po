@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-03 13:29+0900\n"
+"POT-Creation-Date: 2019-02-04 15:17+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,8 +22,8 @@ msgid "renom_rl.utility.filter (5): DiscreteNodeChooser Series"
 msgstr ""
 
 #: of renom_rl.utility.filter.DiscreteNodeChooser:1
-msgid "Base class of chosing action nodes in discrete action space."
-msgstr ""
+msgid "Base class of choosing action nodes in discrete action space."
+msgstr "離散行動を選定するベースクラス."
 
 #: of renom_rl.utility.filter.MaxNodeChooser:1
 msgid "**Max Node Chooser**"
@@ -33,7 +33,7 @@ msgstr ""
 msgid ""
 "Chooses max node index. Returns 1D numpy list. If the length is 1, it "
 "returns int."
-msgstr ""
+msgstr "出力の中で最大となるノードのインデックスを返す.長さが１の場合は、int型を返す."
 
 #: of renom_rl.utility.filter.ProbNodeChooser:1
 msgid "**Probability Node Chooser**"
@@ -43,5 +43,4 @@ msgstr ""
 msgid ""
 "Chooses node index based on its output probability. Returns 1D numpy "
 "list. If the length is 1, it returns int."
-msgstr ""
-
+msgstr "出力を確率として考え、確率的にノードを選択し、そのインデックスを返す.長さが１の場合は、int型を返す."

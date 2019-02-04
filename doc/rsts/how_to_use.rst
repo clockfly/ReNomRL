@@ -25,7 +25,7 @@ We prepared environment models that uses Open AI. For example, if the user wants
 .. code-block:: python
 
     from renom_rl.environ.openai import Breakout
-    env = Breakout()
+    env = CartPole00()
 
 Implementing Environment from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -110,6 +110,6 @@ After finishing the model, we run the module by implementing as shown below:
 
 .. code-block:: python
 
-    result = model.fit(render=False, greedy_step=1000000, random_step=5000, update_period=10000)
+    result = model.fit()
 
 By implement as shown above, we can run DQN. For more information, please refer the API page on environment, and other algorithms.
