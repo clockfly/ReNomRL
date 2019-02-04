@@ -4,7 +4,7 @@ from renom import Node
 
 class DiscreteNodeChooser(object):
     """
-    Base class of chosing action nodes in discrete action space.
+    Base class of choosing action nodes in discrete action space.
     """
 
     def __call__(self):

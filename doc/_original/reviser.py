@@ -40,17 +40,17 @@ for po in po_list:
 
         if msg_str == True:
 
-            count_a += msg.count("。")
+            count_a += msg.count(".")
             count_b += msg.count("、")
 
-            msg = msg.replace("。", ". ").replace("、", ", ")
+            msg = msg.replace(".", ". ").replace("、", ", ")
             msg = msg.replace(".  ", ". ").replace(",  ", ", ")
 
         i += 1
 
         res.append(msg)
 
-    print("{} - overwrite  '、':{}  '。':{} ".format(base_po, count_a, count_b))
+    print("{} - overwrite  '、':{}  '.':{} ".format(base_po, count_a, count_b))
 
     # saving file
     with open(po, 'w') as f:

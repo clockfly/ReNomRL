@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-04 14:20+0900\n"
+"POT-Creation-Date: 2019-02-04 15:17+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,6 +59,10 @@ msgstr ""
 
 #: ../../rsts/version_changes/ver0.4.rst:12
 msgid "discrete/A2C: added ``BaseEnv.start()`` ~ ``BaseEnv.test_close()``"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:13
+msgid "envrion/openai: removed Breakout"
 msgstr ""
 
 #~ msgid "Every Algorithm: Applied Logger Module."

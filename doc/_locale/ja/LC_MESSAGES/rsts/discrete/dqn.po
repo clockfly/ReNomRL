@@ -126,7 +126,7 @@ msgstr "学習したエージェントをテストする関数."
 msgid ""
 "Number of steps (not episodes) for test. If None is given, this method "
 "tests execute only 1 episode."
-msgstr "テストの際に実行するステップ数.Noneが与えられた場合。エピソードが終了するまで実行する."
+msgstr "テストの際に実行するステップ数.Noneが与えられた場合.エピソードが終了するまで実行する."
 
 #: of renom_rl.discrete.dqn.DQN.test:5
 msgid ""

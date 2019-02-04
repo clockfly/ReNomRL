@@ -24,7 +24,7 @@ msgstr ""
 
 #: ../../rsts/utility/logger_key.rst:4
 msgid "In this section, we made a table of available keys in loggers."
-msgstr "ここでは、ロガーにて指定可能なキー一覧を表示します。"
+msgstr "ここでは、ロガーにて指定可能なキー一覧を表示します."
 
 #: of renom_rl.utility.logger.keys:2
 msgid "Common Keys"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "State the agent is in."
-msgstr "エージェントがいる状態。"
+msgstr "エージェントがいる状態."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "action"
@@ -56,7 +56,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Action took in environment."
-msgstr "エージェントが取った行動。"
+msgstr "エージェントが取った行動."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "reward"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Reward received from environment."
-msgstr "エージェントが受け取った報酬。"
+msgstr "エージェントが受け取った報酬."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "terminal"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Terminal status for each iteration."
-msgstr "各iterationにおける終了状態。"
+msgstr "各iterationにおける終了状態."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "next_state"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "State after action occurs."
-msgstr "actionを取った後の状態。"
+msgstr "actionを取った後の状態."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "total_step"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Steps agent took after ``fit`` function was executed."
-msgstr "``fit`` 実行後の累計step数。"
+msgstr "``fit`` 実行後の累計step数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "epoch_step"
@@ -96,7 +96,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Steps agent took during 1 epoch."
-msgstr "各epochにおける累計step数。"
+msgstr "各epochにおける累計step数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "max_step"
@@ -104,7 +104,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Maximum steps that can be taken in 1 epoch."
-msgstr "各epochにおける最大step数。"
+msgstr "各epochにおける最大step数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "total_episode"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Episodes agent experienced after ``fit`` function was executed."
-msgstr "``fit`` 実行後の累計episode数。"
+msgstr "``fit`` 実行後の累計episode数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "epoch_episode"
@@ -120,7 +120,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Episodes agent experienced during 1 epoch."
-msgstr "各epochにおける累計episode数。"
+msgstr "各epochにおける累計episode数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "steps_per_episode"
@@ -128,7 +128,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Steps agent took at certain episode."
-msgstr "各episodeにおける累計step数。"
+msgstr "各episodeにおける累計step数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "epoch"
@@ -136,7 +136,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Number of epochs after ``fit`` function was executed."
-msgstr "``fit`` 実行後の累計epoch数。"
+msgstr "``fit`` 実行後の累計epoch数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "max_epoch"
@@ -144,7 +144,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Maximum epochs that can be taken in training session."
-msgstr "``fit`` における最大epoch数。"
+msgstr "``fit`` における最大epoch数."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "loss"
@@ -152,7 +152,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Value of loss function. (Usually V/Q function)"
-msgstr "損失の値。（通常はV/Q値。）"
+msgstr "損失の値.（通常はV/Q値.）"
 
 #: of renom_rl.utility.logger.keys:1
 msgid "sum_reward"
@@ -160,7 +160,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Total rewards of 1 episode."
-msgstr "1 episode における累計step数。"
+msgstr "1 episode における累計step数."
 
 #: of renom_rl.utility.logger.keys:28
 msgid "logger_epoch function"
@@ -172,7 +172,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Total rewards of ``test`` result."
-msgstr "テストにおける累計ステップ数。"
+msgstr "テストにおける累計ステップ数."
 
 #: of renom_rl.utility.logger.keys:45
 msgid "Keys Available for Specific Algorithm"
@@ -188,7 +188,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Epsilon value of random action choice."
-msgstr "ランダムな行動を選択するためのエプシロン値。"
+msgstr "ランダムな行動を選択するためのエプシロン値."
 
 #: of renom_rl.utility.logger.keys:58
 msgid "DoubleDQN"
@@ -204,7 +204,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Entropy value."
-msgstr "エントロピ値。"
+msgstr "エントロピ値."
 
 #: of renom_rl.utility.logger.keys:1
 msgid "advantage"
@@ -220,7 +220,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Number of workers used to calculate."
-msgstr "平行計算するために使用するエージェント数。"
+msgstr "平行計算するために使用するエージェント数."
 
 #: of renom_rl.utility.logger.keys:80
 msgid "DDPG"
@@ -232,7 +232,7 @@ msgstr ""
 
 #: of renom_rl.utility.logger.keys:1
 msgid "Noise value."
-msgstr "ノイズ値。"
+msgstr "ノイズ値."
 
 #~ msgid "``AVAIABLE_KEYS`` key:\"dqn\""
 #~ msgstr ""
