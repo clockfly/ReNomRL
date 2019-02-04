@@ -31,10 +31,10 @@ class DQN(AgentBase):
     Example:
         >>> import renom as rm
         >>> from renom_rl.discrete.dqn import DQN
-        >>> from renom_rl.environ.openai import Breakout
+        >>> from renom_rl.environ.openai import CartPole00
         >>> model = rm.Sequential(...)
         >>> agent = DQN(
-        ...       Breakout(),
+        ...       CartPole00(),
         ...       model,
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
@@ -185,12 +185,12 @@ class DQN(AgentBase):
         Example:
             >>> import renom as rm
             >>> from renom_rl.discrete.dqn import DQN
-            >>> from renom_rl.environ.openai import CartPole
+            >>> from renom_rl.environ.openai import CartPole00
             >>>
             >>> q_network = rm.Sequential([
             ...    # Define network here.
             ... ])
-            >>> model = DQN(Breakout(), q_network)
+            >>> model = DQN(CartPole00(), q_network)
             >>>
             >>> model.fit()
             epoch 001 avg_loss:0.0031 total reward in epoch: [train:109.000 test: 3.0] avg reward in episode:[train:0.235 test:0.039] e-greedy:0.900: 100%|██████████| 10000/10000 [05:48<00:00, 28.73it/s]

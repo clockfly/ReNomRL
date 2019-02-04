@@ -25,7 +25,7 @@ We prepared environment models that uses Open AI. For example, if the user wants
 .. code-block:: python
 
     from renom_rl.environ.openai import Breakout
-    env = Breakout()
+    env = CartPole00()
 
 Implementing Environment from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

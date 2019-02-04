@@ -30,10 +30,10 @@ class DoubleDQN(AgentBase):
     Example:
         >>> import renom as rm
         >>> from renom_rl.discrete.double_dqn import DoubleDQN
-        >>> from renom_rl.environ.openai import Breakout
+        >>> from renom_rl.environ.openai import CartPole00
         >>> model = rm.Sequential(...)
         >>> agent = DQN(
-        ...       Breakout(),
+        ...       CartPole00(),
         ...       model,
         ...       loss_func=rm.ClippedMeanSquaredError(),
         ...       buffer_size=1e6
