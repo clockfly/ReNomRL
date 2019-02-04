@@ -174,7 +174,7 @@ class Logger(object, metaclass=LoggerMeta):
     def logger(self, **log):
         """
         This function will be called for every iteration.
-        **Override this function when creating custom logger. **
+        **Override this function when creating custom logger**
 
         Args:
             log(dictionary): Data input from every iteration. Keys are logging keys.
@@ -206,7 +206,7 @@ class Logger(object, metaclass=LoggerMeta):
     def logger_epoch(self, **log):
         """
         This function will be called when 1 epoch is done. Due to its similiarity, view ``logger`` function for detail.
-        **Override this function when creating custom logger. **
+        **Override this function when creating custom logger**
         """
         pass
 

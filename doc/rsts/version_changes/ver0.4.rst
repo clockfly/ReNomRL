@@ -8,6 +8,5 @@ ver 0.4
 - continuous+discrete: set env.epoch before reset()
 - discrete/A2C: calculation Bug fixed at A2C (value coef)
 - discrete/A2C: total rewards per thread was adjusted
-- discrete/A2C: changed url citation of document
-- discrete/A2C: added ``BaseEnv.start()`` ~ ``BaseEnv.test_close()``
+- discrete/A2C: changed url citation of documentgit
 - envrion/openai: removed Breakout
