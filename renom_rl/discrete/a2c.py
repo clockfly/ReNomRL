@@ -267,11 +267,12 @@ class A2C(AgentBase):
                             episode_counts[thr] += 1
                             nth_episode_counts[thr] += 1
 
+                    epoch_steps_log[step] = epoch_steps_j
+                    step_counts_log[step] = step_count
+
                     # append 1 step
                     epoch_steps_j += 1
                     step_count += 1
-                    epoch_steps_log[step] = epoch_steps_j
-                    step_counts_log[step] = step_count
 
                     # setting step to next advanced step
                     if step + 1 < advantage:
