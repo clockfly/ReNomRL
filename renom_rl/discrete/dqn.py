@@ -158,13 +158,13 @@ class DQN(AgentBase):
 
     def _update(self):
         """This function updates target network."""
-        self._target_q_network.copy_params(self._best_q_network)
-        self._rec_copy(self._target_q_network, self._best_q_network)
+        self._best_q_network.copy_params(self._q_network)
+        self._rec_copy(self._best_q_network, self._q_network)
 
     def _update_best_q_network(self):
         """This function updates best network in each target update period."""
-        self._best_q_network.copy_params(self._q_network)
-        self._rec_copy(self._best_q_network, self._q_network)
+        self._target_q_network.copy_params(self._best_q_network)
+        self._rec_copy(self._target_q_network, self._best_q_network)
 
     def fit(self, epoch=500, epoch_step=250000, batch_size=32, random_step=50000,
             test_step=None, update_period=10000, train_frequency=4,
