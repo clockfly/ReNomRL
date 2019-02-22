@@ -208,6 +208,14 @@ class Logger(object, metaclass=LoggerMeta):
         """
         pass
 
+    def logger_episode(self, **log):
+        """
+        This function will be called when 1 episode is done. Due to its similiarity, view ``logger`` function for detail.
+        **Override this function when creating custom logger**
+        """
+        pass
+
+
     def result(self, *args):
         """
         Returns dictionary of data that were specified as log_key.
@@ -589,3 +597,8 @@ class SimpleLogger(Logger):
             args.append(kwargs[key])
 
         return self.message_epoch.format(*args)
+
+    def logger_episode(self, **kwargs):
+        """
+        logs episode data
+        """

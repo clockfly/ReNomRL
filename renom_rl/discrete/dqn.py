@@ -127,11 +127,13 @@ class DQN(AgentBase):
         self._target_q_network(np.random.randn(1, *self._state_shape))
         self._q_network.copy_params(self._target_q_network)
 
-    def _action(self, state):
+    def _action(self, state, return_q=False):
         """This method returns an action according to the given state.
         """
         self._q_network.set_models(inference=True)
         act = self._q_network(state[None, ...])
+        if return_q:
+            return self.node_selector(act), act.as_ndarray()
         return self.node_selector(act)
 
     def _test_action(self, state):
@@ -242,6 +244,9 @@ class DQN(AgentBase):
             sum_reward = 0
             sum_reward_log = 0
             nth_episode = 0
+            episode_q = []
+            episode_loss = []
+            
             self.logger.start(epoch_step)
 
             # env epoch
@@ -253,7 +258,9 @@ class DQN(AgentBase):
             for j in range(epoch_step):
 
                 # set action
-                action = action_filter(self._action(state), self.env.sample(),
+                act, q = self._action(state, return_q=True)
+                episode_q.append(np.max(q))
+                action = action_filter(act, self.env.sample(),
                                        step=step_count, episode=episode_count, epoch=e)
                 greedy = action_filter.value()
 
@@ -296,6 +303,7 @@ class DQN(AgentBase):
                             ls = self.loss_func(z, target)
                         ls.grad().update(self._optimizer)
                         loss = np.sum(ls.as_ndarray())
+                        episode_loss.append(ls.as_ndarray())
                         # train_loss += loss
 
                         if count % update_period == 0 and count:
@@ -309,6 +317,14 @@ class DQN(AgentBase):
                     if max_reward_in_each_update_period <= sum_reward:
                         self._update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
+
+                    self.logger.logger_episode(
+                      nth=episode_count,
+                      mean_q=np.mean(episode_q),
+                      mean_loss=np.mean(episode_loss),
+                      cum_reward=sum_reward,
+                      model=self._q_network,
+                    )
                     # train_sum_rewards_in_each_episode.append(sum_reward)
                     # hold log values
                     sum_reward_log = sum_reward
@@ -316,6 +332,8 @@ class DQN(AgentBase):
                     # reset log values
                     sum_reward = 0
                     continuous_step = 0
+                    episode_q = []
+                    episode_loss = []
                     # increment episode values
                     nth_episode += 1
                     episode_count += 1
