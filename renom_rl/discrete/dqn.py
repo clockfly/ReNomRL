@@ -306,11 +306,11 @@ class DQN(AgentBase):
                         episode_loss.append(ls.as_ndarray())
                         # train_loss += loss
 
-                        if count % update_period == 0 and count:
-                            max_reward_in_each_update_period = -np.Inf
-                            self._update()
-                            count = 0
-                        count += 1
+                if count % update_period == 0 and count:
+                    max_reward_in_each_update_period = -np.Inf
+                    self._update()
+                    count = 0
+                count += 1
 
                 # terminal reset
                 if terminal:
