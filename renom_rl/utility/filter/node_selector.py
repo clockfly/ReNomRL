@@ -56,7 +56,7 @@ class ProbNodeChooser(DiscreteNodeChooser):
 
         norm = np.sum(node_var, axis=1).reshape((-1, 1))
 
-        node_norm = node_var/norm
+        node_norm = node_var / norm
 
         prob_list = np.array([np.random.choice(len(n), 1, p=n) for n in node_norm])
 
