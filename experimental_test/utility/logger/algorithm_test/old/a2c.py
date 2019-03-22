@@ -78,7 +78,8 @@ class A2C(object):
         self.envs = [copy.deepcopy(env) for i in range(num_worker)]
         self.test_env = env
         self.loss_func = loss_func if loss_func is not None else rm.MeanSquaredError()
-        self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(0.001, g=0.99, epsilon=1e-10)
+        self._optimizer = optimizer if optimizer is not None else rm.Rmsprop(
+            0.001, g=0.99, epsilon=1e-10)
         self.value_coef = value_coef
         self.entropy_coef = entropy_coef
         self.gamma = gamma
@@ -297,8 +298,8 @@ class A2C(object):
 
                     # append act loss and val loss
                     act_loss = rm.sum(- (advantage_reward * action_coefs *
-                                         act_log  + entropy * entropy_coef)/total_n)
-                    val_loss = self.loss_func(val,reshaped_target_rewards) * value_coef
+                                         act_log + entropy * entropy_coef)/total_n)
+                    val_loss = self.loss_func(val, reshaped_target_rewards) * value_coef
 
                     # total loss
                     total_loss = val_loss + act_loss
