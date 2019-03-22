@@ -44,7 +44,7 @@ import pytest
 #     print(b)
 
 
-@pytest.fixture(scope="class",params=[[1,2,3],[4,5,6],[7,8,9]])
+@pytest.fixture(scope="class", params=[[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 def ali(request):
     yield request.param
 
@@ -66,22 +66,20 @@ def ali(request):
 class Test_A:
 
     @pytest.fixture()
-    def a(self,ali): return ali[0]
+    def a(self, ali): return ali[0]
 
     @pytest.fixture()
-    def b(self,ali): return ali[1]
+    def b(self, ali): return ali[1]
 
     @pytest.fixture()
-    def c(self,ali): return ali[2]
+    def c(self, ali): return ali[2]
 
-
-    def test_one(self,a,b):
+    def test_one(self, a, b):
         print(a+b)
         print("test_1")
         pass
 
-
-    def test_two(self,a,c):
+    def test_two(self, a, c):
         print(a+c)
         print("test_2")
         pass

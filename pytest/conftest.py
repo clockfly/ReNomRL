@@ -8,11 +8,10 @@ def not_show():
     plt.close()
 
 
-
 @pytest.fixture(scope='session', autouse=True)
 def scope_session():
 
-    #setting
+    # setting
     plt.show = not_show
 
     print("start")
@@ -21,11 +20,14 @@ def scope_session():
 
 
 pytest.fixture(scope='module', autouse=True)
+
+
 def scope_module():
 
     print("module start")
     yield
     print("module done")
 
+
 def pytest_namespace():
-    return {"logger":1}
+    return {"logger": 1}
