@@ -292,7 +292,7 @@ class A2C(AgentBase):
 
                 # calculate rewards
                 for i in reversed(range(advantage)):
-                    mask=np.where(dones[i],0.0,1.0)
+                    mask = np.where(dones[i], 0.0, 1.0)
                     target_rewards[i] = rewards[i]+target_rewards[i+1]*gamma*mask
 
                 # -------calcuating gradients-----
@@ -321,7 +321,7 @@ class A2C(AgentBase):
 
                     # append act loss and val loss
                     act_loss = - rm.sum(advantage_reward * action_coefs * act_log) / total_n \
-                                - rm.sum(entropy) * entropy_coef / total_n
+                        - rm.sum(entropy) * entropy_coef / total_n
                     val_loss = self.loss_func(val, reshaped_target_rewards) * value_coef * 2
 
                     # total loss
@@ -338,7 +338,8 @@ class A2C(AgentBase):
                 total_loss_nd = float(total_loss.as_ndarray())
                 entropy_np = float(entropy.as_ndarray().mean())
 
-                singular_list = [epoch_step, e, epoch, val_loss_nd, entropy_np, total_loss_nd, advantage, threads]
+                singular_list = [epoch_step, e, epoch, val_loss_nd,
+                                 entropy_np, total_loss_nd, advantage, threads]
                 log1_key = ["max_step", "epoch", "max_epoch",
                             "loss", "entropy", "total_loss", "advantage", "num_worker"]
                 log1_value = [[data]*advantage for data in singular_list]

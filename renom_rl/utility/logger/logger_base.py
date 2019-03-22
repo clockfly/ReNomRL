@@ -375,18 +375,17 @@ class Logger(object, metaclass=LoggerMeta):
             plt.figure()
 
         cls.graph_attribute(plt, y_data=y_data, x_data=x_data, y_label=y_label, x_label=x_label, x_lim=x_lim, y_lim=y_lim,
-                     x_interval=x_interval, y_interval=y_interval,
-                     dpi=dpi, average_range=average_range, plot_label=plot_label, legend=legend, grid=grid)
+                            x_interval=x_interval, y_interval=y_interval,
+                            dpi=dpi, average_range=average_range, plot_label=plot_label, legend=legend, grid=grid)
 
         plt.grid(grid)
         plt.show()
 
-
     # for graph attributes
     @classmethod
-    def graph_attribute(cls,plt_sub, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
-                 x_interval=0, y_interval=0,
-                 dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
+    def graph_attribute(cls, plt_sub, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
+                        x_interval=0, y_interval=0,
+                        dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
         """
         This function allows users to generate graph properties more easily.\n
         refer ``graph`` for other arguments.
@@ -425,7 +424,7 @@ class Logger(object, metaclass=LoggerMeta):
         if len(np.shape(y_data)) == 1:
 
             if plot_label:
-                assert isinstance(plot_label,str), "plot label must be a string"
+                assert isinstance(plot_label, str), "plot label must be a string"
                 labeling_format = plot_label
             else:
                 labeling_format = "result"
@@ -435,10 +434,11 @@ class Logger(object, metaclass=LoggerMeta):
         if len(np.shape(y_data)) == 2:
 
             if plot_label:
-                if isinstance(plot_label,(list,tuple)):
+                if isinstance(plot_label, (list, tuple)):
                     labeling_format = ["{}".format(x) for x in plot_label]
-                elif isinstance(plot_label,str):
-                    labeling_format = ["{}[{}]".format(plot_label, i) for i in range(len(y_data[0]))]
+                elif isinstance(plot_label, str):
+                    labeling_format = ["{}[{}]".format(plot_label, i)
+                                       for i in range(len(y_data[0]))]
                 else:
                     raise ValueError("Must Implement tuple, list, or string for plot_label")
             else:
@@ -446,7 +446,6 @@ class Logger(object, metaclass=LoggerMeta):
                     labeling_format = ["{}[{}]".format(y_label, i) for i in range(len(y_data[0]))]
                 else:
                     labeling_format = ["result"]*len(y_data[0])
-
 
             for i in range(len(y_data[0])):
                 plt_sub.plot(x_data, y_data[:, i], label="{}".format(labeling_format[i]))
@@ -482,7 +481,7 @@ class Logger(object, metaclass=LoggerMeta):
             plt_sub.legend()
 
         if legend:
-            if isinstance(legend,bool):
+            if isinstance(legend, bool):
                 plt_sub.legend()
             else:
                 plt_sub.legend(**legend)

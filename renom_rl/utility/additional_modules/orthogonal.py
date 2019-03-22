@@ -1,6 +1,7 @@
 import numpy as np
 from renom.config import precision
 
+
 class Initializer(object):
     """Base class of initializer.
 
@@ -40,6 +41,6 @@ class Orthogonal(Initializer):
         c_shape = (shape[0], np.prod(shape[1:]))
         X = np.random.random(c_shape)-0.5
         U, _, Vt = np.linalg.svd(X, full_matrices=False)
-        res = U if U.shape==c_shape else Vt
+        res = U if U.shape == c_shape else Vt
 
         return (res.reshape(shape) * self.gain).astype(precision)
