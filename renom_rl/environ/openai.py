@@ -25,7 +25,7 @@ import gym
 import numpy as np
 from PIL import Image
 from .env import BaseEnv
-
+import cv2
 
 class Pendulum(BaseEnv):
     """
@@ -53,65 +53,109 @@ class Pendulum(BaseEnv):
         return state.reshape(3), reward, terminal
 
 
-# class Breakout(BaseEnv):
-#     """
-#     OpenAI gym "BreakoutNoFrameskip-v4"
-#
-#     """
-#
-#     def __init__(self):
-#         self.env = gym.make('BreakoutNoFrameskip-v4')
-#         self.action_shape = (4,)
-#         self.state_shape = (4, 84, 84)
-#         self.previous_frames = []
-#         self._reset_flag = True
-#         self._last_live = 5
-#         super(Breakout, self).__init__()
-#
-#     def reset(self):
-#         if self._reset_flag:
-#             self._reset_flag = False
-#             self.env.reset()
-#         n_step = np.random.randint(4, 32 + 1)
-#         for _ in range(n_step):
-#             state, _, _ = self.step(self.env.action_space.sample())
-#         return state
-#
-#     def sample(self):
-#         return self.env.action_space.sample()
-#
-#     def _preprocess(self, state):
-#         resized_image = Image.fromarray(state).resize((84, 110)).convert('L')
-#         image_array = np.asarray(resized_image) / 255.
-#         final_image = image_array[26:110]
-#         return final_image
-#
-#     def step(self, action):
-#         state_list = []
-#         reward_list = []
-#         terminal = False
-#         for _ in range(4):
-#             # Use last frame. Other frames will be skipped.
-#             s, r, t, info = self.env.step(action)
-#             state = self._preprocess(s)
-#             reward_list.append(r)
-#             if self._last_live > info["ale.lives"]:
-#                 t = True
-#                 self._last_live = info["ale.lives"]
-#                 if self._last_live > 0:
-#                     self._reset_flag = False
-#                 else:
-#                     self._last_live = 5
-#                     self._reset_flag = True
-#             if t:
-#                 terminal = True
-#
-#         if len(self.previous_frames) > 3:
-#             self.previous_frames = self.previous_frames[1:] + [state]
-#         else:
-#             self.previous_frames += [state]
-#         state = np.stack(self.previous_frames)
-#         return state, np.array(np.sum(reward_list) > 0), terminal
+
+
+
+class Breakout(BaseEnv):
+
+    def __init__(self):
+        self.env = gym.make('BreakoutNoFrameskip-v4')
+        self.action_shape = (self.env.action_space.n,)
+        self.action_interval = 8
+        self.state_shape = (4, 84, 84)
+        self.test=False
+        self.lives = 5
+        self.true_terminal = True
+        self.test_mode = False
+        self.previous_frames=np.zeros(self.state_shape)
+        cv2.ocl.setUseOpenCL(False)
+
+
+    def _preprocess(self, state):
+        frame = cv2.cvtColor(state, cv2.COLOR_RGB2GRAY)
+        frame = cv2.resize(frame, self.state_shape[1:],
+                           interpolation=cv2.INTER_AREA)
+
+        return frame
+
+
+    def get_step(self, action):
+        # getting image of trajectory as list
+        state_list = []
+        reward_list = []
+        weight_interval=0.2
+
+        for x in range(self.action_interval):
+            state, reward, terminal, info = self.env.step(int(action))
+            state_list.append(state)
+            reward_list.append(reward)
+
+        #getting max of each layer, respect to each pixel
+        state = np.stack(state_list[-2:]).max(axis=0)
+        reward = sum(reward_list)
+
+        state = self._preprocess(state)
+
+        return state, reward, terminal, info
+
+
+    def append_and_get(self,state):
+
+        self.previous_frames[:-1] = self.previous_frames[1:].copy()
+        self.previous_frames[-1] = state.copy() / 255.0
+
+    def reset(self):
+
+        self.previous_frames=np.zeros((4,84,84))
+
+        if self.true_terminal:
+            self.env.reset()
+            self.lives = 5
+            self.true_terminal = False
+
+        action_list = np.random.randint(0,4,size=10)
+        fire = np.array([1])
+        action_rand = np.zeros((np.random.randint(30)))
+
+        action_list_all = np.concatenate([action_list,fire,action_rand])
+
+        for a in action_list_all:
+            _ = self.env.step(int(a))
+
+        state, _, _, _ = self.get_step(0)
+        self.append_and_get(state)
+
+        state_final = self.previous_frames
+
+        return state_final
+
+    def sample(self):
+        return self.env.action_space.sample()
+
+    def step(self, action):
+
+        state, reward, _, info = self.get_step(int(action))
+
+        lives = info["ale.lives"]
+        terminal = False
+        self.append_and_get(state)
+
+        # getting lives
+        if lives > 0:
+            if lives < self.lives:
+                self.lives = lives
+                terminal = True
+        else:
+            terminal = True
+            self.true_terminal = True
+
+        state_final = np.stack(self.previous_frames)
+
+        return state_final, reward, terminal
+
+
+    def epoch(self):
+        self.true_terminal = True
 
 
 class CartPole00(BaseEnv):
