@@ -208,6 +208,13 @@ class Logger(object, metaclass=LoggerMeta):
         """
         pass
 
+    def logger_episode(self, **log):
+        """
+        This function will be called when 1 episode is done. Due to its similiarity, view ``logger`` function for detail.
+        **Override this function when creating custom logger**
+        """
+        pass
+
     def result(self, *args):
         """
         Returns dictionary of data that were specified as log_key.
@@ -356,7 +363,7 @@ class Logger(object, metaclass=LoggerMeta):
         """
 
         y_data = np.array(y_data)
-        x_data = x_data if x_data is not None else np.arange(len(y_data))+1
+        x_data = x_data if x_data is not None else np.arange(len(y_data)) + 1
 
         assert len(np.shape(x_data)) <= 1 and len(np.shape(y_data)) <= 2,\
             "key dimension conditions are x_data <= 1 and y_data <= 2 when plotting"
@@ -373,7 +380,7 @@ class Logger(object, metaclass=LoggerMeta):
                 "y_lim must be a [min,max] structure"
 
         x_lim = x_lim if x_lim else [np.min(x_data), np.max(x_data)]
-        y_lim = y_lim if y_lim else [np.min(y_data)-0.1, np.max(y_data)+0.1]
+        y_lim = y_lim if y_lim else [np.min(y_data) - 0.1, np.max(y_data) + 0.1]
 
         plt.xlim(x_lim)
         plt.ylim(y_lim)
@@ -486,7 +493,7 @@ class Logger(object, metaclass=LoggerMeta):
             reader = csv.reader(f, delimiter=',')
             header = next(reader)
 
-            m = np.minimum(len(filename)-4, 6)
+            m = np.minimum(len(filename) - 4, 6)
 
             if filename[-m:-4] != "_e":
                 self._log_dic = {}
@@ -589,3 +596,8 @@ class SimpleLogger(Logger):
             args.append(kwargs[key])
 
         return self.message_epoch.format(*args)
+
+    def logger_episode(self, **kwargs):
+        """
+        logs episode data
+        """

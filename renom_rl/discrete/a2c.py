@@ -156,7 +156,7 @@ class A2C(AgentBase):
 
     def _calc_forward(self, x):
         act, val = self._network(x)
-        e = - rm.sum(act*rm.log(act+1e-5), axis=1)
+        e = - rm.sum(act * rm.log(act + 1e-5), axis=1)
         entropy = e.reshape((-1, 1))
         return act, val, entropy
 
@@ -276,7 +276,7 @@ class A2C(AgentBase):
 
                     # setting step to next advanced step
                     if step + 1 < advantage:
-                        states[step+1] = states_next[step]
+                        states[step + 1] = states_next[step]
 
                     # values are calculated at this section
                     values[step] = self._value(states[step])
@@ -288,8 +288,8 @@ class A2C(AgentBase):
                 target_rewards = np.copy(rewards)
 
                 # calculate rewards
-                for i in reversed(range(advantage-1)):
-                    target_rewards[i] = rewards[i]+target_rewards[i+1]*gamma*(1-dones[i])
+                for i in reversed(range(advantage - 1)):
+                    target_rewards[i] = rewards[i] + target_rewards[i + 1] * gamma * (1 - dones[i])
 
                 # -------calcuating gradients-----
 
@@ -307,7 +307,7 @@ class A2C(AgentBase):
                 self._network.set_models(inference=False)
                 with self._network.train():
                     act, val, entropy = self._calc_forward(reshaped_state)
-                    act_log = rm.log(act+1e-5)
+                    act_log = rm.log(act + 1e-5)
 
                     # initiallize
                     action_coefs = np.zeros_like(act.as_ndarray())
@@ -336,7 +336,7 @@ class A2C(AgentBase):
                 singular_list = [epoch_step, e, epoch, val_loss_nd, entropy_np, advantage, threads]
                 log1_key = ["max_step", "epoch", "max_epoch",
                             "loss", "entropy", "advantage", "num_worker"]
-                log1_value = [[data]*advantage for data in singular_list]
+                log1_value = [[data] * advantage for data in singular_list]
 
                 thread_step_reverse_list = [states, actions, rewards, dones, states_next,
                                             step_counts_log, epoch_steps_log,

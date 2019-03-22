@@ -57,10 +57,10 @@ class GradientClipping(object):
             for i in variables:
                 arr = variables[i]**norm
                 total_norm += arr.sum()
-            total_norm = total_norm ** (1/total_norm)
+            total_norm = total_norm ** (1 / total_norm)
 
         # process gradient
         if threshold < total_norm:
 
             for i in variables:
-                variables[i] = threshold * variables[i]/(total_norm + 1e-6)
+                variables[i] = threshold * variables[i] / (total_norm + 1e-6)
