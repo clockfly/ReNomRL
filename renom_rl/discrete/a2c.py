@@ -373,7 +373,7 @@ class A2C(AgentBase):
                 summed_test_reward = self.test(test_step)
                 self.logger.logger_epoch(total_episode=episode_counts_log[-1], epoch_episode=nth_episode_counts_log[-1],
                                          epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
-                                         advantage=advantage, num_worker=threads)
+                                         entropy=entropy_np, total_loss=total_loss_nd, advantage=advantage, num_worker=threads)
                 self.logger.close()
                 continue
 
