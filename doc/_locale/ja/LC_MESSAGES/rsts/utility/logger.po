@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-22 17:38+0900\n"
-"PO-Revision-Date: 2019-03-22 17:42+0900\n"
+"POT-Creation-Date: 2019-03-23 16:14+0900\n"
+"PO-Revision-Date: 2019-03-23 16:15+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: \n"
@@ -44,8 +44,8 @@ msgid ""
 "For modules using advantage steps, 1 iteration is equivalent to the advantage "
 "step."
 msgstr ""
-"advantage step を使用しているモジュールの場合, 1 iteration は advantage step"
-"分と等価です."
+"advantage step を使用しているモジュールの場合, 1 iteration は advantage step分"
+"と等価です."
 
 #: ../../rsts/utility/logger.rst:11
 msgid "For modules using multiple agents, 1 agent is logged."
@@ -133,6 +133,7 @@ msgstr ""
 #: of renom_rl.utility.logger.AVAILABLE_KEYS:16
 #: renom_rl.utility.logger.Logger:32 renom_rl.utility.logger.Logger.from_csv:8
 #: renom_rl.utility.logger.Logger.graph:32
+#: renom_rl.utility.logger.Logger.graph_attribute:10
 #: renom_rl.utility.logger.Logger.graph_custom:16
 #: renom_rl.utility.logger.Logger.logger:13
 #: renom_rl.utility.logger.Logger.result:13
@@ -372,7 +373,8 @@ msgstr ""
 "グラフを簡単に表示するための関数.記録したデータ以外のデータを活用することも可"
 "能."
 
-#: of renom_rl.utility.logger.Logger.graph_custom:3
+#: of renom_rl.utility.logger.Logger.graph_attribute:3
+#: renom_rl.utility.logger.Logger.graph_custom:3
 msgid "refer ``graph`` for other arguments."
 msgstr "引数については ``graph`` 関数を参照."
 
@@ -391,6 +393,16 @@ msgstr "Y軸ラベル."
 #: of renom_rl.utility.logger.Logger.graph_custom:11
 msgid "X (vertical) axis label."
 msgstr "X軸ラベル."
+
+#: of renom_rl.utility.logger.Logger.graph_attribute:1
+msgid "This function allows users to generate graph properties more easily."
+msgstr ""
+"グラフを簡単に表示するための関数.記録したデータ以外のデータを活用することも可"
+"能."
+
+#: of renom_rl.utility.logger.Logger.graph_attribute:5
+msgid "plt object."
+msgstr "matplotlib オブジェクト"
 
 #: of renom_rl.utility.logger.Logger.to_csv:1
 msgid ""
