@@ -341,15 +341,9 @@ class A2C(AgentBase):
                 singular_list = [epoch_step, e, epoch, val_loss_nd,
                                  entropy_np, total_loss_nd, advantage, threads]
                 log1_key = ["max_step", "epoch", "max_epoch",
-<< << << < HEAD
                             "loss", "entropy", "total_loss", "advantage", "num_worker"]
-                log1_value = [[data]*advantage for data in singular_list]
-
-
-== == == =
-                            "loss", "entropy", "advantage", "num_worker"]
+                            
                 log1_value = [[data] * advantage for data in singular_list]
->> >>>> > 8426c60efda732f6dde0e9290d4a00d51064e77b
 
                 thread_step_reverse_list = [states, actions, rewards, dones, states_next,
                                             step_counts_log, epoch_steps_log,
