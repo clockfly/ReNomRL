@@ -75,6 +75,7 @@ A2C
   "entropy", "Entropy value."
   "advantage", "Advantage steps."
   "num_worker", "Number of workers used to calculate."
+  "total_loss", "Actor and Critic Loss total"
 
 
 DDPG
@@ -116,8 +117,8 @@ _ddpg_keys = _common_keys + ["epsilon", "noise_value"]
 _ddpg_keys_epoch = _common_keys_epoch + ["epsilon", "noise_value"]
 
 # a2c parameters
-_a2c_keys = _common_keys + ["entropy", "advantage", "num_worker"]
-_a2c_keys_epoch = _common_keys_epoch + ["entropy", "advantage", "num_worker"]
+_a2c_keys = _common_keys + ["entropy", "total_loss","advantage", "num_worker"]
+_a2c_keys_epoch = _common_keys_epoch + ["entropy", "total_loss", "advantage", "num_worker"]
 
 #: dictionary value
 available_keys = {"dqn": {"logger": copy(_dqn_keys), "logger_epoch": copy(_dqn_keys_epoch)},
