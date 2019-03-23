@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-04 14:27+0900\n"
+"POT-Creation-Date: 2019-03-22 17:38+0900\n"
 "PO-Revision-Date: 2018-11-03 16:21+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -32,12 +32,22 @@ msgstr ""
 msgid "https://github.com/openai/gym"
 msgstr ""
 
-#: of renom_rl.environ.openai:8
+#: of renom_rl.environ.openai:8 renom_rl.environ.openai.Breakout:6
+#: renom_rl.environ.openai.MountainCar:6
 msgid "Example"
 msgstr ""
 
 #: of renom_rl.environ.openai.Pendulum:1
 msgid "OpenAI gym \"Pendulum\"."
+msgstr ""
+
+#: of renom_rl.environ.openai.Breakout:1
+#, fuzzy
+msgid "A wrapper environment of OpenAI gym \"BreakoutNoFrameskip-v4\""
+msgstr "OpenAI gym モジュールのラッパークラス一覧."
+
+#: of renom_rl.environ.openai.Breakout:3
+msgid "Description : https://gym.openai.com/envs/Breakout-v0/"
 msgstr ""
 
 #: of renom_rl.environ.openai.CartPole00:1
@@ -56,6 +66,15 @@ msgid ""
 msgstr ""
 "OpenAI gym ‘CartPole-v0’ モジュールのラッパークラスです. 200 step 以上倒立できたら, 報酬を+1, 報酬を-1"
 " とします. Training loop は報酬 +1 を10回入手したときに break します."
+
+#: of renom_rl.environ.openai.MountainCar:1
+#, fuzzy
+msgid "A wrapper environment of OpenAI gym \"MountainCar-v0\""
+msgstr "OpenAI gym モジュールのラッパークラス一覧."
+
+#: of renom_rl.environ.openai.MountainCar:3
+msgid "Description : https://github.com/openai/gym/wiki/MountainCar-v0"
+msgstr ""
 
 #~ msgid "A wrapper environment of OpenAI gym \"Pendulum-v0\"."
 #~ msgstr "OpenAI gym 'Pendulum-v0' モジュールのラッパークラスです."
@@ -98,4 +117,3 @@ msgstr ""
 
 #~ msgid "OpenAI gym \"BreakoutNoFrameskip-v4\""
 #~ msgstr "OpenAI gym ‘BreakoutNoFrameskip-v4’"
-

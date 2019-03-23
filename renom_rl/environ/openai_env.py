@@ -74,68 +74,6 @@ class CartPole(BaseEnv):
         self.env.viewer = None
 
 
-class MountainCar(BaseEnv):
-    """A wrapper environment of OpenAI gym "MountainCar-v0"
-
-    Description : https://github.com/openai/gym/wiki/MountainCar-v0
-
-    Example:
-        >>> import renom as rm
-        >>> from renom_rl.discrete.double_dqn import DoubleDQN
-        >>> from renom_rl.environ.openai_env import MountainCar
-        >>> env = MountainCar()
-        Env Space :  (2,)
-        Action Space :  (3,)
-        >>> q_network = rm.Sequential([rm.Dense(30),
-                    ... rm.Relu(),
-                    ... rm.Dense(30),
-                    ... rm.Relu(),
-                    ... rm.Dense(env.action_shape[0])
-                    ... ])
-        >>> agent = DoubleDQN(env, q_network)
-        >>> agent.fit()
-"""
-
-    def __init__(self):
-        self.env = gym.make('MountainCar-v0')
-        self.action_shape = (self.env.action_space.n,)
-        self.state_shape = self.env.observation_space.shape
-        print("Env Space : ", self.state_shape)
-        print("Action Space : ", self.action_shape)
-
-        self.animation = Animation()
-        self.test_mode = False
-
-    def reset(self):
-        return self.env.reset()
-
-    def sample(self):
-        return self.env.action_space.sample()
-
-    def step(self, action):
-        state, _, terminal, _ = self.env.step(int(action))
-        reward = 0
-
-        if terminal:
-            if state[0] > 0.5:
-                reward = 1
-            else:
-                reward = state[0] + 0.5
-
-        return state, reward, terminal
-
-    def test_start(self):
-        self.animation.reset()
-        self.env.reset()
-
-    def test_epoch_step(self):
-        self.animation.store(self.env.render(mode="rgb_array"))
-
-    def test_close(self):
-        # self.env.close()
-        self.env.viewer = None
-
-
 class Breakout_ram(BaseEnv):
     """A wrapper environment of OpenAI gym "Breakout-ram-v0"
 

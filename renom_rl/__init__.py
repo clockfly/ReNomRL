@@ -4,7 +4,7 @@
 from __future__ import division, print_function
 from tqdm import tqdm
 
-__version__ = "0.4.0b"
+__version__ = "0.4.2b"
 
 
 def fit_decorator(self, func):

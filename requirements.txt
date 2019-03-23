@@ -6,3 +6,4 @@ JSAnimation==0.1
 pyglet==1.2.4
 ipython==6.2.1
 matplotlib==2.2.3
+opencv-python==4.0.0.21

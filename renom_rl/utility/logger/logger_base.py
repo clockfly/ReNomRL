@@ -264,7 +264,7 @@ class Logger(object, metaclass=LoggerMeta):
 
     def graph(self, y_key, x_key=None, x_lim=None, y_lim=None,
               x_interval=0, y_interval=0, figsize=None,
-              dpi=100, average_range=0, grid=True):
+              dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
         """
         Shows plot from recorded data. Keys must be from ``log_key`` . if ``x_key`` is None,
         ``y_key`` will be plot based on its length. Note that this function is focused on
@@ -283,6 +283,8 @@ class Logger(object, metaclass=LoggerMeta):
                                     (i being plotted point), when [min,max] is set. If int \
                                     type is set, it becomes [average_length,average_length].\
                                      Default is 0.
+            plot_label (string): Names label of plot when legend appears. Default is None.
+            legend (bool or dictionary): Shows Legend. If dictionary, legend's property will be set based on its value. Default is None (False).
             grid (boolean): Shows grid based on ticks. Default is True.
 
         Examples:
@@ -310,11 +312,11 @@ class Logger(object, metaclass=LoggerMeta):
         # creating custom graph
         self.graph_custom(y_data=y_data, x_data=x_data, y_label=y_key, x_label=x_key, x_lim=x_lim, y_lim=y_lim,
                           x_interval=x_interval, y_interval=y_interval, figsize=figsize,
-                          dpi=dpi, average_range=average_range, grid=grid)
+                          dpi=dpi, average_range=average_range, plot_label=plot_label, legend=legend, grid=grid)
 
     def graph_epoch(self, y_key, x_key=None, x_lim=None, y_lim=None,
                     x_interval=0, y_interval=0, figsize=None,
-                    dpi=100, average_range=0, grid=True):
+                    dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
         """
         Shows plot from recorded data at every epoch. View the function above for details.
         """
@@ -338,12 +340,13 @@ class Logger(object, metaclass=LoggerMeta):
         # creating custom graph
         self.graph_custom(y_data=y_data, x_data=x_data, y_label=y_key, x_label=x_key, x_lim=x_lim, y_lim=y_lim,
                           x_interval=x_interval, y_interval=y_interval, figsize=figsize,
-                          dpi=dpi, average_range=average_range, grid=grid)
+                          dpi=dpi, average_range=average_range, plot_label=plot_label, legend=legend, grid=grid)
 
     # for custom graph
-    def graph_custom(self, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
+    @classmethod
+    def graph_custom(cls, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
                      x_interval=0, y_interval=0, figsize=None,
-                     dpi=100, average_range=0, grid=True):
+                     dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
         """
         This function allows users to quickly create graph when custom creating own data.\n
         refer ``graph`` for other arguments.
@@ -354,6 +357,49 @@ class Logger(object, metaclass=LoggerMeta):
             x_data (numpy): X (horizontal) axis data. This must be 1-D data. Default is None.
             y_label (string):  Y (vertical) axis label.
             x_label (string):  X (vertical) axis label.
+
+        Examples:
+            >>> import numpy as np
+            >>> from renom_rl.utility.logger import Logger
+            >>> import matplotlib.pyplot as plt
+            >>>
+            >>> data_list={}
+            >>> data_list["param1"]=np.random.random((100,2))
+            >>> data_list["param2"]=np.random.random((100,2))
+            >>> data_list["param3"]=np.random.random((100,2))
+            >>>
+            >>> plt.figure(figsize=(10,10))
+            >>> for i , k in enumerate(data_list,1):
+            ...     plt.subplot(len(data_list),1,i)
+            ...     Logger.graph_attribute(plt,data_list[k],plot_label=["plt_a", "plt_b"],y_label=k,legend={"loc":"upper right"})
+            >>>
+            >>> plt.show()
+
+        """
+        if figsize:
+            plt.figure(figsize=figsize, dpi=dpi)
+        else:
+            plt.figure()
+
+        cls.graph_attribute(plt, y_data=y_data, x_data=x_data, y_label=y_label, x_label=x_label, x_lim=x_lim, y_lim=y_lim,
+                            x_interval=x_interval, y_interval=y_interval,
+                            dpi=dpi, average_range=average_range, plot_label=plot_label, legend=legend, grid=grid)
+
+        plt.grid(grid)
+        plt.show()
+
+    # for graph attributes
+    @classmethod
+    def graph_attribute(cls, plt_sub, y_data, x_data=None, y_label="", x_label="", x_lim=None, y_lim=None,
+                        x_interval=0, y_interval=0,
+                        dpi=100, average_range=0, plot_label=None, legend=None, grid=True):
+        """
+        This function allows users to generate graph properties more easily.\n
+        refer ``graph`` for other arguments.
+
+        Args:
+
+            plt (matplotlib): plt object.
 
         Examples:
             >>> # suppose logger.total has a 2D list
@@ -368,9 +414,6 @@ class Logger(object, metaclass=LoggerMeta):
         assert len(np.shape(x_data)) <= 1 and len(np.shape(y_data)) <= 2,\
             "key dimension conditions are x_data <= 1 and y_data <= 2 when plotting"
 
-        if figsize:
-            plt.figure(figsize=figsize, dpi=dpi)
-
         if x_lim:
             assert isinstance(x_lim, list) and len(x_lim) == 2,\
                 "x_lim must be a [min,max] structure"
@@ -382,24 +425,47 @@ class Logger(object, metaclass=LoggerMeta):
         x_lim = x_lim if x_lim else [np.min(x_data), np.max(x_data)]
         y_lim = y_lim if y_lim else [np.min(y_data) - 0.1, np.max(y_data) + 0.1]
 
-        plt.xlim(x_lim)
-        plt.ylim(y_lim)
+        plt_sub.xlim(x_lim)
+        plt_sub.ylim(y_lim)
 
         if len(np.shape(y_data)) == 1:
-            plt.plot(x_data, y_data, "b", label="result")
+
+            if plot_label:
+                assert isinstance(plot_label, str), "plot label must be a string"
+                labeling_format = plot_label
+            else:
+                labeling_format = "result"
+
+            plt_sub.plot(x_data, y_data, "b", label=labeling_format)
+
         if len(np.shape(y_data)) == 2:
+
+            if plot_label:
+                if isinstance(plot_label, (list, tuple)):
+                    labeling_format = ["{}".format(x) for x in plot_label]
+                elif isinstance(plot_label, str):
+                    labeling_format = ["{}[{}]".format(plot_label, i)
+                                       for i in range(len(y_data[0]))]
+                else:
+                    raise ValueError("Must Implement tuple, list, or string for plot_label")
+            else:
+                if y_label:
+                    labeling_format = ["{}[{}]".format(y_label, i) for i in range(len(y_data[0]))]
+                else:
+                    labeling_format = ["result"]*len(y_data[0])
+
             for i in range(len(y_data[0])):
-                plt.plot(x_data, y_data[:, i], label="{}[{}]".format(y_label, i))
+                plt_sub.plot(x_data, y_data[:, i], label="{}".format(labeling_format[i]))
 
         if x_interval:
-            plt.xticks(np.arange(x_lim[0], x_lim[-1], x_interval))
+            plt_sub.xticks(np.arange(x_lim[0], x_lim[-1], x_interval))
         if y_interval:
-            plt.yticks(np.arange(y_lim[0], y_lim[-1], y_interval))
+            plt_sub.yticks(np.arange(y_lim[0], y_lim[-1], y_interval))
 
         if x_label:
-            plt.xlabel(x_label)
+            plt_sub.xlabel(x_label)
         if y_label:
-            plt.ylabel(y_label)
+            plt_sub.ylabel(y_label)
 
         if average_range:
             if isinstance(average_range, list):
@@ -416,13 +482,18 @@ class Logger(object, metaclass=LoggerMeta):
                                            min_length=int(average_range),
                                            max_length=int(average_range))
             else:
-                assert Exception("average_range must be int or list (len == 2)")
+                raise Exception("average_range must be int or list (len == 2)")
 
-            plt.plot(x_data, avg_data, "r", label="average")
-            plt.legend()
+            plt_sub.plot(x_data, avg_data, "r", label="average")
+            plt_sub.legend()
 
-        plt.grid(grid)
-        plt.show()
+        if legend:
+            if isinstance(legend, bool):
+                plt_sub.legend()
+            else:
+                plt_sub.legend(**legend)
+
+        plt_sub.grid(grid)
 
     def to_csv(self, filename, overwrite=False, epoch_data=True):
         """

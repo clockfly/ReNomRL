@@ -44,6 +44,7 @@ class GradientClipping(object):
         assert gradient is not None, "insert the gradient of model (model.grad())"
 
         # setting variables etc.
+        auto_updates = gradient._auto_updates
         variables = gradient.variables
         norm = float(norm)
         threshold = float(threshold)
@@ -54,10 +55,10 @@ class GradientClipping(object):
         else:
             # regular norm
             total_norm = 0
-            for i in variables:
-                arr = variables[i]**norm
+            for i in auto_updates:
+                arr = np.abs(variables[id(i)])**norm
                 total_norm += arr.sum()
-            total_norm = total_norm ** (1 / total_norm)
+            total_norm = total_norm ** (1/norm)
 
         # process gradient
         if threshold < total_norm:

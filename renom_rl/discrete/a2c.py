@@ -156,8 +156,8 @@ class A2C(AgentBase):
 
     def _calc_forward(self, x):
         act, val = self._network(x)
-        e = - rm.sum(act * rm.log(act + 1e-5), axis=1)
-        entropy = e.reshape((-1, 1))
+        e = - rm.sum(act*rm.log(act+1e-5), axis=1)
+        entropy = e.reshape(-1, 1)
         return act, val, entropy
 
     def fit(self, epoch=1, epoch_step=250000, test_step=None):
@@ -204,9 +204,9 @@ class A2C(AgentBase):
             dones = np.zeros((advantage, threads, 1))
             states_next = np.zeros((advantage, threads, *test_env.state_shape))
 
-            # value, value next, target value function
+            # value, target value function
             values = np.zeros((advantage, threads, 1))
-            target_rewards = np.zeros((advantage, threads, 1))
+            target_rewards = np.zeros((advantage + 1, threads, 1))
 
             # logging
             sum_rewards_log = np.zeros((advantage, threads, ))
@@ -223,7 +223,7 @@ class A2C(AgentBase):
 
             # initiallize
             states[0] = np.array([envs[i].reset() for i in range(threads)]
-                                 ).reshape((-1, *test_env.state_shape))
+                                 ).reshape(-1, *test_env.state_shape)
 
             # action size
             a_, _ = self._network(states[0])
@@ -248,16 +248,19 @@ class A2C(AgentBase):
                     for thr in range(threads):
 
                         # next state,reward,done
-                        states_next[step][thr], rewards[step][thr], dones[step][thr] = envs[thr].step(
-                            int(actions[step][thr]))
+                        states_n, rewards_n, dones_n = envs[thr].step(int(actions[step][thr]))
+
+                        states_next[step][thr] = np.copy(states_n)
+                        rewards[step][thr] = np.copy(rewards_n)
+                        dones[step][thr] = np.copy(dones_n)
 
                         # summing rewards / append steps
                         sum_rewards[thr] += rewards[step][thr]
-                        sum_rewards_log[step][thr] = sum_rewards[thr]
+                        sum_rewards_log[step][thr] = sum_rewards[thr].copy()
                         continuous_steps[thr] += 1
-                        continuous_steps_log[step][thr] = continuous_steps[thr]
-                        episode_counts_log[step][thr] = episode_counts[thr]
-                        nth_episode_counts_log[step][thr] = nth_episode_counts[thr]
+                        continuous_steps_log[step][thr] = continuous_steps[thr].copy()
+                        episode_counts_log[step][thr] = episode_counts[thr].copy()
+                        nth_episode_counts_log[step][thr] = nth_episode_counts[thr].copy()
 
                         # if done, then reset, set next state is initial
                         if dones[step][thr]:
@@ -276,7 +279,7 @@ class A2C(AgentBase):
 
                     # setting step to next advanced step
                     if step + 1 < advantage:
-                        states[step + 1] = states_next[step]
+                        states[step+1] = states_next[step].copy()
 
                     # values are calculated at this section
                     values[step] = self._value(states[step])
@@ -285,23 +288,24 @@ class A2C(AgentBase):
                     _ = [self.envs[_t].epoch_step() for _t in range(threads)]
 
                 # copy rewards
-                target_rewards = np.copy(rewards)
+                target_rewards[-1] = self._value(states_next[-1])
 
                 # calculate rewards
-                for i in reversed(range(advantage - 1)):
-                    target_rewards[i] = rewards[i] + target_rewards[i + 1] * gamma * (1 - dones[i])
+                for i in reversed(range(advantage)):
+                    mask = np.where(dones[i], 0.0, 1.0)
+                    target_rewards[i] = rewards[i]+target_rewards[i+1]*gamma*mask
 
                 # -------calcuating gradients-----
 
                 # reshaping states, target
-                reshaped_state = states.reshape((-1, *envs[0].state_shape))
-                reshaped_target_rewards = target_rewards.reshape((-1, 1))
-                advantage_reward = reshaped_target_rewards - values.reshape((-1, 1))
+                reshaped_state = states.reshape(-1, *test_env.state_shape)
+                reshaped_target_rewards = target_rewards[:-1].reshape(-1, 1)
+                advantage_reward = reshaped_target_rewards - self._value(reshaped_state)
 
                 total_n = advantage * threads
 
                 # reshape index variables for action
-                action_index = actions.reshape((-1,))
+                action_index = actions.reshape(-1,)
 
                 # caculate forward with comuptational graph
                 self._network.set_models(inference=False)
@@ -316,9 +320,9 @@ class A2C(AgentBase):
                     action_coefs[range(action_index.shape[0]), action_index.astype("int")] = 1
 
                     # append act loss and val loss
-                    act_loss = rm.sum(- (advantage_reward * action_coefs *
-                                         act_log + entropy * entropy_coef) / total_n)
-                    val_loss = self.loss_func(val, reshaped_target_rewards) * value_coef
+                    act_loss = - rm.sum(advantage_reward * action_coefs * act_log) / total_n \
+                        - rm.sum(entropy) * entropy_coef / total_n
+                    val_loss = self.loss_func(val, reshaped_target_rewards) * value_coef * 2
 
                     # total loss
                     total_loss = val_loss + act_loss
@@ -331,12 +335,21 @@ class A2C(AgentBase):
                 grad.update(self._optimizer)
 
                 val_loss_nd = float(val_loss.as_ndarray())
-                entropy_np = float(rm.sum(entropy).as_ndarray())
+                total_loss_nd = float(total_loss.as_ndarray())
+                entropy_np = float(entropy.as_ndarray().mean())
 
-                singular_list = [epoch_step, e, epoch, val_loss_nd, entropy_np, advantage, threads]
+                singular_list = [epoch_step, e, epoch, val_loss_nd,
+                                 entropy_np, total_loss_nd, advantage, threads]
                 log1_key = ["max_step", "epoch", "max_epoch",
+<< << << < HEAD
+                            "loss", "entropy", "total_loss", "advantage", "num_worker"]
+                log1_value = [[data]*advantage for data in singular_list]
+
+
+== == == =
                             "loss", "entropy", "advantage", "num_worker"]
                 log1_value = [[data] * advantage for data in singular_list]
+>> >>>> > 8426c60efda732f6dde0e9290d4a00d51064e77b
 
                 thread_step_reverse_list = [states, actions, rewards, dones, states_next,
                                             step_counts_log, epoch_steps_log,
@@ -356,7 +369,7 @@ class A2C(AgentBase):
 
                 self.logger.update(advantage)
 
-                states[0] = states_next[-1]
+                states[0] = states_next[-1].copy()
 
                 if any([self.envs[_t].terminate() for _t in range(threads)]):
                     print("terminated")
@@ -366,14 +379,14 @@ class A2C(AgentBase):
 
                 summed_test_reward = self.test(test_step)
                 self.logger.logger_epoch(total_episode=episode_counts_log[-1], epoch_episode=nth_episode_counts_log[-1],
-                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
-                                         advantage=advantage, num_worker=threads)
+                                         epoch = e, max_epoch = epoch, test_reward = summed_test_reward,
+                                         entropy = entropy_np, total_loss = total_loss_nd, advantage = advantage, num_worker = threads)
                 self.logger.close()
                 continue
 
             break
 
-    def test(self, test_step=None, **kwargs):
+    def test(self, test_step = None, **kwargs):
         """
         Test the trained actor agent.
 
@@ -384,17 +397,17 @@ class A2C(AgentBase):
             Sum of rewards.
         """
 
-        env = self.test_env
+        env=self.test_env
 
-        sum_reward = 0
+        sum_reward=0
         env.test_start()
-        state = env.reset()
+        state=env.reset()
 
         if test_step is None:
             while True:
-                action = self._test_action(state[None, ...])
+                action=self._test_action(state[None, ...])
 
-                state, reward, terminal = env.step(action)
+                state, reward, terminal=env.step(action)
 
                 sum_reward += float(reward)
 
@@ -406,9 +419,9 @@ class A2C(AgentBase):
         else:
             for j in range(test_step):
 
-                action = self._test_action(state[None, ...])
+                action=self._test_action(state[None, ...])
 
-                state, reward, terminal = env.step(action)
+                state, reward, terminal=env.step(action)
 
                 sum_reward += float(reward)
 

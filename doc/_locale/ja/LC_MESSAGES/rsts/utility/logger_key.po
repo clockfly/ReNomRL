@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-31 15:19+0900\n"
-"PO-Revision-Date: 2019-01-30 18:48+0900\n"
+"POT-Creation-Date: 2019-03-23 14:59+0900\n"
+"PO-Revision-Date: 2019-03-23 15:14+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: ../../rsts/utility/logger_key.rst:2
 msgid "Logger Key Table"
@@ -222,7 +223,15 @@ msgstr ""
 msgid "Number of workers used to calculate."
 msgstr "平行計算するために使用するエージェント数."
 
-#: of renom_rl.utility.logger.keys:80
+#: of renom_rl.utility.logger.keys:1
+msgid "total_loss"
+msgstr ""
+
+#: of renom_rl.utility.logger.keys:1
+msgid "Actor and Critic Loss total"
+msgstr "行動関数と価値関数の総失和"
+
+#: of renom_rl.utility.logger.keys:81
 msgid "DDPG"
 msgstr ""
 
@@ -233,16 +242,3 @@ msgstr ""
 #: of renom_rl.utility.logger.keys:1
 msgid "Noise value."
 msgstr "ノイズ値."
-
-#~ msgid "``AVAIABLE_KEYS`` key:\"dqn\""
-#~ msgstr ""
-
-#~ msgid "``AVAIABLE_KEYS`` key:\"ddqn\""
-#~ msgstr ""
-
-#~ msgid "``AVAIABLE_KEYS`` key:\"a2c\""
-#~ msgstr ""
-
-#~ msgid "``AVAIABLE_KEYS`` key:\"ddpg\""
-#~ msgstr ""
-
