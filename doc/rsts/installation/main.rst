@@ -40,6 +40,9 @@ The following installation procedure is from the link above.
     # Install all games
     pip install 'gym[atari]'
 
+
+
+
 .. note::
 
   The above installation may not work depending on the user's environment.
