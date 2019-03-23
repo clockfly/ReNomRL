@@ -12,7 +12,7 @@ def _moving_average(data, min_length, max_length):
         min_i = np.maximum(i - min_length, 0)
         max_i = np.minimum(i + max_length + 1, len(data))
 
-        avg = np.sum(data[min_i:max_i], axis=0)/(max_i-min_i)
+        avg = np.sum(data[min_i:max_i], axis=0) / (max_i - min_i)
         res.append(avg)
 
     return np.array(res)

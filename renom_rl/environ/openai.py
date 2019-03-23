@@ -53,7 +53,9 @@ class Pendulum(BaseEnv):
         state, reward, terminal = self.env.step(action)[:3]
         return state.reshape(3), reward, terminal
 
+
 cv2.ocl.setUseOpenCL(False)
+
 
 class Breakout(BaseEnv):
     """A wrapper environment of OpenAI gym "BreakoutNoFrameskip-v4"
@@ -92,9 +94,9 @@ class Breakout(BaseEnv):
         self.test_mode = False
         self.previous_frames = np.zeros(self.state_shape)
 
-        print("Env space :  ",(210, 160, 3))
-        print("Preprocessed Env space :  ",self.state_shape)
-        print("Action space :  ",self.action_shape)
+        print("Env space :  ", (210, 160, 3))
+        print("Preprocessed Env space :  ", self.state_shape)
+        print("Action space :  ", self.action_shape)
 
     def _preprocess(self, state):
         frame = cv2.cvtColor(state, cv2.COLOR_RGB2GRAY)

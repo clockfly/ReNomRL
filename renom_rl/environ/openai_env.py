@@ -74,9 +74,6 @@ class CartPole(BaseEnv):
         self.env.viewer = None
 
 
-
-
-
 class Breakout_ram(BaseEnv):
     """A wrapper environment of OpenAI gym "Breakout-ram-v0"
 
@@ -237,7 +234,7 @@ class Breakout(BaseEnv):
     def _preprocess(self, state_list):
         processed_state_list = []
         for s in state_list:
-            processed_state = np.uint8(resize(rgb2gray(s)*255, (84, 84)))
+            processed_state = np.uint8(resize(rgb2gray(s) * 255, (84, 84)))
             processed_state_list.append(processed_state)
 
         if len(processed_state_list) is not self.action_interval:

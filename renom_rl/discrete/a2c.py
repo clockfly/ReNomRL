@@ -311,7 +311,7 @@ class A2C(AgentBase):
                 self._network.set_models(inference=False)
                 with self._network.train():
                     act, val, entropy = self._calc_forward(reshaped_state)
-                    act_log = rm.log(act+1e-5)
+                    act_log = rm.log(act + 1e-5)
 
                     # initiallize
                     action_coefs = np.zeros_like(act.as_ndarray())
@@ -341,8 +341,15 @@ class A2C(AgentBase):
                 singular_list = [epoch_step, e, epoch, val_loss_nd,
                                  entropy_np, total_loss_nd, advantage, threads]
                 log1_key = ["max_step", "epoch", "max_epoch",
+<< << << < HEAD
                             "loss", "entropy", "total_loss", "advantage", "num_worker"]
                 log1_value = [[data]*advantage for data in singular_list]
+
+
+== == == =
+                            "loss", "entropy", "advantage", "num_worker"]
+                log1_value = [[data] * advantage for data in singular_list]
+>> >>>> > 8426c60efda732f6dde0e9290d4a00d51064e77b
 
                 thread_step_reverse_list = [states, actions, rewards, dones, states_next,
                                             step_counts_log, epoch_steps_log,
@@ -372,14 +379,14 @@ class A2C(AgentBase):
 
                 summed_test_reward = self.test(test_step)
                 self.logger.logger_epoch(total_episode=episode_counts_log[-1], epoch_episode=nth_episode_counts_log[-1],
-                                         epoch=e, max_epoch=epoch, test_reward=summed_test_reward,
-                                         entropy=entropy_np, total_loss=total_loss_nd, advantage=advantage, num_worker=threads)
+                                         epoch = e, max_epoch = epoch, test_reward = summed_test_reward,
+                                         entropy = entropy_np, total_loss = total_loss_nd, advantage = advantage, num_worker = threads)
                 self.logger.close()
                 continue
 
             break
 
-    def test(self, test_step=None, **kwargs):
+    def test(self, test_step = None, **kwargs):
         """
         Test the trained actor agent.
 
@@ -390,17 +397,17 @@ class A2C(AgentBase):
             Sum of rewards.
         """
 
-        env = self.test_env
+        env=self.test_env
 
-        sum_reward = 0
+        sum_reward=0
         env.test_start()
-        state = env.reset()
+        state=env.reset()
 
         if test_step is None:
             while True:
-                action = self._test_action(state[None, ...])
+                action=self._test_action(state[None, ...])
 
-                state, reward, terminal = env.step(action)
+                state, reward, terminal=env.step(action)
 
                 sum_reward += float(reward)
 
@@ -412,9 +419,9 @@ class A2C(AgentBase):
         else:
             for j in range(test_step):
 
-                action = self._test_action(state[None, ...])
+                action=self._test_action(state[None, ...])
 
-                state, reward, terminal = env.step(action)
+                state, reward, terminal=env.step(action)
 
                 sum_reward += float(reward)
 

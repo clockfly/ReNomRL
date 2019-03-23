@@ -9,6 +9,7 @@ before_script:
   - alias python3='python3.5'; alias pip3='pip3.5'
   - cd ..
   - pip3 install --upgrade pip
+  - pip install cython numpy
   - pip3 install -r requirements.txt
 
 pages:
@@ -23,4 +24,4 @@ pages:
     - public
 
   only:
-    - /^suwa\/.*$/
+    - /^release\/.*$/

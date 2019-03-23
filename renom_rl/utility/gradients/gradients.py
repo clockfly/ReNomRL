@@ -64,4 +64,4 @@ class GradientClipping(object):
         if threshold < total_norm:
 
             for i in variables:
-                variables[i] = threshold * variables[i]/(total_norm + 1e-6)
+                variables[i] = threshold * variables[i] / (total_norm + 1e-6)

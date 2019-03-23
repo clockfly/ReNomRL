@@ -55,7 +55,7 @@ class A2CLoggerD(Logger):
     def logger_epoch(self, **log):
         e = log["epoch"]
         avg_loss = self.train_loss / self.epoch_step + 1
-        avg_train_reward = self.train_sum_rewards_in_epoch/(self.tick + 1)
+        avg_train_reward = self.train_sum_rewards_in_epoch / (self.tick + 1)
         train_reward = self.sum_reward_per_epoch
         test_reward = log["test_reward"]
 

@@ -56,10 +56,10 @@ class EpsilonSL(Epsilon):
         super(EpsilonSL, self).__init__(initial, min, max)
 
         self.epsilon_step = epsilon_step
-        self.step_size = (max-min)/epsilon_step
+        self.step_size = (max - min) / epsilon_step
 
     def __call__(self, step, episode, epoch):
-        self.epsilon = self._clip(self.initial-self.step_size*step)
+        self.epsilon = self._clip(self.initial - self.step_size * step)
         return self.epsilon
 
 
@@ -93,7 +93,7 @@ class EpsilonEI(Epsilon):
         self.alpha = alpha
 
     def __call__(self, step, episode, epoch):
-        self.epsilon = self._clip(self.min+(self.initial-self.min)/(1+episode*self.alpha))
+        self.epsilon = self._clip(self.min + (self.initial - self.min) / (1 + episode * self.alpha))
         return self.epsilon
 
 
