@@ -359,21 +359,9 @@ class Logger(object, metaclass=LoggerMeta):
             x_label (string):  X (vertical) axis label.
 
         Examples:
-            >>> import numpy as np
-            >>> from renom_rl.utility.logger import Logger
-            >>> import matplotlib.pyplot as plt
-            >>>
-            >>> data_list={}
-            >>> data_list["param1"]=np.random.random((100,2))
-            >>> data_list["param2"]=np.random.random((100,2))
-            >>> data_list["param3"]=np.random.random((100,2))
-            >>>
-            >>> plt.figure(figsize=(10,10))
-            >>> for i , k in enumerate(data_list,1):
-            ...     plt.subplot(len(data_list),1,i)
-            ...     Logger.graph_attribute(plt,data_list[k],plot_label=["plt_a", "plt_b"],y_label=k,legend={"loc":"upper right"})
-            >>>
-            >>> plt.show()
+            >>> # suppose logger.total has a 2D list
+            >>> array_list=np.array(logger.total_list)[:,1]
+            >>> logger.graph_custom(array_list,y_label="this is y",x_label="this is x",x_interval=5)
 
         """
         if figsize:
@@ -402,9 +390,21 @@ class Logger(object, metaclass=LoggerMeta):
             plt (matplotlib): plt object.
 
         Examples:
-            >>> # suppose logger.total has a 2D list
-            >>> array_list=np.array(logger.total_list)[:,1]
-            >>> logger.graph_custom(array_list,y_label="this is y",x_label="this is x",x_interval=5)
+            >>> import numpy as np
+            >>> from renom_rl.utility.logger import Logger
+            >>> import matplotlib.pyplot as plt
+            >>>
+            >>> data_list={}
+            >>> data_list["param1"]=np.random.random((100,2))
+            >>> data_list["param2"]=np.random.random((100,2))
+            >>> data_list["param3"]=np.random.random((100,2))
+            >>>
+            >>> plt.figure(figsize=(10,10))
+            >>> for i , k in enumerate(data_list,1):
+            ...     plt.subplot(len(data_list),1,i)
+            ...     Logger.graph_attribute(plt,data_list[k],plot_label=["plt_a", "plt_b"],y_label=k,legend={"loc":"upper right"})
+            >>>
+            >>> plt.show()
 
         """
 
