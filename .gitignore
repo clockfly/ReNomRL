@@ -175,4 +175,12 @@ Additional ignored files
 
 # removing release script
 release.sh
-version_list.txt
+release_version_list.txt
+release
+
+# updating minor_number
+minor_check
+minor_check_py.py
+
+#release manual
+manual.md
