@@ -22,7 +22,7 @@ View `Logger Key Table <./logger_key.html>`_ for variables available to log.
         :annotation: [dict]
 
     .. autoclass:: Logger
-        :members: logger,logger_epoch,result,result_epoch,graph,graph_epoch,graph_custom,to_csv,from_csv
+        :members: logger,logger_epoch,result,result_epoch,graph,graph_epoch,graph_custom,graph_attribute,to_csv,from_csv
 
     .. autoclass:: SimpleLogger
         :exclude-members: logger

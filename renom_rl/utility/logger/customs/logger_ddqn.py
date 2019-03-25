@@ -49,7 +49,7 @@ class DoubleDQNLogger(Logger):
         summed_train_reward = self.train_sum_rewards_in_epoch
         summed_test_reward = log["test_reward"]
         # avg_train_reward = np.mean(self.train_sum_rewards_in_each_episode)
-        avg_train_reward = self.train_sum_rewards_in_epoch/(self.tick + 1)
+        avg_train_reward = self.train_sum_rewards_in_epoch / (self.tick + 1)
         greedy = self.greedy
 
         # 　message

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-04 15:17+0900\n"
+"POT-Creation-Date: 2019-03-23 14:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,15 +54,43 @@ msgid "discrete/A2C: total rewards per thread was adjusted"
 msgstr ""
 
 #: ../../rsts/version_changes/ver0.4.rst:11
-msgid "discrete/A2C: changed url citation of document"
+msgid "discrete/A2C: changed url citation of documentgit"
 msgstr ""
 
 #: ../../rsts/version_changes/ver0.4.rst:12
-msgid "discrete/A2C: added ``BaseEnv.start()`` ~ ``BaseEnv.test_close()``"
+msgid "envrion/openai: removed Breakout"
 msgstr ""
 
-#: ../../rsts/version_changes/ver0.4.rst:13
-msgid "envrion/openai: removed Breakout"
+#: ../../rsts/version_changes/ver0.4.rst:16
+msgid "ver 0.4.1"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:17
+msgid "Changed Setup verison"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:20
+msgid "ver 0.4.2"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:21
+msgid "Logger: added  graph attribute function."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:22
+msgid "Logger:  Enabled class logger to use graph attribute."
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:23
+msgid "DQN:  Redefined Update Period"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:24
+msgid "A2C: Debugged (Now working Well)"
+msgstr ""
+
+#: ../../rsts/version_changes/ver0.4.rst:25
+msgid "Env:  Breakout Changed"
 msgstr ""
 
 #~ msgid "Every Algorithm: Applied Logger Module."
@@ -81,5 +109,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "discrete/A2C: set env.epoch before reset()"
+#~ msgstr ""
+
+#~ msgid "discrete/A2C: changed url citation of document"
+#~ msgstr ""
+
+#~ msgid "discrete/A2C: added ``BaseEnv.start()`` ~ ``BaseEnv.test_close()``"
 #~ msgstr ""
 

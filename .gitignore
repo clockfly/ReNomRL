@@ -172,10 +172,16 @@ Additional ignored files
 
 # All DS_Store
 .DS_Store
+remove_DS_store.sh
 
 # removing release script
 release.sh
-version_list.txt
+release_version_list.txt
+release
 
-# experimental_test
-experimental_test
+# updating minor_number
+minor_check
+minor_check_py.py
+
+#release manual
+manual.md

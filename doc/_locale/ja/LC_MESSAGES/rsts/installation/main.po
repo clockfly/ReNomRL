@@ -7,102 +7,117 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ReNomRL 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-31 10:24+0900\n"
-"PO-Revision-Date: 2018-10-03 17:56+0900\n"
+"POT-Creation-Date: 2019-03-23 14:59+0900\n"
+"PO-Revision-Date: 2019-03-23 16:41+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: ../../rsts/installation/main.rst:2
 msgid "Installation"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:4
+#: ../../rsts/installation/main.rst:5
+msgid "Installing ReNomRL"
+msgstr "ReNomRL のインストール"
+
+#: ../../rsts/installation/main.rst:7
 msgid "ReNom RL can be downloaded from the URL below."
 msgstr "ReNom RL は以下のURL からダウンロード可能です. "
 
-#: ../../rsts/installation/main.rst:6
+#: ../../rsts/installation/main.rst:9
 msgid "URL: https://github.com/ReNom-dev-team/ReNomRL.git"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:15
-msgid ""
-"OpenAI’s Gym are frequently used in tutorials, problem solving, etc. We "
-"recommend you download it."
-msgstr "また Open AIのgym を利用する場面が多くあります. ダウンロードすることを推奨します. "
+#: ../../rsts/installation/main.rst:21
+msgid "Installing Gym"
+msgstr "Gym のインストール"
 
-#: ../../rsts/installation/main.rst:17
+#: ../../rsts/installation/main.rst:23
+msgid ""
+"OpenAI’s Gym are frequently used in tutorials, problem solving, etc. "
+"View the following site for downloading."
+msgstr ""
+"また Open AIのgym を利用する場面が多くあります. 以下のリンクを参考にイン"
+"ストールしてください. "
+
+#: ../../rsts/installation/main.rst:25
 msgid "URL : https://github.com/openai/gym#installation"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:34
+#: ../../rsts/installation/main.rst:27
+msgid "The following installation procedure is from the link above."
+msgstr ""
+"以下のインストール手順は上記をリンクを参考にまとめた簡易的なインストール"
+"手順です."
+
+#: ../../rsts/installation/main.rst:45
+msgid ""
+"The above installation may not work depending on the user's environment. "
+"Please confirm whether gym works appropriately, such as using the "
+"following code: ::"
+msgstr ""
+"環境によって上記のインストール手順を実施しても, うまくできないケースがあ"
+"ります. そのため, 下記のように, gym が正しく動作するかを確認してください."
+
+#: ../../rsts/installation/main.rst:64
 msgid "**Requirements**"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:36
+#: ../../rsts/installation/main.rst:66
 msgid "Linux/Ubuntu"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:37
+#: ../../rsts/installation/main.rst:67
 msgid "Python 2.7 3.6"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:38
-msgid "ReNom DL 2.6 (or over)"
+#: ../../rsts/installation/main.rst:68
+msgid "ReNom DL 2.7 (or over)"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:39
+#: ../../rsts/installation/main.rst:69
 msgid "numpy 1.14.5"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:40
+#: ../../rsts/installation/main.rst:70
 msgid "tqdm 4.26.0"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:41
+#: ../../rsts/installation/main.rst:71
 msgid "Gym 0.10.5"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:42
+#: ../../rsts/installation/main.rst:72
+msgid "CV2 4.0.0.21"
+msgstr ""
+
+#: ../../rsts/installation/main.rst:73
 msgid "Homebrew (For OSX)"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:44
+#: ../../rsts/installation/main.rst:75
 msgid "**Requirements For Animation**"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:46
+#: ../../rsts/installation/main.rst:77
 msgid "JSAnimation"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:47
+#: ../../rsts/installation/main.rst:78
 msgid "pyglet 1.2.4"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:48
+#: ../../rsts/installation/main.rst:79
 msgid "ipython 6.2.1"
 msgstr ""
 
-#: ../../rsts/installation/main.rst:49
+#: ../../rsts/installation/main.rst:80
 msgid "matplotlib 2.2.3"
 msgstr ""
-
-#~ msgid "Reference:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "https://qiita.com/ishizakiiii/items/75bc2176a1e0b65bdd16 "
-#~ "https://github.com/openai/gym#installation"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "*Requirements* -       Python 2.7 3.6 -"
-#~ "       ReNom DL -       OpenAI Gym -"
-#~ "       Homebrew (For OSX)"
-#~ msgstr ""
-

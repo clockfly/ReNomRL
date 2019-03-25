@@ -158,6 +158,7 @@ class DQN(AgentBase):
 
     def _update(self):
         """This function updates target network."""
+        # A(B) Copy B to A.
         self._target_q_network.copy_params(self._best_q_network)
         self._rec_copy(self._target_q_network, self._best_q_network)
 
@@ -242,6 +243,7 @@ class DQN(AgentBase):
             sum_reward = 0
             sum_reward_log = 0
             nth_episode = 0
+
             self.logger.start(epoch_step)
 
             # env epoch
@@ -253,7 +255,8 @@ class DQN(AgentBase):
             for j in range(epoch_step):
 
                 # set action
-                action = action_filter(self._action(state), self.env.sample(),
+                act = self._action(state)
+                action = action_filter(act, self.env.sample(),
                                        step=step_count, episode=episode_count, epoch=e)
                 greedy = action_filter.value()
 
@@ -280,7 +283,6 @@ class DQN(AgentBase):
                         target = self._q_network(train_prestate).as_ndarray()
 
                         target.setflags(write=True)
-                        max_q_action = np.argmax(self._q_network(train_state).as_ndarray(), axis=1)
                         value = np.amax(self._target_q_network(train_state).as_ndarray(),
                                         axis=1, keepdims=True) * self._gamma * (~train_terminal[:, None])
 
@@ -298,17 +300,18 @@ class DQN(AgentBase):
                         loss = np.sum(ls.as_ndarray())
                         # train_loss += loss
 
-                        if count % update_period == 0 and count:
-                            max_reward_in_each_update_period = -np.Inf
-                            self._update()
-                            count = 0
-                        count += 1
+                if count % update_period == 0 and count:
+                    max_reward_in_each_update_period = -np.Inf
+                    self._update()
+                    count = 0
+                count += 1
 
                 # terminal reset
                 if terminal:
                     if max_reward_in_each_update_period <= sum_reward:
                         self._update_best_q_network()
                         max_reward_in_each_update_period = sum_reward
+
                     # train_sum_rewards_in_each_episode.append(sum_reward)
                     # hold log values
                     sum_reward_log = sum_reward
